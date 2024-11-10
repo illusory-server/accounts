@@ -1,0 +1,6 @@
+.vscode
+.idea
+prod.yaml
+dev.yaml
+local.yaml
+.env

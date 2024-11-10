@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package v1;
+
+option go_package = "https://github.com/illusory-server/auth-service/gen/accounts/v1";
+
+message Id {
+  string Id = 1;
+}
+
+message AccountResponse {
+  string Id = 1;
+
+}
+
+service AccountsService {
+  rpc GetAccountById(Id) returns (AccountResponse) {}
+}

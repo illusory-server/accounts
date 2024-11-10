@@ -1,0 +1,49 @@
+version: 3
+
+env:
+  PATH_MAIN: cmd/main/main.go
+  PATH_DEV_CFG: config/dev.yaml
+  PATH_PROD_CFG: config/prod.yaml
+  PATH_LOCAL_CFG: config/local.yaml
+  PATH_TEST_CFG: config/test.yaml
+
+  PATH_MIGRATION_PSQL_DIR: migration/psql
+
+  PROTO_SRC: 'proto'
+  PROTO_FILES: 'proto/**/**/*.proto'
+  PROTO_OUT: './gen/'
+
+tasks:
+  clean:
+    - rm -rf ./main
+  build:
+    cmds:
+      - go build $PATH_MAIN
+  build-dev:
+    cmds:
+      - go build $PATH_MAIN
+      - CONFIG_PATH=$PATH_DEV_CFG ./main
+  dev:
+    cmds:
+      - CONFIG_PATH=$PATH_DEV_CFG go run -race $PATH_MAIN
+  migration:
+    # goose -dir migration/pgx_goose_migration create name_file psql
+    cmds:
+      - export GOOSE_DRIVER=postgres
+      - export GOOSE_DBSTRING=postgresql://eer0:hahaha1234@localhost:5002/illusory-auth-service?sslmode=disable
+      - export GOOSE_MIGRATION_DIR=$PATH_MIGRATION_PSQL_DIR
+      - goose up
+  test:
+    cmds:
+      - go test -race ./...
+  cover:
+    cmds:
+      - go test -race -v -coverpkg=./... -coverprofile=c.out ./...
+      - go tool cover -html="c.out"
+      - rm c.out
+  proto:
+    cmds:
+      - protoc -I $PROTO_SRC $PROTO_FILES --go_out=$PROTO_OUT --go_opt=paths=source_relative --go-grpc_out=$PROTO_OUT --go-grpc_opt=paths=source_relative
+  exp:
+    cmds:
+      - CONFIG_PATH=$PATH_DEV_CFG LOG_LEVEL=debug LOG_PRETTY=true go run main.go
