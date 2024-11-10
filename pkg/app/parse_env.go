@@ -64,7 +64,7 @@ func parseEnv() (*envVar, error) {
 	}, nil
 }
 
-func convertLogLvlToIntLvl(lvl string) int {
+func convertLogLvlToIntLvl(lvl string) logger.Level {
 	switch lvl {
 	case "debug":
 		return logger.DebugLvl
