@@ -76,3 +76,7 @@ func Uint64(key string, value uint64) logger.Field {
 func RawJson(key string, value []byte) logger.Field {
 	return logger.Field{Key: key, Type: logger.RawJsonType, Value: value}
 }
+
+func Group(key string, fields ...logger.Field) logger.Field {
+	return logger.Field{Key: key, Type: logger.GroupType, Value: fields}
+}

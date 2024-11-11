@@ -129,8 +129,13 @@ func fieldToEvent(event *zerolog.Event, fields []logger.Field) *zerolog.Event {
 			if ok {
 				event = event.RawJSON(f.Key, val)
 			}
-		default:
-			panic("unhandled default case")
+		case logger.GroupType:
+			val, ok := f.Value.([]logger.Field)
+			if ok {
+				d := zerolog.Dict()
+				e := fieldToEvent(d, val)
+				event = event.Dict(f.Key, e)
+			}
 		}
 	}
 	return event

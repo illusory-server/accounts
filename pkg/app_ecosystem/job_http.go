@@ -30,8 +30,7 @@ type (
 )
 
 func (h *HTTPJob) Init(ctx context.Context, config any) error {
-	//TODO implement me
-	panic("implement me")
+	return nil
 }
 
 func (h *HTTPJob) Run(ctx context.Context) error {
@@ -65,6 +64,14 @@ func (h *HTTPJob) Run(ctx context.Context) error {
 }
 
 func (h *HTTPJob) Close(ctx context.Context) error {
-	//TODO implement me
-	panic("implement me")
+	h.mu.Lock()
+	defer h.mu.Unlock()
+
+	close(h.stop)
+
+	if h.server != nil {
+		return h.server.Shutdown(ctx)
+	}
+
+	return nil
 }

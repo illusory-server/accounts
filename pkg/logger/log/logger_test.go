@@ -214,6 +214,20 @@ func TestField(t *testing.T) {
 				return RawJson(allKeyName, []byte(`{"data": "message"}`))
 			},
 		},
+		{
+			name: "Should correct group field",
+			expected: logger.Field{
+				Key:  allKeyName,
+				Type: logger.GroupType,
+				Value: []logger.Field{
+					String("1", "mes"),
+					Int("2", 69),
+				},
+			},
+			actual: func() logger.Field {
+				return Group(allKeyName, String("1", "mes"), Int("2", 69))
+			},
+		},
 	}
 
 	for _, tt := range tc {

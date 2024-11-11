@@ -24,6 +24,7 @@ const (
 	Uint32Type
 	Uint64Type
 	RawJsonType
+	GroupType
 )
 
 type Level int
