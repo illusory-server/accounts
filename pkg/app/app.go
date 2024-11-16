@@ -5,6 +5,7 @@ import (
 	"github.com/OddEer0/Eer0/app/eapp"
 	"github.com/illusory-server/accounts/pkg/logger"
 	"github.com/opentracing/opentracing-go"
+	"io"
 )
 
 type Job interface {
@@ -27,6 +28,7 @@ type App struct {
 	err    error
 	logger logger.Logger
 	tracer opentracing.Tracer
+	closer []io.Closer
 }
 
 func (a *App) Logger() logger.Logger {

@@ -75,3 +75,13 @@ func (h *HTTPJob) Close(ctx context.Context) error {
 
 	return nil
 }
+
+func NewHTTPJob(app *app.App, config *HTTPJobConfig, handler http.Handler) *HTTPJob {
+	return &HTTPJob{
+		app:     app,
+		config:  config,
+		stop:    make(chan struct{}),
+		mu:      sync.Mutex{},
+		handler: handler,
+	}
+}

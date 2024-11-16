@@ -6,7 +6,8 @@ import (
 )
 
 func main() {
-	a := app.Init("accounts", "0.0.1", "Accounts service").WithConfig(&config.Config{})
+	a := app.Init(&app.Options{Name: "Accounts", Description: "base accounts service", Version: "1.0.0"}).
+		WithConfig(&config.Config{})
 
 	err := a.Start()
 	if err != nil {

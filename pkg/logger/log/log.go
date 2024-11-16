@@ -11,7 +11,7 @@ func loggerFromContext(ctx context.Context) *zerolog.Logger {
 	if logFromCtx == nil {
 		return nil
 	}
-	log := logFromCtx.With().Timestamp().CallerWithSkipFrameCount(3).Logger()
+	log := logFromCtx.With().Timestamp().CallerWithSkipFrameCount(CallerSkipFrameCount).Logger()
 	return &log
 }
 

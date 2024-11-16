@@ -15,7 +15,8 @@ env:
 
 tasks:
   clean:
-    - rm -rf ./main
+    cmds:
+      - rm -rf ./main
   build:
     cmds:
       - go build $PATH_MAIN

@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"github.com/illusory-server/accounts/internal/infra/config"
 	"github.com/illusory-server/accounts/pkg/app"
+	appecosystem "github.com/illusory-server/accounts/pkg/app_ecosystem"
 	"github.com/illusory-server/accounts/pkg/logger/log"
 	"net/http"
+	"time"
 )
 
 func createMsgHandler(msg string) func(context.Context, any) error {
@@ -73,27 +75,37 @@ func main() {
 		Handler: createMsgHandler("before handler"),
 	})
 
+	handler := http.NewServeMux()
+	handler.HandleFunc("/hi", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("hello 1"))
+	})
+	httpJobb := appecosystem.NewHTTPJob(myapp, &appecosystem.HTTPJobConfig{
+		Address:        ":10110",
+		ReadTimeout:    5 * time.Second,
+		WriteTimeout:   5 * time.Second,
+		MaxHeaderBytes: 100000,
+	}, handler)
+
 	ctx := myapp.Logger().InjectCtx(context.Background())
 
 	log.Debug(ctx, "config inline", log.Any("config", cfg))
+	applog := myapp.Logger()
+	applog.Debug(ctx, "app config")
 
 	myapp.WithJob(app.JobOpt{
 		Key: "http-1",
-		Job: &httpJob{
-			Key:  "http-1",
-			ctx:  ctx,
-			Addr: ":10110",
-			Msg:  "hello 1",
+		Job: httpJobb,
+	},
+		app.JobOpt{
+			Key: "http-2",
+			Job: &httpJob{
+				Key:  "http-2",
+				ctx:  ctx,
+				Addr: ":10120",
+				Msg:  "hello 2",
+			},
 		},
-	}, app.JobOpt{
-		Key: "http-2",
-		Job: &httpJob{
-			Key:  "http-2",
-			ctx:  ctx,
-			Addr: ":10120",
-			Msg:  "hello 2",
-		},
-	})
+	)
 
 	err := myapp.Start()
 	if err != nil {

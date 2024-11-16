@@ -8,6 +8,11 @@ import (
 	"time"
 )
 
+const (
+	CallerSkipFrameCount       = 3
+	StructCallerSkipFrameCount = 4
+)
+
 type (
 	Options struct {
 		Out    io.Writer
@@ -158,7 +163,7 @@ func (l *Log) Log(ctx context.Context, level logger.Level, message string, field
 		lg = &l.logger
 	}
 
-	log := lg.With().Timestamp().Caller().Logger()
+	log := lg.With().Timestamp().CallerWithSkipFrameCount(StructCallerSkipFrameCount).Logger()
 	var e *zerolog.Event
 	switch level {
 	case logger.DebugLvl:

@@ -49,8 +49,7 @@ func (g *GrpcJob) Init(ctx context.Context, config any) error {
 		sliceInterceptors = append(sliceInterceptors, interceptors.Timeout(g.config.RequestTimeout))
 	}
 
-	// TODO - Сделать interceptor для Sentry
-	//sliceInterceptors = append(sliceInterceptors, SentryInterceptor())
+	sliceInterceptors = append(sliceInterceptors, interceptors.Sentry())
 
 	grpcOptions := []grpc.ServerOption{
 		grpc.ChainUnaryInterceptor(sliceInterceptors...),
@@ -70,8 +69,8 @@ func (g *GrpcJob) Init(ctx context.Context, config any) error {
 		}
 	}
 
-	//// Register monitoring
-	//grpcmw.RegisterPrometheus(srv)
+	// Register monitoring
+	interceptors.RegisterPrometheus(srv)
 	//// Register healthcheck service
 	//health.RegisterHealthServer(srv, new(healthService))
 	// Register reflection service on gRPC server.

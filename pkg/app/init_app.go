@@ -5,6 +5,11 @@ import (
 	"github.com/OddEer0/Eer0/app/eapp"
 	"github.com/OddEer0/Eer0/app/ecosystem"
 	"github.com/illusory-server/accounts/pkg/logger/log"
+	"github.com/opentracing/opentracing-go"
+	"github.com/pkg/errors"
+	jaegercfg "github.com/uber/jaeger-client-go/config"
+	"github.com/uber/jaeger-lib/metrics/prometheus"
+	"io"
 )
 
 type Options struct {
@@ -13,6 +18,7 @@ type Options struct {
 
 func Init(opt *Options) *App {
 	app := &App{}
+	app.closer = make([]io.Closer, 0, 8)
 	env, err := parseEnv()
 	if err != nil {
 		app.err = err
@@ -38,7 +44,10 @@ func Init(opt *Options) *App {
 
 	// TODO - Сделать инициализацию Sentry
 
-	// TODO - Сделать инициализацию Tracer`а
+	err = app.initTracer(opt.Name)
+	if err != nil {
+		app.err = err
+	}
 
 	app.app = app.app.LibConfig(&eapp.LibConfig{
 		StartTimeout: env.StartTimeout,
@@ -46,4 +55,27 @@ func Init(opt *Options) *App {
 	})
 
 	return app
+}
+
+func (a *App) initTracer(name string) error {
+	cfg, err := jaegercfg.FromEnv()
+	if err != nil {
+		return errors.Wrap(err, "[App] jaegercfg.FromEnv")
+	}
+
+	cfg.ServiceName = name
+
+	metricsFactory := prometheus.New()
+
+	tracer, closer, err := cfg.NewTracer(jaegercfg.Metrics(metricsFactory))
+	if err != nil {
+		return errors.Wrap(err, "[App] cfg.NewTracer")
+	}
+
+	a.tracer = tracer
+	a.closer = append(a.closer, closer)
+
+	opentracing.SetGlobalTracer(a.tracer)
+
+	return nil
 }
