@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/illusory-server/accounts/internal/domain/vo"
+	"github.com/illusory-server/accounts/pkg/errors/codes"
+	"github.com/illusory-server/accounts/pkg/errors/xerr"
 	"github.com/pkg/errors"
 	"time"
 )
@@ -54,7 +56,7 @@ func NewAccount(
 	}
 
 	if err := result.Validate(); err != nil {
-		return nil, err
+		return nil, xerr.WrapWithCode(err, codes.Unprocessable, "Account.Validate")
 	}
 
 	return result, nil

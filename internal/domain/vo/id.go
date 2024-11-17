@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"github.com/go-ozzo/ozzo-validation"
 	"github.com/go-ozzo/ozzo-validation/is"
+	"github.com/illusory-server/accounts/pkg/errors/codes"
+	"github.com/illusory-server/accounts/pkg/errors/xerr"
 )
 
 type ID struct {
@@ -13,7 +15,7 @@ type ID struct {
 func NewID(v string) (ID, error) {
 	result := ID{value: v}
 	if err := result.Validate(); err != nil {
-		return ID{}, err
+		return ID{}, xerr.WrapWithCode(err, codes.Unprocessable, "ID.Validate")
 	}
 
 	return result, nil

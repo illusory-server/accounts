@@ -2,6 +2,8 @@ package vo
 
 import (
 	validation "github.com/go-ozzo/ozzo-validation"
+	"github.com/illusory-server/accounts/pkg/errors/codes"
+	"github.com/illusory-server/accounts/pkg/errors/xerr"
 	"regexp"
 )
 
@@ -21,7 +23,7 @@ func NewPassword(value string) (Password, error) {
 	result := Password{value: value}
 
 	if err := result.Validate(); err != nil {
-		return Password{}, err
+		return Password{}, xerr.WrapWithCode(err, codes.Unprocessable, "Password.Validate")
 	}
 
 	return result, nil

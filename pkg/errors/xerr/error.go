@@ -124,11 +124,32 @@ func Wrap(err error, msg string) error {
 		return &Error{
 			Message: errors.Wrap(e.Message, msg),
 			Code:    e.Code,
+			Info:    e.Info,
 		}
 	}
 
 	return &Error{
 		Code:    codes.Internal,
+		Message: errors.Wrap(err, msg),
+	}
+}
+
+func WrapWithCode(err error, code codes.Code, msg string) error {
+	if err == nil {
+		return nil
+	}
+
+	var e *Error
+	if errors.As(err, &e) {
+		return &Error{
+			Message: errors.Wrap(e.Message, msg),
+			Code:    code,
+			Info:    e.Info,
+		}
+	}
+
+	return &Error{
+		Code:    code,
 		Message: errors.Wrap(err, msg),
 	}
 }
@@ -143,6 +164,7 @@ func Unwrap(err error) error {
 		return &Error{
 			Message: errors.Unwrap(e.Message),
 			Code:    e.Code,
+			Info:    e.Info,
 		}
 	}
 

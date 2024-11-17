@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/go-ozzo/ozzo-validation/is"
+	"github.com/illusory-server/accounts/pkg/errors/codes"
+	"github.com/illusory-server/accounts/pkg/errors/xerr"
 )
 
 const (
@@ -25,7 +27,7 @@ func NewAccountInfo(firstName, lastName, email string) (AccountInfo, error) {
 	}
 
 	if err := result.Validate(); err != nil {
-		return AccountInfo{}, err
+		return AccountInfo{}, xerr.WrapWithCode(err, codes.Unprocessable, "AccountInfo.Validate")
 	}
 
 	return result, nil
