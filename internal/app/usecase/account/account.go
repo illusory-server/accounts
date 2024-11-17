@@ -1,12 +1,12 @@
 package account
 
 type (
-	UseCase interface {
-	}
+	UseCase interface{}
 
-	account struct{}
+	AccountsUseCase struct {
+	}
 )
 
 func NewUseCase() UseCase {
-	return &account{}
+	return &AccountsUseCase{}
 }
