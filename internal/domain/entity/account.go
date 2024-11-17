@@ -1,6 +1,7 @@
 package entity
 
 import (
+	"encoding/json"
 	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/illusory-server/accounts/internal/domain/vo"
 	"github.com/pkg/errors"
@@ -135,4 +136,16 @@ func (a *Account) SetUpdatedAt(updatedAt time.Time) error {
 	}
 	a.updatedAt = updatedAt
 	return nil
+}
+
+func (a *Account) MarshalJSON() ([]byte, error) {
+	data := map[string]interface{}{
+		"id":         a.ID(),
+		"info":       a.Info(),
+		"role":       a.Role(),
+		"nickname":   a.Nickname(),
+		"updated_at": a.UpdatedAt(),
+		"created_at": a.CreatedAt(),
+	}
+	return json.Marshal(data)
 }

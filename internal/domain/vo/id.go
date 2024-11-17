@@ -1,6 +1,7 @@
 package vo
 
 import (
+	"encoding/json"
 	"github.com/go-ozzo/ozzo-validation"
 	"github.com/go-ozzo/ozzo-validation/is"
 )
@@ -28,4 +29,8 @@ func (v ID) Validate() error {
 			validation.Required.Error("value is empty"),
 			is.UUIDv4),
 	)
+}
+
+func (v ID) MarshalJSON() ([]byte, error) {
+	return json.Marshal(v.value)
 }

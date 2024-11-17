@@ -1,6 +1,7 @@
 package entity_test
 
 import (
+	"encoding/json"
 	"github.com/google/uuid"
 	"github.com/illusory-server/accounts/internal/domain/entity"
 	"github.com/illusory-server/accounts/internal/domain/vo"
@@ -173,5 +174,44 @@ func TestEntityAccount(t *testing.T) {
 		err = acc.SetUpdatedAt(time.Now().Add(1 * time.Hour))
 		assert.Error(t, err)
 		assert.Equal(t, newUpdatedTime, acc.UpdatedAt())
+	})
+
+	t.Run("Should correct marshal", func(t *testing.T) {
+		acc, err := entity.NewAccount(
+			id,
+			info,
+			role,
+			nick,
+			pass,
+			updatedTime,
+			createdTime,
+		)
+		assert.NoError(t, err)
+
+		s, err := json.Marshal(acc)
+		assert.NoError(t, err)
+		var m map[string]interface{}
+		err = json.Unmarshal(s, &m)
+		assert.NoError(t, err)
+
+		expected := map[string]interface{}{
+			"id": id.Value(),
+			"info": map[string]interface{}{
+				"first_name": info.FirstName(),
+				"last_name":  info.LastName(),
+				"email":      info.Email(),
+			},
+			"role":       role.Value(),
+			"nickname":   nick,
+			"updated_at": updatedTime,
+			"created_at": createdTime,
+		}
+
+		expectedBytes, err := json.Marshal(expected)
+		assert.NoError(t, err)
+		var expectedMap map[string]interface{}
+		err = json.Unmarshal(expectedBytes, &expectedMap)
+		assert.NoError(t, err)
+		assert.Equal(t, expectedMap, m)
 	})
 }

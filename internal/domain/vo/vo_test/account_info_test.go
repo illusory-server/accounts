@@ -1,6 +1,7 @@
 package vo_test
 
 import (
+	"encoding/json"
 	"github.com/illusory-server/accounts/internal/domain/vo"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -47,5 +48,29 @@ func TestVoAccountInfo(t *testing.T) {
 		)
 		assert.Error(t, err)
 		assert.Equal(t, vo.AccountInfo{}, info)
+	})
+
+	t.Run("Should marshal json", func(t *testing.T) {
+		firstName := "eer0"
+		lastName := "kirov"
+		email := "kuru@gmail.com"
+		info, err := vo.NewAccountInfo(
+			firstName, lastName, email,
+		)
+		assert.NoError(t, err)
+
+		bytes, err := json.Marshal(info)
+		assert.NoError(t, err)
+
+		var m map[string]interface{}
+		err = json.Unmarshal(bytes, &m)
+		assert.NoError(t, err)
+
+		expected := map[string]interface{}{
+			"first_name": firstName,
+			"last_name":  lastName,
+			"email":      email,
+		}
+		assert.Equal(t, expected, m)
 	})
 }

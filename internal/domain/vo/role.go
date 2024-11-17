@@ -1,6 +1,7 @@
 package vo
 
 import (
+	"encoding/json"
 	validation "github.com/go-ozzo/ozzo-validation"
 )
 
@@ -39,4 +40,8 @@ func (r Role) Validate() error {
 
 func (r Role) Value() AccountRoleType {
 	return r.value
+}
+
+func (r Role) MarshalJSON() ([]byte, error) {
+	return json.Marshal(r.value)
 }

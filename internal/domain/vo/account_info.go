@@ -1,6 +1,7 @@
 package vo
 
 import (
+	"encoding/json"
 	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/go-ozzo/ozzo-validation/is"
 )
@@ -54,4 +55,15 @@ func (a AccountInfo) Email() string {
 
 func (a AccountInfo) FullName() string {
 	return a.firstName + " " + a.lastName
+}
+
+// marshal
+
+func (a AccountInfo) MarshalJSON() ([]byte, error) {
+	marshal := map[string]interface{}{
+		"first_name": a.firstName,
+		"last_name":  a.lastName,
+		"email":      a.email,
+	}
+	return json.Marshal(marshal)
 }

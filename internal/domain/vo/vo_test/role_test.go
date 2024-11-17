@@ -1,6 +1,7 @@
 package vo
 
 import (
+	"encoding/json"
 	"github.com/illusory-server/accounts/internal/domain/vo"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -28,5 +29,13 @@ func TestRole(t *testing.T) {
 		role, err := vo.NewRole(incorrectRole)
 		assert.Error(t, err)
 		assert.Equal(t, vo.Role{}, role)
+	})
+
+	t.Run("Should marshal json", func(t *testing.T) {
+		role, err := vo.NewRole(vo.RoleSuperAdmin)
+		assert.NoError(t, err)
+		jsonBytes, err := json.Marshal(role)
+		assert.NoError(t, err)
+		assert.JSONEq(t, string("\""+vo.RoleSuperAdmin+"\""), string(jsonBytes))
 	})
 }
