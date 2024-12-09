@@ -4,15 +4,27 @@ package v1;
 
 option go_package = "https://github.com/illusory-server/auth-service/gen/accounts/v1";
 
-message Id {
-  string Id = 1;
+message String {
+  string value = 1;
 }
 
-message AccountResponse {
-  string Id = 1;
+message Email {
+  string email = 1;
+  bool is_activate = 2;
+}
 
+message Account {
+  string id = 1;
+  string first_name = 2;
+  string last_name = 3;
+  string email = 4;
+  string nickname = 5;
+  string role = 6;
+  string source = 7;
+  string updated_at = 8;
+  string created_at = 10;
 }
 
 service AccountsService {
-  rpc GetAccountById(Id) returns (AccountResponse) {}
+  rpc GetAccountById(String) returns (Account) {}
 }

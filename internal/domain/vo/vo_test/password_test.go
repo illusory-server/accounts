@@ -15,7 +15,7 @@ func TestVoPassword(t *testing.T) {
 	})
 
 	t.Run("Should return error for invalid password", func(t *testing.T) {
-		pass, err := vo.NewPassword("wrongpass")
+		pass, err := vo.NewPassword("pass")
 		assert.Error(t, err)
 		assert.Equal(t, vo.Password{}, pass)
 

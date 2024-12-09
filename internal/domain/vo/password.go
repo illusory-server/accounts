@@ -4,16 +4,12 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/illusory-server/accounts/pkg/errors/codes"
 	"github.com/illusory-server/accounts/pkg/errors/xerr"
-	"regexp"
 )
 
 const (
 	MinPasswordLen = 8
-	MaxPasswordLen = 64
+	MaxPasswordLen = 256
 )
-
-var isHasSymbol = regexp.MustCompile("([A-Za-z])")
-var isHasDigit = regexp.MustCompile("([0-9])")
 
 type Password struct {
 	value string
@@ -35,8 +31,6 @@ func (p Password) Validate() error {
 			&p.value,
 			validation.Required,
 			validation.Length(MinPasswordLen, MaxPasswordLen),
-			validation.Match(isHasSymbol),
-			validation.Match(isHasDigit),
 		),
 	)
 }
