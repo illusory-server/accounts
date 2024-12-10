@@ -83,7 +83,7 @@ func (r *ReadonlyApp) Dependency() *dig.Container {
 
 type Options struct {
 	Name, Description, Version string
-	CoreConfigInterceptor      ConfigInterceptor
+	ConfigInterceptor          ConfigInterceptor
 	Logger                     Logger
 	Container                  *dig.Container
 }
@@ -125,7 +125,7 @@ func NewApp(opt *Options) *App {
 
 		di: di,
 
-		configInterceptor: opt.CoreConfigInterceptor,
+		configInterceptor: opt.ConfigInterceptor,
 		logger:            log,
 	}
 

@@ -3,9 +3,23 @@ package ayaka
 import (
 	"context"
 	"fmt"
-	"github.com/pkg/errors"
 	"sync"
 	"time"
+)
+
+const (
+	LogKeyInfoKey                    = "job_key"
+	LogKeyInfoError                  = "job_error"
+	LogKeyInfoPanic                  = "job_panic"
+	LogMessageInitError              = "job init failed"
+	LogMessageInitPanic              = "job init panic"
+	LogMessageRunError               = "job run failed"
+	LogMessageRunPanic               = "job run panic"
+	LogMessageGracefulShotdownFailed = "graceful shotdown failed"
+	FormatErrJobInitFailed           = "failed to initialize job '%s': %w"
+	FormatErrJobInitPanic            = "panic in initialized job '%s': %v"
+	FormatErrJobRunFailed            = "failed run job '%s': %w"
+	FormatErrJobRunPanic             = "panic in runned job '%s': %v"
 )
 
 func (a *App) initJob(ctx context.Context) error {
@@ -24,20 +38,20 @@ func (a *App) initJob(ctx context.Context) error {
 			defer wg.Done()
 			defer func() {
 				if r := recover(); r != nil {
-					a.logger.Error(ctx, "job init panic", map[string]any{
-						"job_key":     key,
-						"job_recover": r,
+					a.logger.Error(ctx, LogMessageInitPanic, map[string]any{
+						LogKeyInfoKey:   key,
+						LogKeyInfoPanic: r,
 					})
-					sErr.add(fmt.Errorf("panic in initialized job '%s': %v", key, r))
+					sErr.add(fmt.Errorf(FormatErrJobInitPanic, key, r))
 				}
 			}()
 
 			if err := job.Init(ctxStop, a.Dependency()); err != nil {
-				a.logger.Error(ctx, "job init failed", map[string]any{
-					"job_key":   key,
-					"job_error": err.Error(),
+				a.logger.Error(ctx, LogMessageInitError, map[string]any{
+					LogKeyInfoKey:   key,
+					LogKeyInfoError: err.Error(),
 				})
-				sErr.add(fmt.Errorf("failed to initialize job '%s': %w", key, err))
+				sErr.add(fmt.Errorf(FormatErrJobInitFailed, key, err))
 			}
 		}(a.ctx, key, job)
 	}
@@ -49,15 +63,15 @@ func (a *App) initJob(ctx context.Context) error {
 
 	select {
 	case <-stopChan:
-		return errors.Wrap(sErr.get(), "[App.initJob]")
+		return sErr.get()
 	case <-ctx.Done():
 		t := time.NewTimer(a.Config().GracefulTimeout)
 		select {
 		case <-t.C:
-			a.logger.Warn(a.ctx, "graceful shotdown failed", nil)
-			return errors.Wrap(ErrGracefulTimeout, "[App.InitJob]")
+			a.logger.Warn(a.ctx, LogMessageGracefulShotdownFailed, nil)
+			return ErrGracefulTimeout
 		case <-stopChan:
-			return errors.Wrap(ctx.Err(), "[App.InitJob]")
+			return ctx.Err()
 		}
 	}
 }
@@ -78,20 +92,20 @@ func (a *App) runJob(ctx context.Context) error {
 			defer wg.Done()
 			defer func() {
 				if r := recover(); r != nil {
-					a.logger.Error(ctx, "job run panic", map[string]any{
-						"job_key":     key,
-						"job_recover": r,
+					a.logger.Error(ctx, LogMessageRunPanic, map[string]any{
+						LogKeyInfoKey:   key,
+						LogKeyInfoPanic: r,
 					})
-					sErr.add(fmt.Errorf("panic in runned job '%s': %v", key, r))
+					sErr.add(fmt.Errorf(FormatErrJobRunPanic, key, r))
 				}
 			}()
 
 			if err := job.Run(ctxStop, a.Dependency()); err != nil {
-				a.logger.Error(ctx, "job run failed", map[string]any{
-					"job_key":   key,
-					"job_error": err.Error(),
+				a.logger.Error(ctx, LogMessageRunError, map[string]any{
+					LogKeyInfoKey:   key,
+					LogKeyInfoError: err.Error(),
 				})
-				sErr.add(fmt.Errorf("failed run job '%s': %w", key, err))
+				sErr.add(fmt.Errorf(FormatErrJobRunFailed, key, err))
 			}
 		}(a.ctx, key, job)
 	}
@@ -103,15 +117,15 @@ func (a *App) runJob(ctx context.Context) error {
 
 	select {
 	case <-stopChan:
-		return errors.Wrap(sErr.get(), "[App.RunJob]")
+		return sErr.get()
 	case <-ctx.Done():
 		t := time.NewTimer(a.Config().GracefulTimeout)
 		select {
 		case <-t.C:
-			a.logger.Warn(a.ctx, "graceful shotdown failed", nil)
-			return errors.Wrap(ErrGracefulTimeout, "[App.RunJob]")
+			a.logger.Warn(a.ctx, LogMessageGracefulShotdownFailed, nil)
+			return ErrGracefulTimeout
 		case <-stopChan:
-			return errors.Wrap(ctx.Err(), "[App.RunJob]")
+			return ctx.Err()
 		}
 	}
 }

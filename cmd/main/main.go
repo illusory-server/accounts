@@ -1,16 +1,19 @@
 package main
 
 import (
-	"github.com/illusory-server/accounts/internal/infra/config"
-	"github.com/illusory-server/accounts/pkg/app"
+	"github.com/illusory-server/accounts/cmd/dependency"
+	ayaka "github.com/illusory-server/accounts/pkg/core"
+	"github.com/illusory-server/accounts/pkg/ecosystem"
 )
 
 func main() {
-	a := app.Init(&app.Options{Name: "Accounts", Description: "base accounts service", Version: "1.0.0"}).
-		WithConfig(&config.Config{})
+	dependencyFactory := dependency.NewFactory()
 
-	err := a.Start()
-	if err != nil {
-		panic(err)
-	}
+	ayaka.NewApp(&ayaka.Options{
+		Name:                  "Accounts",
+		Description:           "Core accounts service",
+		Version:               "0.0.1",
+		CoreConfigInterceptor: ecosystem.AdapterParseConfigFromEnv,
+		Container:             dependencyFactory.Container(),
+	})
 }
