@@ -90,15 +90,17 @@ func TestSingleJob(t *testing.T) {
 		t.Parallel()
 		logger := newTestLogger()
 
+		cfg := &ayaka.Config{
+			StartTimeout:    time.Second * 5,
+			GracefulTimeout: time.Second * 5,
+		}
+
 		app := ayaka.NewApp(&ayaka.Options{
 			Name:        "my-app",
 			Description: "my-app description testing",
 			Version:     "1.0.0",
 			Logger:      logger,
-		}).WithConfig(&ayaka.Config{
-			StartTimeout:    time.Second * 5,
-			GracefulTimeout: time.Second * 5,
-		}).WithJob(ayaka.JobEntry{
+		}).WithConfig(cfg).WithJob(ayaka.JobEntry{
 			Key: "my-test-job",
 			Job: &correctJob{
 				initDuration: time.Second * 1,
@@ -110,7 +112,25 @@ func TestSingleJob(t *testing.T) {
 		assert.NoError(t, err)
 		assert.NoError(t, app.Err())
 
-		// TODO asserting logger infos
+		logger.messages = logger.messages[1:]
+		logger.levels = logger.levels[1:]
+		logger.infos = logger.infos[1:]
+
+		assert.Equal(t,
+			[]string{"init all job started", "init end", "run all job started", "run end", "run all job finished"},
+			logger.messages)
+		assert.Equal(t,
+			[]string{"info", "debug", "info", "debug", "info"},
+			logger.levels)
+		assert.Equal(t, []map[string]any{
+			{
+				"init_timeout": time.Second * 5,
+			},
+			nil,
+			nil,
+			nil,
+			nil,
+		}, logger.infos)
 	})
 
 	t.Run("Should correct error handle init job", func(t *testing.T) {
