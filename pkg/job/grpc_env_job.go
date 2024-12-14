@@ -25,12 +25,16 @@ var (
 	}
 )
 
-// NewGrpcEnvJob panic incorrect env value or not set
-func NewGrpcEnvJob(
-	keys GrpcEnvJobEnvKeys,
+// MustGrpcEnvJob default key - GRPC_ADDRESS, GRPC_REQUEST_TIMEOUT, GRPC_MAX_RETRY
+func MustGrpcEnvJob(
+	keys *GrpcEnvJobEnvKeys,
 	tracer opentracing.Tracer,
 	regs ...ecosystem.GrpcRegister,
 ) *ecosystem.GrpcJob {
+	if keys == nil {
+		keys = &DefaultUnaryJobEnvKeys
+	}
+
 	address := os.Getenv(keys.Address)
 	if address == "" {
 		panic("environment variable '" + keys.Address + "' is not set")
