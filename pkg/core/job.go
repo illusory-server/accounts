@@ -3,6 +3,7 @@ package ayaka
 import (
 	"context"
 	"fmt"
+	"github.com/pkg/errors"
 	"sync"
 	"time"
 )
@@ -22,9 +23,9 @@ const (
 	FormatErrJobRunPanic             = "panic in runned job '%s': %v"
 )
 
-func (a *App) initJob(ctx context.Context) error {
+func (a *App) initJob() error {
 	var wg sync.WaitGroup
-	ctxStop, cancel := context.WithCancel(ctx)
+	ctx, cancel := context.WithTimeout(a.ctx, a.Config().StartTimeout)
 	defer cancel()
 
 	sErr := newSingleError(func() {
@@ -46,14 +47,14 @@ func (a *App) initJob(ctx context.Context) error {
 				}
 			}()
 
-			if err := job.Init(ctxStop, a.Dependency()); err != nil {
+			if err := job.Init(ctx, a.Dependency()); err != nil {
 				a.logger.Error(ctx, LogMessageInitError, map[string]any{
 					LogKeyInfoKey:   key,
 					LogKeyInfoError: err.Error(),
 				})
 				sErr.add(fmt.Errorf(FormatErrJobInitFailed, key, err))
 			}
-		}(a.ctx, key, job)
+		}(ctx, key, job)
 	}
 
 	go func() {
@@ -71,14 +72,17 @@ func (a *App) initJob(ctx context.Context) error {
 			a.logger.Warn(a.ctx, LogMessageGracefulShotdownFailed, nil)
 			return ErrGracefulTimeout
 		case <-stopChan:
+			if errors.Is(ctx.Err(), context.Canceled) {
+				return sErr.get()
+			}
 			return ctx.Err()
 		}
 	}
 }
 
-func (a *App) runJob(ctx context.Context) error {
+func (a *App) runJob() error {
 	var wg sync.WaitGroup
-	ctxStop, cancel := context.WithCancel(ctx)
+	ctx, cancel := context.WithCancel(a.ctx)
 	defer cancel()
 
 	sErr := newSingleError(func() {
@@ -100,14 +104,14 @@ func (a *App) runJob(ctx context.Context) error {
 				}
 			}()
 
-			if err := job.Run(ctxStop, a.Dependency()); err != nil {
+			if err := job.Run(ctx, a.Dependency()); err != nil {
 				a.logger.Error(ctx, LogMessageRunError, map[string]any{
 					LogKeyInfoKey:   key,
 					LogKeyInfoError: err.Error(),
 				})
 				sErr.add(fmt.Errorf(FormatErrJobRunFailed, key, err))
 			}
-		}(a.ctx, key, job)
+		}(ctx, key, job)
 	}
 
 	go func() {
@@ -125,6 +129,9 @@ func (a *App) runJob(ctx context.Context) error {
 			a.logger.Warn(a.ctx, LogMessageGracefulShotdownFailed, nil)
 			return ErrGracefulTimeout
 		case <-stopChan:
+			if errors.Is(ctx.Err(), context.Canceled) {
+				return sErr.get()
+			}
 			return ctx.Err()
 		}
 	}

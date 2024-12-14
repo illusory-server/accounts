@@ -20,12 +20,14 @@ const (
 )
 
 type correctJob struct {
-	initDuration time.Duration
-	runDuration  time.Duration
-	errInit      error
-	errRun       error
-	panicInit    string
-	panicRun     string
+	initDuration        time.Duration
+	ctxDoneInitDuration time.Duration
+	runDuration         time.Duration
+	ctxDoneRunDuration  time.Duration
+	errInit             error
+	errRun              error
+	panicInit           string
+	panicRun            string
 }
 
 func (c correctJob) Init(ctx context.Context, container *dig.Container) error {
@@ -52,6 +54,10 @@ func (c correctJob) Init(ctx context.Context, container *dig.Container) error {
 		logger.Debug(ctx, initEnd, nil)
 		return nil
 	case <-ctx.Done():
+		if c.ctxDoneInitDuration > 0 {
+			ti := time.NewTimer(c.ctxDoneInitDuration)
+			<-ti.C
+		}
 		logger.Debug(ctx, initEndWithCtx, nil)
 		return ctx.Err()
 	}
@@ -81,6 +87,10 @@ func (c correctJob) Run(ctx context.Context, container *dig.Container) error {
 		logger.Debug(ctx, runEnd, nil)
 		return nil
 	case <-ctx.Done():
+		if c.ctxDoneRunDuration > 0 {
+			ti := time.NewTimer(c.ctxDoneRunDuration)
+			<-ti.C
+		}
 		logger.Debug(ctx, runEndWithCtx, nil)
 		return ctx.Err()
 	}
@@ -383,7 +393,7 @@ func TestMultipleJobs(t *testing.T) {
 			"info",
 		}
 		for i := 0; i < jobCount; i++ {
-			expectedMessage = append(expectedMessage, "job init failed", "init end with ctx done")
+			expectedMessage = append(expectedMessage, ayaka.LogMessageInitError, initEndWithCtx)
 			expectedLevel = append(expectedLevel, "debug", "error")
 			jobEntries = append(jobEntries, ayaka.JobEntry{
 				Key: fmt.Sprintf("my-test-job-%d", i+1),
@@ -401,7 +411,7 @@ func TestMultipleJobs(t *testing.T) {
 				errInit: myError,
 			},
 		})
-		expectedMessage = append(expectedMessage, "job init failed")
+		expectedMessage = append(expectedMessage, ayaka.LogMessageInitError)
 		expectedLevel = append(expectedLevel, "error")
 
 		app := ayaka.NewApp(&ayaka.Options{
@@ -456,7 +466,7 @@ func TestMultipleJobs(t *testing.T) {
 			"info",
 		}
 		for i := 0; i < jobCount; i++ {
-			expectedMessage = append(expectedMessage, "job init failed", "init end with ctx done")
+			expectedMessage = append(expectedMessage, ayaka.LogMessageInitError, initEndWithCtx)
 			expectedLevel = append(expectedLevel, "debug", "error")
 			jobEntries = append(jobEntries, ayaka.JobEntry{
 				Key: fmt.Sprintf("my-test-job-%d", i+1),
@@ -474,7 +484,7 @@ func TestMultipleJobs(t *testing.T) {
 				panicInit: "panic xd",
 			},
 		})
-		expectedMessage = append(expectedMessage, "job init panic")
+		expectedMessage = append(expectedMessage, ayaka.LogMessageInitPanic)
 		expectedLevel = append(expectedLevel, "error")
 
 		app := ayaka.NewApp(&ayaka.Options{
@@ -530,7 +540,7 @@ func TestMultipleJobs(t *testing.T) {
 			"info",
 		}
 		for i := 0; i < jobCount; i++ {
-			expectedMessage = append(expectedMessage, "init end", "job run failed", "run end with ctx done")
+			expectedMessage = append(expectedMessage, "init end", ayaka.LogMessageRunError, runEndWithCtx)
 			expectedLevel = append(expectedLevel, "debug", "debug", "error")
 			jobEntries = append(jobEntries, ayaka.JobEntry{
 				Key: fmt.Sprintf("my-test-job-%d", i+1),
@@ -550,7 +560,7 @@ func TestMultipleJobs(t *testing.T) {
 				errRun:       myError,
 			},
 		})
-		expectedMessage = append(expectedMessage, "job run failed", "init end", "run all job started")
+		expectedMessage = append(expectedMessage, ayaka.LogMessageRunError, "init end", "run all job started")
 		expectedLevel = append(expectedLevel, "error", "debug", "info")
 
 		app := ayaka.NewApp(&ayaka.Options{
@@ -605,7 +615,7 @@ func TestMultipleJobs(t *testing.T) {
 			"info",
 		}
 		for i := 0; i < jobCount; i++ {
-			expectedMessage = append(expectedMessage, "init end", "job run failed", "run end with ctx done")
+			expectedMessage = append(expectedMessage, "init end", ayaka.LogMessageRunError, runEndWithCtx)
 			expectedLevel = append(expectedLevel, "debug", "debug", "error")
 			jobEntries = append(jobEntries, ayaka.JobEntry{
 				Key: fmt.Sprintf("my-test-job-%d", i+1),
@@ -625,7 +635,7 @@ func TestMultipleJobs(t *testing.T) {
 				panicRun:     "panic xd",
 			},
 		})
-		expectedMessage = append(expectedMessage, "job run panic", "init end", "run all job started")
+		expectedMessage = append(expectedMessage, ayaka.LogMessageRunPanic, "init end", "run all job started")
 		expectedLevel = append(expectedLevel, "error", "debug", "info")
 
 		app := ayaka.NewApp(&ayaka.Options{
@@ -663,15 +673,217 @@ func TestMultipleJobs(t *testing.T) {
 }
 
 func TestJobsTimout(t *testing.T) {
-	t.Run("Should correct stop init with start timout", func(t *testing.T) {
+	t.Run("Should correct stop init with start timout 1", func(t *testing.T) {
+		t.Parallel()
+		logger := newTestLogger()
 
+		cfg := &ayaka.Config{
+			StartTimeout:    time.Second * 1,
+			GracefulTimeout: time.Second * 2,
+		}
+
+		app := ayaka.NewApp(&ayaka.Options{
+			Name:        "my-app",
+			Description: "my-app description testing",
+			Version:     "1.0.0",
+			Logger:      logger,
+		}).WithConfig(cfg).WithJob(ayaka.JobEntry{
+			Key: "my-test-job",
+			Job: &correctJob{
+				initDuration: time.Second * 2,
+				runDuration:  time.Second * 1,
+			},
+		})
+
+		err := app.Start()
+		assert.Error(t, err)
+		assert.NoError(t, app.Err())
+
+		logger.messages = logger.messages[1:]
+		logger.levels = logger.levels[1:]
+		logger.infos = logger.infos[1:]
+
+		assert.Equal(t,
+			[]string{"init all job started", "init end with ctx done", ayaka.LogMessageInitError},
+			logger.messages)
+		assert.Equal(t,
+			[]string{"info", "debug", "error"},
+			logger.levels)
+		assert.Equal(t,
+			[]map[string]any{
+				{
+					"init_timeout": time.Second * 1,
+				}, nil, {
+					ayaka.LogKeyInfoKey:   "my-test-job",
+					ayaka.LogKeyInfoError: context.DeadlineExceeded.Error(),
+				},
+			},
+			logger.infos)
+	})
+
+	t.Run("Should correct stop init with start timout 2", func(t *testing.T) {
+		t.Parallel()
+		logger := newTestLogger()
+
+		cfg := &ayaka.Config{
+			StartTimeout:    time.Second * 1,
+			GracefulTimeout: time.Second * 2,
+		}
+
+		app := ayaka.NewApp(&ayaka.Options{
+			Name:        "my-app",
+			Description: "my-app description testing",
+			Version:     "1.0.0",
+			Logger:      logger,
+		}).WithConfig(cfg).WithJob(ayaka.JobEntry{
+			Key: "my-test-job",
+			Job: &correctJob{
+				initDuration: time.Second * 2,
+				runDuration:  time.Second * 1,
+			},
+		}, ayaka.JobEntry{
+			Key: "my-test-job-2",
+			Job: &correctJob{
+				initDuration: time.Second * 0,
+				runDuration:  time.Second * 5,
+			},
+		})
+
+		err := app.Start()
+		assert.Error(t, err)
+		assert.NoError(t, app.Err())
+
+		logger.messages = logger.messages[1:]
+		logger.levels = logger.levels[1:]
+		logger.infos = logger.infos[1:]
+
+		assert.Equal(t,
+			[]string{"init all job started", "init end", "init end with ctx done", ayaka.LogMessageInitError},
+			logger.messages)
+		assert.Equal(t,
+			[]string{"info", "debug", "debug", "error"},
+			logger.levels)
+		assert.Equal(t,
+			[]map[string]any{
+				{
+					"init_timeout": time.Second * 1,
+				}, nil, nil, {
+					ayaka.LogKeyInfoKey:   "my-test-job",
+					ayaka.LogKeyInfoError: context.DeadlineExceeded.Error(),
+				},
+			},
+			logger.infos)
 	})
 
 	t.Run("Should correct graceful timeout init job", func(t *testing.T) {
+		t.Parallel()
+		logger := newTestLogger()
 
+		cfg := &ayaka.Config{
+			StartTimeout:    time.Second * 5,
+			GracefulTimeout: time.Second * 1,
+		}
+
+		myErr := errors.New("my error")
+
+		app := ayaka.NewApp(&ayaka.Options{
+			Name:        "my-app",
+			Description: "my-app description testing",
+			Version:     "1.0.0",
+			Logger:      logger,
+		}).WithConfig(cfg).WithJob(ayaka.JobEntry{
+			Key: "my-test-job",
+			Job: &correctJob{
+				initDuration:        time.Second * 1,
+				runDuration:         time.Second * 1,
+				ctxDoneInitDuration: time.Second * 2,
+			},
+		}, ayaka.JobEntry{
+			Key: "my-test-job-2",
+			Job: &correctJob{
+				errInit: myErr,
+			},
+		})
+
+		err := app.Start()
+		assert.Error(t, err)
+		assert.NoError(t, app.Err())
+
+		logger.messages = logger.messages[1:]
+		logger.levels = logger.levels[1:]
+		logger.infos = logger.infos[1:]
+
+		assert.Equal(t,
+			[]string{"init all job started", ayaka.LogMessageInitError, ayaka.LogMessageGracefulShotdownFailed},
+			logger.messages)
+		assert.Equal(t,
+			[]string{"info", "error", "warn"},
+			logger.levels)
+		assert.Equal(t,
+			[]map[string]any{
+				{
+					"init_timeout": time.Second * 5,
+				}, {
+					ayaka.LogKeyInfoKey:   "my-test-job-2",
+					ayaka.LogKeyInfoError: myErr.Error(),
+				}, nil,
+			},
+			logger.infos)
 	})
 
 	t.Run("Should correct graceful timeout run job", func(t *testing.T) {
+		t.Parallel()
+		logger := newTestLogger()
 
+		cfg := &ayaka.Config{
+			StartTimeout:    time.Second * 5,
+			GracefulTimeout: time.Second * 1,
+		}
+
+		myErr := errors.New("my error")
+
+		app := ayaka.NewApp(&ayaka.Options{
+			Name:        "my-app",
+			Description: "my-app description testing",
+			Version:     "1.0.0",
+			Logger:      logger,
+		}).WithConfig(cfg).WithJob(ayaka.JobEntry{
+			Key: "my-test-job",
+			Job: &correctJob{
+				initDuration:       time.Second * 1,
+				runDuration:        time.Second * 2,
+				ctxDoneRunDuration: time.Second * 2,
+			},
+		}, ayaka.JobEntry{
+			Key: "my-test-job-2",
+			Job: &correctJob{
+				errRun: myErr,
+			},
+		})
+
+		err := app.Start()
+		assert.Error(t, err)
+		assert.NoError(t, app.Err())
+
+		logger.messages = logger.messages[1:]
+		logger.levels = logger.levels[1:]
+		logger.infos = logger.infos[1:]
+
+		assert.Equal(t,
+			[]string{"init all job started", "init end", "init end", "run all job started", ayaka.LogMessageRunError, ayaka.LogMessageGracefulShotdownFailed},
+			logger.messages)
+		assert.Equal(t,
+			[]string{"info", "debug", "debug", "info", "error", "warn"},
+			logger.levels)
+		assert.Equal(t,
+			[]map[string]any{
+				{
+					"init_timeout": time.Second * 5,
+				}, nil, nil, nil, {
+					ayaka.LogKeyInfoKey:   "my-test-job-2",
+					ayaka.LogKeyInfoError: myErr.Error(),
+				}, nil,
+			},
+			logger.infos)
 	})
 }

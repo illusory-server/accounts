@@ -1,7 +1,6 @@
 package ayaka
 
 import (
-	"context"
 	"github.com/pkg/errors"
 )
 
@@ -13,22 +12,16 @@ func (a *App) Start() error {
 		return a.err
 	}
 
-	ctxWithStartTimeout, cancel := context.WithTimeout(a.ctx, a.Config().StartTimeout)
-	defer cancel()
-
 	a.logger.Info(a.ctx, "init all job started", map[string]any{
 		"init_timeout": a.Config().StartTimeout,
 	})
-	err := a.initJob(ctxWithStartTimeout)
+	err := a.initJob()
 	if err != nil {
 		return errors.Wrap(err, "[App] initJob")
 	}
 
-	ctx, cncl := context.WithCancel(a.ctx)
-	defer cncl()
-
 	a.logger.Info(a.ctx, "run all job started", nil)
-	err = a.runJob(ctx)
+	err = a.runJob()
 	if err != nil {
 		return errors.Wrap(err, "[App] runJob")
 	}
