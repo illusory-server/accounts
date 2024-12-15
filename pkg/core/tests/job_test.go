@@ -122,18 +122,17 @@ func TestSingleJob(t *testing.T) {
 		assert.NoError(t, err)
 		assert.NoError(t, app.Err())
 
-		logger.mutex.Lock()
-		defer logger.mutex.Unlock()
-		logger.messages = logger.messages[1:]
-		logger.levels = logger.levels[1:]
-		logger.infos = logger.infos[1:]
+		data := logger.getData()
+		data.messages = data.messages[1:]
+		data.levels = data.levels[1:]
+		data.infos = data.infos[1:]
 
 		assert.Equal(t,
 			[]string{"init all job started", "init end", "run all job started", "run end", "run all job finished"},
-			logger.messages)
+			data.messages)
 		assert.Equal(t,
 			[]string{"info", "debug", "info", "debug", "info"},
-			logger.levels)
+			data.levels)
 		assert.Equal(t, []map[string]any{
 			{
 				"init_timeout": time.Second * 5,
@@ -142,7 +141,7 @@ func TestSingleJob(t *testing.T) {
 			nil,
 			nil,
 			nil,
-		}, logger.infos)
+		}, data.infos)
 	})
 
 	t.Run("Should correct error handle init job", func(t *testing.T) {
@@ -172,20 +171,19 @@ func TestSingleJob(t *testing.T) {
 			errors.Cause(err).Error(),
 		)
 
-		logger.mutex.Lock()
-		defer logger.mutex.Unlock()
-		logger.messages = logger.messages[2:]
-		logger.levels = logger.levels[2:]
-		logger.infos = logger.infos[2:]
+		data := logger.getData()
+		data.messages = data.messages[2:]
+		data.levels = data.levels[2:]
+		data.infos = data.infos[2:]
 
-		assert.Equal(t, []string{ayaka.LogMessageInitError}, logger.messages)
-		assert.Equal(t, []string{"error"}, logger.levels)
+		assert.Equal(t, []string{ayaka.LogMessageInitError}, data.messages)
+		assert.Equal(t, []string{"error"}, data.levels)
 		assert.Equal(t, []map[string]any{
 			{
 				ayaka.LogKeyInfoError: myErr.Error(),
 				ayaka.LogKeyInfoKey:   "my-test-job-1",
 			},
-		}, logger.infos)
+		}, data.infos)
 	})
 
 	t.Run("Should correct panic handle init job", func(t *testing.T) {
@@ -215,20 +213,19 @@ func TestSingleJob(t *testing.T) {
 			errors.Cause(err).Error(),
 		)
 
-		logger.mutex.Lock()
-		defer logger.mutex.Unlock()
-		logger.messages = logger.messages[2:]
-		logger.levels = logger.levels[2:]
-		logger.infos = logger.infos[2:]
+		data := logger.getData()
+		data.messages = data.messages[2:]
+		data.levels = data.levels[2:]
+		data.infos = data.infos[2:]
 
-		assert.Equal(t, []string{ayaka.LogMessageInitPanic}, logger.messages)
-		assert.Equal(t, []string{"error"}, logger.levels)
+		assert.Equal(t, []string{ayaka.LogMessageInitPanic}, data.messages)
+		assert.Equal(t, []string{"error"}, data.levels)
 		assert.Equal(t, []map[string]any{
 			{
 				ayaka.LogKeyInfoPanic: panicMessage,
 				ayaka.LogKeyInfoKey:   "my-test-job-1",
 			},
-		}, logger.infos)
+		}, data.infos)
 	})
 
 	t.Run("Should correct error handle run job", func(t *testing.T) {
@@ -258,20 +255,19 @@ func TestSingleJob(t *testing.T) {
 			errors.Cause(err).Error(),
 		)
 
-		logger.mutex.Lock()
-		defer logger.mutex.Unlock()
-		logger.messages = logger.messages[4:]
-		logger.levels = logger.levels[4:]
-		logger.infos = logger.infos[4:]
+		data := logger.getData()
+		data.messages = data.messages[4:]
+		data.levels = data.levels[4:]
+		data.infos = data.infos[4:]
 
-		assert.Equal(t, []string{ayaka.LogMessageRunError}, logger.messages)
-		assert.Equal(t, []string{"error"}, logger.levels)
+		assert.Equal(t, []string{ayaka.LogMessageRunError}, data.messages)
+		assert.Equal(t, []string{"error"}, data.levels)
 		assert.Equal(t, []map[string]any{
 			{
 				ayaka.LogKeyInfoError: myErr.Error(),
 				ayaka.LogKeyInfoKey:   "my-test-job-1",
 			},
-		}, logger.infos)
+		}, data.infos)
 	})
 
 	t.Run("Should correct panic handle run job", func(t *testing.T) {
@@ -301,20 +297,19 @@ func TestSingleJob(t *testing.T) {
 			errors.Cause(err).Error(),
 		)
 
-		logger.mutex.Lock()
-		defer logger.mutex.Unlock()
-		logger.messages = logger.messages[4:]
-		logger.levels = logger.levels[4:]
-		logger.infos = logger.infos[4:]
+		data := logger.getData()
+		data.messages = data.messages[4:]
+		data.levels = data.levels[4:]
+		data.infos = data.infos[4:]
 
-		assert.Equal(t, []string{ayaka.LogMessageRunPanic}, logger.messages)
-		assert.Equal(t, []string{"error"}, logger.levels)
+		assert.Equal(t, []string{ayaka.LogMessageRunPanic}, data.messages)
+		assert.Equal(t, []string{"error"}, data.levels)
 		assert.Equal(t, []map[string]any{
 			{
 				ayaka.LogKeyInfoPanic: panicMessage,
 				ayaka.LogKeyInfoKey:   "my-test-job-1",
 			},
-		}, logger.infos)
+		}, data.infos)
 	})
 }
 
@@ -365,23 +360,22 @@ func TestMultipleJobs(t *testing.T) {
 		assert.NoError(t, err)
 		assert.NoError(t, app.Err())
 
-		logger.mutex.Lock()
-		defer logger.mutex.Unlock()
-		logger.messages = logger.messages[1:]
-		logger.levels = logger.levels[1:]
-		logger.infos = logger.infos[1:]
+		data := logger.getData()
+		data.messages = data.messages[1:]
+		data.levels = data.levels[1:]
+		data.infos = data.infos[1:]
 
 		sort.Strings(expectedMessage)
 		sort.Strings(expectedLevel)
-		sort.Strings(logger.messages)
-		sort.Strings(logger.levels)
+		sort.Strings(data.messages)
+		sort.Strings(data.levels)
 
 		assert.Equal(t,
 			expectedMessage,
-			logger.messages)
+			data.messages)
 		assert.Equal(t,
 			expectedLevel,
-			logger.levels)
+			data.levels)
 	})
 
 	t.Run("Should correct error handle init jobs", func(t *testing.T) {
@@ -441,23 +435,22 @@ func TestMultipleJobs(t *testing.T) {
 		assert.Error(t, err)
 		assert.NoError(t, app.Err())
 
-		logger.mutex.Lock()
-		defer logger.mutex.Unlock()
-		logger.messages = logger.messages[1:]
-		logger.levels = logger.levels[1:]
-		logger.infos = logger.infos[1:]
+		data := logger.getData()
+		data.messages = data.messages[1:]
+		data.levels = data.levels[1:]
+		data.infos = data.infos[1:]
 
 		sort.Strings(expectedMessage)
 		sort.Strings(expectedLevel)
-		sort.Strings(logger.messages)
-		sort.Strings(logger.levels)
+		sort.Strings(data.messages)
+		sort.Strings(data.levels)
 
 		assert.Equal(t,
 			expectedMessage,
-			logger.messages)
+			data.messages)
 		assert.Equal(t,
 			expectedLevel,
-			logger.levels)
+			data.levels)
 	})
 
 	t.Run("Should correct error panic init jobs", func(t *testing.T) {
@@ -516,23 +509,22 @@ func TestMultipleJobs(t *testing.T) {
 		assert.Error(t, err)
 		assert.NoError(t, app.Err())
 
-		logger.mutex.Lock()
-		defer logger.mutex.Unlock()
-		logger.messages = logger.messages[1:]
-		logger.levels = logger.levels[1:]
-		logger.infos = logger.infos[1:]
+		data := logger.getData()
+		data.messages = data.messages[1:]
+		data.levels = data.levels[1:]
+		data.infos = data.infos[1:]
 
 		sort.Strings(expectedMessage)
 		sort.Strings(expectedLevel)
-		sort.Strings(logger.messages)
-		sort.Strings(logger.levels)
+		sort.Strings(data.messages)
+		sort.Strings(data.levels)
 
 		assert.Equal(t,
 			expectedMessage,
-			logger.messages)
+			data.messages)
 		assert.Equal(t,
 			expectedLevel,
-			logger.levels)
+			data.levels)
 	})
 
 	t.Run("Should correct error handle run jobs", func(t *testing.T) {
@@ -594,23 +586,22 @@ func TestMultipleJobs(t *testing.T) {
 		assert.Error(t, err)
 		assert.NoError(t, app.Err())
 
-		logger.mutex.Lock()
-		defer logger.mutex.Unlock()
-		logger.messages = logger.messages[1:]
-		logger.levels = logger.levels[1:]
-		logger.infos = logger.infos[1:]
+		data := logger.getData()
+		data.messages = data.messages[1:]
+		data.levels = data.levels[1:]
+		data.infos = data.infos[1:]
 
 		sort.Strings(expectedMessage)
 		sort.Strings(expectedLevel)
-		sort.Strings(logger.messages)
-		sort.Strings(logger.levels)
+		sort.Strings(data.messages)
+		sort.Strings(data.levels)
 
 		assert.Equal(t,
 			expectedMessage,
-			logger.messages)
+			data.messages)
 		assert.Equal(t,
 			expectedLevel,
-			logger.levels)
+			data.levels)
 	})
 
 	t.Run("Should correct panic handler run jobs", func(t *testing.T) {
@@ -671,23 +662,22 @@ func TestMultipleJobs(t *testing.T) {
 		assert.Error(t, err)
 		assert.NoError(t, app.Err())
 
-		logger.mutex.Lock()
-		defer logger.mutex.Unlock()
-		logger.messages = logger.messages[1:]
-		logger.levels = logger.levels[1:]
-		logger.infos = logger.infos[1:]
+		data := logger.getData()
+		data.messages = data.messages[1:]
+		data.levels = data.levels[1:]
+		data.infos = data.infos[1:]
 
 		sort.Strings(expectedMessage)
 		sort.Strings(expectedLevel)
-		sort.Strings(logger.messages)
-		sort.Strings(logger.levels)
+		sort.Strings(data.messages)
+		sort.Strings(data.levels)
 
 		assert.Equal(t,
 			expectedMessage,
-			logger.messages)
+			data.messages)
 		assert.Equal(t,
 			expectedLevel,
-			logger.levels)
+			data.levels)
 	})
 }
 
@@ -718,18 +708,17 @@ func TestJobsTimout(t *testing.T) {
 		assert.Error(t, err)
 		assert.NoError(t, app.Err())
 
-		logger.mutex.Lock()
-		defer logger.mutex.Unlock()
-		logger.messages = logger.messages[1:]
-		logger.levels = logger.levels[1:]
-		logger.infos = logger.infos[1:]
+		data := logger.getData()
+		data.messages = data.messages[1:]
+		data.levels = data.levels[1:]
+		data.infos = data.infos[1:]
 
 		assert.Equal(t,
 			[]string{"init all job started", "init end with ctx done", ayaka.LogMessageInitError},
-			logger.messages)
+			data.messages)
 		assert.Equal(t,
 			[]string{"info", "debug", "error"},
-			logger.levels)
+			data.levels)
 		assert.Equal(t,
 			[]map[string]any{
 				{
@@ -739,7 +728,7 @@ func TestJobsTimout(t *testing.T) {
 					ayaka.LogKeyInfoError: context.DeadlineExceeded.Error(),
 				},
 			},
-			logger.infos)
+			data.infos)
 	})
 
 	t.Run("Should correct stop init with start timout 2", func(t *testing.T) {
@@ -774,18 +763,17 @@ func TestJobsTimout(t *testing.T) {
 		assert.Error(t, err)
 		assert.NoError(t, app.Err())
 
-		logger.mutex.Lock()
-		defer logger.mutex.Unlock()
-		logger.messages = logger.messages[1:]
-		logger.levels = logger.levels[1:]
-		logger.infos = logger.infos[1:]
+		data := logger.getData()
+		data.messages = data.messages[1:]
+		data.levels = data.levels[1:]
+		data.infos = data.infos[1:]
 
 		assert.Equal(t,
 			[]string{"init all job started", "init end", "init end with ctx done", ayaka.LogMessageInitError},
-			logger.messages)
+			data.messages)
 		assert.Equal(t,
 			[]string{"info", "debug", "debug", "error"},
-			logger.levels)
+			data.levels)
 		assert.Equal(t,
 			[]map[string]any{
 				{
@@ -795,7 +783,7 @@ func TestJobsTimout(t *testing.T) {
 					ayaka.LogKeyInfoError: context.DeadlineExceeded.Error(),
 				},
 			},
-			logger.infos)
+			data.infos)
 	})
 
 	t.Run("Should correct graceful timeout init job", func(t *testing.T) {
@@ -832,18 +820,17 @@ func TestJobsTimout(t *testing.T) {
 		assert.Error(t, err)
 		assert.NoError(t, app.Err())
 
-		logger.mutex.Lock()
-		defer logger.mutex.Unlock()
-		logger.messages = logger.messages[1:]
-		logger.levels = logger.levels[1:]
-		logger.infos = logger.infos[1:]
+		data := logger.getData()
+		data.messages = data.messages[1:]
+		data.levels = data.levels[1:]
+		data.infos = data.infos[1:]
 
 		assert.Equal(t,
 			[]string{"init all job started", ayaka.LogMessageInitError, ayaka.LogMessageGracefulShotdownFailed},
-			logger.messages)
+			data.messages)
 		assert.Equal(t,
 			[]string{"info", "error", "warn"},
-			logger.levels)
+			data.levels)
 		assert.Equal(t,
 			[]map[string]any{
 				{
@@ -853,7 +840,7 @@ func TestJobsTimout(t *testing.T) {
 					ayaka.LogKeyInfoError: myErr.Error(),
 				}, nil,
 			},
-			logger.infos)
+			data.infos)
 	})
 
 	t.Run("Should correct graceful timeout run job", func(t *testing.T) {
@@ -890,18 +877,17 @@ func TestJobsTimout(t *testing.T) {
 		assert.Error(t, err)
 		assert.NoError(t, app.Err())
 
-		logger.mutex.Lock()
-		defer logger.mutex.Unlock()
-		logger.messages = logger.messages[1:]
-		logger.levels = logger.levels[1:]
-		logger.infos = logger.infos[1:]
+		data := logger.getData()
+		data.messages = data.messages[1:]
+		data.levels = data.levels[1:]
+		data.infos = data.infos[1:]
 
 		assert.Equal(t,
 			[]string{"init all job started", "init end", "init end", "run all job started", ayaka.LogMessageRunError, ayaka.LogMessageGracefulShotdownFailed},
-			logger.messages)
+			data.messages)
 		assert.Equal(t,
 			[]string{"info", "debug", "debug", "info", "error", "warn"},
-			logger.levels)
+			data.levels)
 		assert.Equal(t,
 			[]map[string]any{
 				{
@@ -911,6 +897,6 @@ func TestJobsTimout(t *testing.T) {
 					ayaka.LogKeyInfoError: myErr.Error(),
 				}, nil,
 			},
-			logger.infos)
+			data.infos)
 	})
 }
