@@ -4,6 +4,7 @@ import (
 	"context"
 	ayaka "github.com/illusory-server/accounts/pkg/core"
 	"github.com/stretchr/testify/assert"
+	"sync"
 	"testing"
 	"time"
 )
@@ -12,27 +13,36 @@ type testLogger struct {
 	levels   []string
 	messages []string
 	infos    []map[string]any
+	mutex    *sync.Mutex
 }
 
 func (t *testLogger) Debug(_ context.Context, message string, info map[string]any) {
+	t.mutex.Lock()
+	defer t.mutex.Unlock()
 	t.levels = append(t.levels, "debug")
 	t.messages = append(t.messages, message)
 	t.infos = append(t.infos, info)
 }
 
 func (t *testLogger) Info(_ context.Context, message string, info map[string]any) {
+	t.mutex.Lock()
+	defer t.mutex.Unlock()
 	t.levels = append(t.levels, "info")
 	t.messages = append(t.messages, message)
 	t.infos = append(t.infos, info)
 }
 
 func (t *testLogger) Warn(_ context.Context, message string, info map[string]any) {
+	t.mutex.Lock()
+	defer t.mutex.Unlock()
 	t.levels = append(t.levels, "warn")
 	t.messages = append(t.messages, message)
 	t.infos = append(t.infos, info)
 }
 
 func (t *testLogger) Error(_ context.Context, message string, info map[string]any) {
+	t.mutex.Lock()
+	defer t.mutex.Unlock()
 	t.levels = append(t.levels, "error")
 	t.messages = append(t.messages, message)
 	t.infos = append(t.infos, info)
@@ -43,6 +53,7 @@ func newTestLogger() *testLogger {
 		levels:   make([]string, 0, 10),
 		messages: make([]string, 0, 10),
 		infos:    make([]map[string]any, 0, 10),
+		mutex:    &sync.Mutex{},
 	}
 }
 

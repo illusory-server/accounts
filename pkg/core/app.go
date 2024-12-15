@@ -8,8 +8,8 @@ import (
 
 type (
 	Job interface {
-		Init(ctx context.Context, container *dig.Container) error
-		Run(ctx context.Context, container *dig.Container) error
+		Init(ctx context.Context, container Container) error
+		Run(ctx context.Context, container Container) error
 	}
 
 	JobEntry struct {
@@ -30,7 +30,7 @@ type (
 		err    error
 		ctx    context.Context
 
-		di *dig.Container
+		di Container
 
 		configInterceptor ConfigInterceptor
 		logger            *Log
@@ -53,7 +53,7 @@ func (a *App) Err() error {
 	return a.err
 }
 
-func (a *App) Dependency() *dig.Container {
+func (a *App) Dependency() Container {
 	return a.di
 }
 
@@ -77,7 +77,7 @@ func (r *ReadonlyApp) Err() error {
 	return r.app.Err()
 }
 
-func (r *ReadonlyApp) Dependency() *dig.Container {
+func (r *ReadonlyApp) Dependency() Container {
 	return r.app.Dependency()
 }
 
@@ -123,7 +123,7 @@ func NewApp(opt *Options) *App {
 		jobs:   make(map[string]Job),
 		err:    errRes,
 
-		di: di,
+		di: newSyncContainer(di),
 
 		configInterceptor: opt.ConfigInterceptor,
 		logger:            log,

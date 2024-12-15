@@ -6,7 +6,6 @@ import (
 	ayaka "github.com/illusory-server/accounts/pkg/core"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
-	"go.uber.org/dig"
 	"sort"
 	"testing"
 	"time"
@@ -30,7 +29,7 @@ type correctJob struct {
 	panicRun            string
 }
 
-func (c correctJob) Init(ctx context.Context, container *dig.Container) error {
+func (c correctJob) Init(ctx context.Context, container ayaka.Container) error {
 	var (
 		logger ayaka.Logger
 	)
@@ -63,7 +62,7 @@ func (c correctJob) Init(ctx context.Context, container *dig.Container) error {
 	}
 }
 
-func (c correctJob) Run(ctx context.Context, container *dig.Container) error {
+func (c correctJob) Run(ctx context.Context, container ayaka.Container) error {
 	var (
 		logger ayaka.Logger
 	)
@@ -123,6 +122,8 @@ func TestSingleJob(t *testing.T) {
 		assert.NoError(t, err)
 		assert.NoError(t, app.Err())
 
+		logger.mutex.Lock()
+		defer logger.mutex.Unlock()
 		logger.messages = logger.messages[1:]
 		logger.levels = logger.levels[1:]
 		logger.infos = logger.infos[1:]
@@ -171,6 +172,8 @@ func TestSingleJob(t *testing.T) {
 			errors.Cause(err).Error(),
 		)
 
+		logger.mutex.Lock()
+		defer logger.mutex.Unlock()
 		logger.messages = logger.messages[2:]
 		logger.levels = logger.levels[2:]
 		logger.infos = logger.infos[2:]
@@ -212,6 +215,8 @@ func TestSingleJob(t *testing.T) {
 			errors.Cause(err).Error(),
 		)
 
+		logger.mutex.Lock()
+		defer logger.mutex.Unlock()
 		logger.messages = logger.messages[2:]
 		logger.levels = logger.levels[2:]
 		logger.infos = logger.infos[2:]
@@ -253,6 +258,8 @@ func TestSingleJob(t *testing.T) {
 			errors.Cause(err).Error(),
 		)
 
+		logger.mutex.Lock()
+		defer logger.mutex.Unlock()
 		logger.messages = logger.messages[4:]
 		logger.levels = logger.levels[4:]
 		logger.infos = logger.infos[4:]
@@ -294,6 +301,8 @@ func TestSingleJob(t *testing.T) {
 			errors.Cause(err).Error(),
 		)
 
+		logger.mutex.Lock()
+		defer logger.mutex.Unlock()
 		logger.messages = logger.messages[4:]
 		logger.levels = logger.levels[4:]
 		logger.infos = logger.infos[4:]
@@ -356,6 +365,8 @@ func TestMultipleJobs(t *testing.T) {
 		assert.NoError(t, err)
 		assert.NoError(t, app.Err())
 
+		logger.mutex.Lock()
+		defer logger.mutex.Unlock()
 		logger.messages = logger.messages[1:]
 		logger.levels = logger.levels[1:]
 		logger.infos = logger.infos[1:]
@@ -430,6 +441,8 @@ func TestMultipleJobs(t *testing.T) {
 		assert.Error(t, err)
 		assert.NoError(t, app.Err())
 
+		logger.mutex.Lock()
+		defer logger.mutex.Unlock()
 		logger.messages = logger.messages[1:]
 		logger.levels = logger.levels[1:]
 		logger.infos = logger.infos[1:]
@@ -503,6 +516,8 @@ func TestMultipleJobs(t *testing.T) {
 		assert.Error(t, err)
 		assert.NoError(t, app.Err())
 
+		logger.mutex.Lock()
+		defer logger.mutex.Unlock()
 		logger.messages = logger.messages[1:]
 		logger.levels = logger.levels[1:]
 		logger.infos = logger.infos[1:]
@@ -579,6 +594,8 @@ func TestMultipleJobs(t *testing.T) {
 		assert.Error(t, err)
 		assert.NoError(t, app.Err())
 
+		logger.mutex.Lock()
+		defer logger.mutex.Unlock()
 		logger.messages = logger.messages[1:]
 		logger.levels = logger.levels[1:]
 		logger.infos = logger.infos[1:]
@@ -654,6 +671,8 @@ func TestMultipleJobs(t *testing.T) {
 		assert.Error(t, err)
 		assert.NoError(t, app.Err())
 
+		logger.mutex.Lock()
+		defer logger.mutex.Unlock()
 		logger.messages = logger.messages[1:]
 		logger.levels = logger.levels[1:]
 		logger.infos = logger.infos[1:]
@@ -699,6 +718,8 @@ func TestJobsTimout(t *testing.T) {
 		assert.Error(t, err)
 		assert.NoError(t, app.Err())
 
+		logger.mutex.Lock()
+		defer logger.mutex.Unlock()
 		logger.messages = logger.messages[1:]
 		logger.levels = logger.levels[1:]
 		logger.infos = logger.infos[1:]
@@ -753,6 +774,8 @@ func TestJobsTimout(t *testing.T) {
 		assert.Error(t, err)
 		assert.NoError(t, app.Err())
 
+		logger.mutex.Lock()
+		defer logger.mutex.Unlock()
 		logger.messages = logger.messages[1:]
 		logger.levels = logger.levels[1:]
 		logger.infos = logger.infos[1:]
@@ -809,6 +832,8 @@ func TestJobsTimout(t *testing.T) {
 		assert.Error(t, err)
 		assert.NoError(t, app.Err())
 
+		logger.mutex.Lock()
+		defer logger.mutex.Unlock()
 		logger.messages = logger.messages[1:]
 		logger.levels = logger.levels[1:]
 		logger.infos = logger.infos[1:]
@@ -865,6 +890,8 @@ func TestJobsTimout(t *testing.T) {
 		assert.Error(t, err)
 		assert.NoError(t, app.Err())
 
+		logger.mutex.Lock()
+		defer logger.mutex.Unlock()
 		logger.messages = logger.messages[1:]
 		logger.levels = logger.levels[1:]
 		logger.infos = logger.infos[1:]
