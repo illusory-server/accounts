@@ -9,30 +9,12 @@ type Logger interface {
 	Error(ctx context.Context, message string, info map[string]any)
 }
 
-type Log struct {
-	logger Logger
-}
+type noopLogger struct{}
 
-func (l *Log) Debug(ctx context.Context, message string, info map[string]any) {
-	if l.logger != nil {
-		l.logger.Debug(ctx, message, info)
-	}
-}
+func (n noopLogger) Debug(ctx context.Context, message string, info map[string]any) {}
 
-func (l *Log) Info(ctx context.Context, message string, info map[string]any) {
-	if l.logger != nil {
-		l.logger.Info(ctx, message, info)
-	}
-}
+func (n noopLogger) Info(ctx context.Context, message string, info map[string]any) {}
 
-func (l *Log) Warn(ctx context.Context, message string, info map[string]any) {
-	if l.logger != nil {
-		l.logger.Warn(ctx, message, info)
-	}
-}
+func (n noopLogger) Warn(ctx context.Context, message string, info map[string]any) {}
 
-func (l *Log) Error(ctx context.Context, message string, info map[string]any) {
-	if l.logger != nil {
-		l.logger.Error(ctx, message, info)
-	}
-}
+func (n noopLogger) Error(ctx context.Context, message string, info map[string]any) {}

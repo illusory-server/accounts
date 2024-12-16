@@ -33,7 +33,7 @@ type (
 		di Container
 
 		configInterceptor ConfigInterceptor
-		logger            *Log
+		logger            Logger
 	}
 
 	ReadonlyApp struct {
@@ -102,7 +102,10 @@ func NewApp(opt *Options) *App {
 	if err != nil {
 		errRes = err
 	}
-	log := &Log{logger: opt.Logger}
+	var log Logger = noopLogger{}
+	if opt.Logger != nil {
+		log = opt.Logger
+	}
 
 	di := opt.Container
 	if di == nil {
