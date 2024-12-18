@@ -36,7 +36,8 @@ tasks:
       - goose up
   test:
     cmds:
-      - go test -race ./...
+      - go clean -testcache
+      - go test -cover -race ./...
   cover:
     cmds:
       - go test -race -v -coverpkg=./... -coverprofile=c.out ./...
