@@ -28,9 +28,7 @@ func (a *App) initJob() error {
 	ctx, cancel := context.WithTimeout(a.ctx, a.Config().StartTimeout)
 	defer cancel()
 
-	sErr := newSingleError(func() {
-		cancel()
-	})
+	sErr := newSingleError(cancel)
 	stopChan := make(chan struct{})
 
 	for key, job := range a.jobs {
@@ -85,9 +83,7 @@ func (a *App) runJob() error {
 	ctx, cancel := context.WithCancel(a.ctx)
 	defer cancel()
 
-	sErr := newSingleError(func() {
-		cancel()
-	})
+	sErr := newSingleError(cancel)
 	stopChan := make(chan struct{})
 
 	for key, job := range a.jobs {
