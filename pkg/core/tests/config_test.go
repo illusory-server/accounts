@@ -3,6 +3,7 @@ package ayaka
 import (
 	"context"
 	ayaka "github.com/illusory-server/accounts/pkg/core"
+	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
@@ -69,5 +70,19 @@ func TestWithConfig(t *testing.T) {
 				"test": "kek",
 			},
 		}, app.Config())
+	})
+
+	t.Run("Should correct error with error interceptor", func(t *testing.T) {
+		app := ayaka.NewApp(&ayaka.Options{
+			Name:        "my-app",
+			Description: "my-app description testing",
+			Version:     "1.0.0",
+			ConfigInterceptor: func(ctx context.Context, conf *ayaka.Config) (*ayaka.Config, error) {
+				return conf, errors.New("some error")
+			},
+		}).WithConfig(&ayaka.Config{})
+		assert.Error(t, app.Err())
+		assert.Error(t, app.Start())
+		assert.Equal(t, &ayaka.Config{}, app.Config())
 	})
 }

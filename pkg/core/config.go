@@ -13,9 +13,9 @@ type Config struct {
 
 func (c Config) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]any{
-		"StartTimeout":    c.StartTimeout / time.Second,
-		"GracefulTimeout": c.GracefulTimeout / time.Second,
-		"Info":            c.Info,
+		"start_timeout":    c.StartTimeout / time.Second,
+		"graceful_timeout": c.GracefulTimeout / time.Second,
+		"info":             c.Info,
 	})
 }
 

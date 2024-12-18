@@ -102,7 +102,7 @@ func NewApp(opt *Options) *App {
 	if err != nil {
 		errRes = err
 	}
-	var log Logger = noopLogger{}
+	var log Logger = NoopLogger{}
 	if opt.Logger != nil {
 		log = opt.Logger
 	}
@@ -126,7 +126,7 @@ func NewApp(opt *Options) *App {
 		jobs:   make(map[string]Job),
 		err:    errRes,
 
-		di: newSyncContainer(di),
+		di: NewSyncContainer(di),
 
 		configInterceptor: opt.ConfigInterceptor,
 		logger:            log,

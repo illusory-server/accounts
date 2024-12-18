@@ -15,10 +15,7 @@ func AppFromContext(ctx context.Context) (*ReadonlyApp, error) {
 	if val == nil {
 		return nil, ErrAppNotFountInContext
 	}
-	result, ok := val.(*App)
-	if !ok {
-		return nil, ErrIncorrectValueInContext
-	}
+	result := val.(*App)
 	return &ReadonlyApp{
 		app: result,
 	}, nil
