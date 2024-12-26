@@ -3,7 +3,6 @@ package repository
 import (
 	"context"
 	"github.com/illusory-server/accounts/internal/domain/entity"
-	"github.com/illusory-server/accounts/internal/domain/query"
 	"github.com/illusory-server/accounts/internal/domain/vo"
 )
 
@@ -27,7 +26,7 @@ type AccountQuery interface {
 	GetById(ctx context.Context, id string) (*entity.Account, error)
 	GetByEmail(ctx context.Context, email string) (*entity.Account, error)
 	GetByNickname(ctx context.Context, nickname string) (*entity.Account, error)
-	GetByQuery(ctx context.Context, query *query.Pagination) ([]*entity.Account, error)
+	GetByQuery(ctx context.Context, query vo.Query) ([]*entity.Account, error)
 	GetPageCountByLimit(ctx context.Context, limit uint64) (uint64, error)
 
 	CheckAccountRoleById(ctx context.Context, id string, expectedRole vo.AccountRoleType) (bool, error)

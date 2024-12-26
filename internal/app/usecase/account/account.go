@@ -4,7 +4,6 @@ import (
 	"context"
 	"github.com/illusory-server/accounts/internal/app/factory"
 	"github.com/illusory-server/accounts/internal/domain/entity"
-	"github.com/illusory-server/accounts/internal/domain/query"
 	"github.com/illusory-server/accounts/internal/domain/repository"
 	"github.com/illusory-server/accounts/internal/domain/vo"
 	"github.com/illusory-server/accounts/pkg/logger"
@@ -39,7 +38,7 @@ type (
 		GetWithPasswordById(ctx context.Context, id string) (*entity.Account, error)
 		GetByEmail(ctx context.Context, email string) (*WithoutPassword, error)
 		GetByNickname(ctx context.Context, nickname string) (*WithoutPassword, error)
-		GetByQuery(ctx context.Context, query query.Pagination) ([]*WithoutPassword, error)
+		GetByQuery(ctx context.Context, query vo.Query) ([]*WithoutPassword, error)
 		GetByIds(ctx context.Context, ids []string) ([]*WithoutPassword, error)
 	}
 
@@ -81,7 +80,7 @@ func (a *AccountsUseCase) GetByNickname(ctx context.Context, nickname string) (*
 	panic("implement me")
 }
 
-func (a *AccountsUseCase) GetByQuery(ctx context.Context, query query.Pagination) ([]*WithoutPassword, error) {
+func (a *AccountsUseCase) GetByQuery(ctx context.Context, query vo.Query) ([]*WithoutPassword, error) {
 	//TODO implement me
 	panic("implement me")
 }
