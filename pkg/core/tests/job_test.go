@@ -95,6 +95,25 @@ func (c correctJob) Run(ctx context.Context, container ayaka.Container) error {
 	}
 }
 
+func TestWithJobErrorApp(t *testing.T) {
+	t.Parallel()
+
+	app := ayaka.NewApp(&ayaka.Options{
+		Name:        "my-app",
+		Description: "my-app description testing",
+		Version:     "1.0.0",
+	}).WithJob(ayaka.JobEntry{
+		Key: "my-test-job",
+		Job: &correctJob{
+			initDuration: time.Second * 1,
+			runDuration:  time.Second * 1,
+		},
+	})
+
+	assert.Error(t, app.Err())
+	assert.Error(t, app.Start())
+}
+
 func TestSingleJob(t *testing.T) {
 	t.Run("Should correct init and run job", func(t *testing.T) {
 		t.Parallel()
