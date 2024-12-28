@@ -13,15 +13,13 @@ import (
 
 type GrpcEnvJobEnvKeys struct {
 	Address,
-	RequestTimeout,
-	MaxRetry string
+	RequestTimeout string
 }
 
 var (
 	DefaultUnaryJobEnvKeys = GrpcEnvJobEnvKeys{
 		Address:        "GRPC_ADDRESS",
 		RequestTimeout: "GRPC_REQUEST_TIMEOUT",
-		MaxRetry:       "GRPC_MAX_RETRY",
 	}
 )
 
@@ -43,24 +41,14 @@ func MustGrpcEnvJob(
 	if requestTimeoutEnv == "" {
 		panic("environment variable '" + keys.RequestTimeout + "' is not set")
 	}
-	maxRetryEnv := os.Getenv(keys.MaxRetry)
-	if maxRetryEnv == "" {
-		panic("environment variable '" + keys.MaxRetry + "' is not set")
-	}
 	requestTimeout, err := strconv.Atoi(requestTimeoutEnv)
 	if err != nil {
 		panic("environment variable '" + keys.RequestTimeout + "' is not a number")
-	}
-	maxRetry, err := strconv.Atoi(maxRetryEnv)
-	if err != nil {
-		panic("environment variable '" + keys.MaxRetry + "' is not a number")
 	}
 
 	job, err := ecosystem.NewGrpcJobBuilder().
 		Address(address).
 		RequestTimeout(time.Duration(requestTimeout) * time.Second).
-		MaxRetry(maxRetry).
-		Tracer(tracer).
 		Register(regs...).
 		RegisterServer(func(srv *grpc.Server) error {
 			// Register monitoring

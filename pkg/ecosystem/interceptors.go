@@ -37,3 +37,26 @@ func TimeoutInterceptor(timeout time.Duration) grpc.UnaryServerInterceptor {
 		}
 	}
 }
+
+// RetryInterceptorOptions - retry query, if it error request
+type RetryInterceptorOptions struct {
+	// Retry count
+	Count uint
+	// Retry worked only pick set code, Omit do not work if it has Pick set
+	Pick []codes.Code
+	// Retry not worked pick set code, Do not work if it has Pick set
+	Omit []codes.Code
+	// Retry count by code
+	CodeCount map[codes.Code]uint
+}
+
+func RetryInterceptor(opt *RetryInterceptorOptions) grpc.UnaryServerInterceptor {
+	return func(
+		ctx context.Context,
+		req interface{},
+		info *grpc.UnaryServerInfo,
+		handler grpc.UnaryHandler,
+	) (interface{}, error) {
+		return handler(ctx, req)
+	}
+}
