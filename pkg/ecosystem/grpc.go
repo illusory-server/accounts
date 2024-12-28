@@ -3,14 +3,8 @@ package ecosystem
 import (
 	"context"
 	validation "github.com/go-ozzo/ozzo-validation"
-	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/recovery"
-	grpcvalidator "github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/validator"
-	grpcprometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
-	"github.com/grpc-ecosystem/grpc-opentracing/go/otgrpc"
 	ayaka "github.com/illusory-server/accounts/pkg/core"
-	"github.com/opentracing/opentracing-go"
 	"github.com/pkg/errors"
-	"go.uber.org/dig"
 	"google.golang.org/grpc"
 	"net"
 	"sync"
@@ -25,7 +19,7 @@ type (
 		interceptors   []grpc.UnaryServerInterceptor
 		regs           []GrpcRegister
 		serverRegs     []GrpcServerRegister
-		tracer         opentracing.Tracer
+		options        []grpc.ServerOption
 	}
 
 	GrpcJob struct {
@@ -37,49 +31,69 @@ type (
 		interceptors   []grpc.UnaryServerInterceptor
 		regs           []GrpcRegister
 		serverRegs     []GrpcServerRegister
-		tracer         opentracing.Tracer
+		options        []grpc.ServerOption
 	}
 
-	GrpcRegister       func(ctx context.Context, di *dig.Container, srv *grpc.Server) error
+	GrpcRegister       func(ctx context.Context, di ayaka.Container, srv *grpc.Server) error
 	GrpcServerRegister func(srv *grpc.Server) error
 )
+
+func (g *GrpcJob) Address() string {
+	return g.address
+}
+
+func (g *GrpcJob) RequestTimeout() time.Duration {
+	return g.requestTimeout
+}
+
+func (g *GrpcJob) MaxRetry() int {
+	return g.maxRetry
+}
+
+func (g *GrpcJob) Interceptors() []grpc.UnaryServerInterceptor {
+	return g.interceptors
+}
+
+func (g *GrpcJob) Regs() []GrpcRegister {
+	return g.regs
+}
+
+func (g *GrpcJob) ServerRegs() []GrpcServerRegister {
+	return g.serverRegs
+}
+
+func (g *GrpcJob) Options() []grpc.ServerOption {
+	return g.options
+}
 
 func (g *GrpcJobBuilder) Validate() error {
 	return validation.ValidateStruct(g,
 		validation.Field(&g.address, validation.Required),
 		validation.Field(&g.requestTimeout, validation.Required),
 		validation.Field(&g.maxRetry, validation.Required),
-		validation.Field(&g.tracer, validation.Required),
 	)
 }
 
 func NewGrpcJobBuilder() *GrpcJobBuilder {
 	return &GrpcJobBuilder{
 		regs:         make([]GrpcRegister, 0, 8),
+		serverRegs:   make([]GrpcServerRegister, 0, 8),
 		interceptors: make([]grpc.UnaryServerInterceptor, 0, 8),
+		options:      make([]grpc.ServerOption, 0, 8),
 	}
 }
 
-func (g *GrpcJob) Init(ctx context.Context, di *dig.Container) error {
-	sliceInterceptors := append(g.interceptors,
-		grpcprometheus.UnaryServerInterceptor,
-		otgrpc.OpenTracingServerInterceptor(g.tracer),
-		grpcvalidator.UnaryServerInterceptor(),
-	)
+func (g *GrpcJob) Init(ctx context.Context, di ayaka.Container) error {
+	sliceInterceptors := append(g.interceptors)
 
-	if g.requestTimeout != 0 {
+	if g.requestTimeout > 0 {
 		sliceInterceptors = append(sliceInterceptors, TimeoutInterceptor(g.requestTimeout))
 	}
 
 	grpcOptions := []grpc.ServerOption{
 		grpc.ChainUnaryInterceptor(sliceInterceptors...),
-		grpc.ChainStreamInterceptor(
-			otgrpc.OpenTracingStreamServerInterceptor(g.tracer),
-			recovery.StreamServerInterceptor(),
-			grpcprometheus.StreamServerInterceptor,
-			grpcvalidator.StreamServerInterceptor(),
-		),
 	}
+	grpcOptions = append(grpcOptions, g.options...)
 
 	srv := grpc.NewServer(grpcOptions...)
 
@@ -113,7 +127,7 @@ func (g *GrpcJob) Init(ctx context.Context, di *dig.Container) error {
 	}
 }
 
-func (g *GrpcJob) Run(ctx context.Context, di *dig.Container) error {
+func (g *GrpcJob) Run(ctx context.Context, di ayaka.Container) error {
 	errCh := make(chan error, 1)
 	var log ayaka.Logger
 	err := di.Invoke(func(logger ayaka.Logger) {
@@ -169,13 +183,9 @@ func (g *GrpcJobBuilder) MaxRetry(max int) *GrpcJobBuilder {
 }
 
 func (g *GrpcJobBuilder) Interceptors(interceptors ...grpc.UnaryServerInterceptor) *GrpcJobBuilder {
-	g.interceptors = interceptors
-	g.interceptors = append(g.interceptors, interceptors...)
-	return g
-}
-
-func (g *GrpcJobBuilder) Tracer(tracer opentracing.Tracer) *GrpcJobBuilder {
-	g.tracer = tracer
+	for _, inter := range interceptors {
+		g.interceptors = append(g.interceptors, inter)
+	}
 	return g
 }
 
@@ -193,6 +203,13 @@ func (g *GrpcJobBuilder) RegisterServer(regs ...GrpcServerRegister) *GrpcJobBuil
 	return g
 }
 
+func (g *GrpcJobBuilder) RegisterOptions(options ...grpc.ServerOption) *GrpcJobBuilder {
+	for _, opt := range options {
+		g.options = append(g.options, opt)
+	}
+	return g
+}
+
 func (g *GrpcJobBuilder) Build() (*GrpcJob, error) {
 	err := g.Validate()
 	if err != nil {
@@ -205,7 +222,8 @@ func (g *GrpcJobBuilder) Build() (*GrpcJob, error) {
 		maxRetry:       g.maxRetry,
 		interceptors:   g.interceptors,
 		regs:           g.regs,
-		tracer:         g.tracer,
+		serverRegs:     g.serverRegs,
+		options:        g.options,
 		mu:             sync.Mutex{},
 	}, nil
 }
