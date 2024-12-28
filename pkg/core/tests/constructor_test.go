@@ -1,4 +1,4 @@
-package ayaka_test
+package ayaka
 
 import (
 	"context"
@@ -13,6 +13,7 @@ func TestConstructor(t *testing.T) {
 			Name:        "my-app",
 			Description: "my-app description testing",
 			Version:     "1.0.0",
+			Container:   ayaka.NewContainer(ayaka.NoopLogger{}),
 		})
 		assert.NoError(t, app.Err())
 		assert.NoError(t, app.Start())
@@ -31,23 +32,35 @@ func TestConstructor(t *testing.T) {
 		assert.Equal(t, ayaka.ErrAppNotFountInContext, err)
 	})
 
-	t.Run("Should error with empty required Name, Description and Version fields", func(t *testing.T) {
+	t.Run("Should error with empty required Name, Container, Description and Version fields", func(t *testing.T) {
+		container := ayaka.NewContainer(ayaka.NoopLogger{})
 		app := ayaka.NewApp(&ayaka.Options{
 			Description: "my-app description testing",
 			Version:     "1.0.0",
+			Container:   container,
 		})
 		assert.Error(t, app.Err())
 		assert.Error(t, app.Start())
 
 		app = ayaka.NewApp(&ayaka.Options{
-			Name:    "my-app",
-			Version: "1.0.0",
+			Name:      "my-app",
+			Version:   "1.0.0",
+			Container: container,
 		})
 		assert.Error(t, app.Err())
 		assert.Error(t, app.Start())
 
 		app = ayaka.NewApp(&ayaka.Options{
 			Name:        "my-app",
+			Description: "my-app description testing",
+			Container:   container,
+		})
+		assert.Error(t, app.Err())
+		assert.Error(t, app.Start())
+
+		app = ayaka.NewApp(&ayaka.Options{
+			Name:        "my-app",
+			Version:     "1.0.0",
 			Description: "my-app description testing",
 		})
 		assert.Error(t, app.Err())

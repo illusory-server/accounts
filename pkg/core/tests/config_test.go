@@ -15,6 +15,7 @@ func TestWithConfig(t *testing.T) {
 			Name:        "my-app",
 			Description: "my-app description testing",
 			Version:     "1.0.0",
+			Container:   ayaka.NewContainer(ayaka.NoopLogger{}),
 		}).WithConfig(&ayaka.Config{
 			StartTimeout:    time.Second * 2,
 			GracefulTimeout: time.Second * 3,
@@ -37,6 +38,7 @@ func TestWithConfig(t *testing.T) {
 		app := ayaka.NewApp(&ayaka.Options{
 			Name:        "my-app",
 			Description: "my-app description testing",
+			Container:   ayaka.NewContainer(ayaka.NoopLogger{}),
 		}).WithConfig(&ayaka.Config{
 			StartTimeout:    time.Second * 2,
 			GracefulTimeout: time.Second * 3,
@@ -52,6 +54,7 @@ func TestWithConfig(t *testing.T) {
 			Name:        "my-app",
 			Description: "my-app description testing",
 			Version:     "1.0.0",
+			Container:   ayaka.NewContainer(ayaka.NoopLogger{}),
 			ConfigInterceptor: func(ctx context.Context, conf *ayaka.Config) (*ayaka.Config, error) {
 				conf.StartTimeout = time.Second * 2
 				conf.GracefulTimeout = time.Second * 3
@@ -77,6 +80,7 @@ func TestWithConfig(t *testing.T) {
 			Name:        "my-app",
 			Description: "my-app description testing",
 			Version:     "1.0.0",
+			Container:   ayaka.NewContainer(ayaka.NoopLogger{}),
 			ConfigInterceptor: func(ctx context.Context, conf *ayaka.Config) (*ayaka.Config, error) {
 				return conf, errors.New("some error")
 			},

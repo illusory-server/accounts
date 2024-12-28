@@ -6,7 +6,6 @@ import (
 	ayaka "github.com/illusory-server/accounts/pkg/core"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
-	"go.uber.org/dig"
 	"testing"
 	"time"
 )
@@ -40,6 +39,7 @@ func TestContext(t *testing.T) {
 		Name:        "my-app",
 		Description: "my-app description testing",
 		Version:     "1.0.0",
+		Container:   ayaka.NewContainer(ayaka.NoopLogger{}),
 	})
 
 	ctx := app.Context()
@@ -73,23 +73,4 @@ func TestNoopLogger(t *testing.T) {
 	logger.Info(ctx, message, info)
 	logger.Warn(ctx, message, info)
 	logger.Error(ctx, message, info)
-}
-
-func TestDISyncContainer(t *testing.T) {
-	container := dig.New()
-	err := container.Provide(func() ayaka.Logger {
-		return ayaka.NoopLogger{}
-	})
-	assert.NoError(t, err)
-
-	syncContainer := ayaka.NewSyncContainer(container)
-
-	for i := 0; i < 3; i++ {
-		go func() {
-			err := syncContainer.Invoke(func(log ayaka.Logger) {
-				log.Debug(context.Background(), "message routine", nil)
-			})
-			assert.NoError(t, err)
-		}()
-	}
 }

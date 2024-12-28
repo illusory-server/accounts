@@ -28,7 +28,7 @@ func TestQuery(t *testing.T) {
 		assert.Error(t, err)
 		assert.Equal(t, vo.Query{}, query)
 
-		query, err = vo.NewQuery(5, 20, "", "")
+		query, err = vo.NewQuery(5, 20, "", "k")
 		assert.Error(t, err)
 		assert.Equal(t, vo.Query{}, query)
 	})

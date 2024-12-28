@@ -84,7 +84,6 @@ func (r *ReadonlyApp) Dependency() Container {
 type Options struct {
 	Name, Description, Version string
 	ConfigInterceptor          ConfigInterceptor
-	Logger                     Logger
 	Container                  *dig.Container
 }
 
@@ -93,6 +92,7 @@ func (o Options) Validate() error {
 		validation.Field(&o.Name, validation.Required),
 		validation.Field(&o.Description, validation.Required),
 		validation.Field(&o.Version, validation.Required),
+		validation.Field(&o.Container, validation.Required),
 	)
 }
 
@@ -102,18 +102,14 @@ func NewApp(opt *Options) *App {
 	if err != nil {
 		errRes = err
 	}
-	var log Logger = NoopLogger{}
-	if opt.Logger != nil {
-		log = opt.Logger
-	}
-
-	di := opt.Container
-	if di == nil {
-		di = dig.New()
-	}
-	err = di.Provide(func() Logger { return log })
-	if err != nil {
-		errRes = err
+	var log Logger
+	if opt.Container != nil {
+		err = opt.Container.Invoke(func(l Logger) {
+			log = l
+		})
+		if err != nil {
+			errRes = err
+		}
 	}
 
 	result := &App{
@@ -126,7 +122,7 @@ func NewApp(opt *Options) *App {
 		jobs:   make(map[string]Job),
 		err:    errRes,
 
-		di: NewSyncContainer(di),
+		di: opt.Container,
 
 		configInterceptor: opt.ConfigInterceptor,
 		logger:            log,
@@ -135,4 +131,13 @@ func NewApp(opt *Options) *App {
 	result.ctx = AppWithContext(context.Background(), result)
 
 	return result
+}
+
+func NewContainer(log Logger) *dig.Container {
+	di := dig.New()
+	err := di.Provide(func() Logger { return log })
+	if err != nil {
+		return nil
+	}
+	return di
 }
