@@ -109,7 +109,7 @@ func TestSingleJob(t *testing.T) {
 			Name:        "my-app",
 			Description: "my-app description testing",
 			Version:     "1.0.0",
-			Logger:      logger,
+			Container:   ayaka.NewContainer(logger),
 		}).WithConfig(cfg).WithJob(ayaka.JobEntry{
 			Key: "my-test-job",
 			Job: &correctJob{
@@ -153,7 +153,7 @@ func TestSingleJob(t *testing.T) {
 			Name:        "my-app",
 			Description: "my-app description testing",
 			Version:     "1.0.0",
-			Logger:      logger,
+			Container:   ayaka.NewContainer(logger),
 		}).WithConfig(&ayaka.Config{
 			StartTimeout:    time.Second * 5,
 			GracefulTimeout: time.Second * 5,
@@ -195,7 +195,7 @@ func TestSingleJob(t *testing.T) {
 			Name:        "my-app",
 			Description: "my-app description testing",
 			Version:     "1.0.0",
-			Logger:      logger,
+			Container:   ayaka.NewContainer(logger),
 		}).WithConfig(&ayaka.Config{
 			StartTimeout:    time.Second * 5,
 			GracefulTimeout: time.Second * 5,
@@ -237,7 +237,7 @@ func TestSingleJob(t *testing.T) {
 			Name:        "my-app",
 			Description: "my-app description testing",
 			Version:     "1.0.0",
-			Logger:      logger,
+			Container:   ayaka.NewContainer(logger),
 		}).WithConfig(&ayaka.Config{
 			StartTimeout:    time.Second * 5,
 			GracefulTimeout: time.Second * 5,
@@ -279,7 +279,7 @@ func TestSingleJob(t *testing.T) {
 			Name:        "my-app",
 			Description: "my-app description testing",
 			Version:     "1.0.0",
-			Logger:      logger,
+			Container:   ayaka.NewContainer(logger),
 		}).WithConfig(&ayaka.Config{
 			StartTimeout:    time.Second * 5,
 			GracefulTimeout: time.Second * 5,
@@ -348,7 +348,7 @@ func TestMultipleJobs(t *testing.T) {
 			Name:        "my-app",
 			Description: "my-app description testing",
 			Version:     "1.0.0",
-			Logger:      logger,
+			Container:   ayaka.NewContainer(logger),
 		}).WithConfig(cfg).WithJob(jobEntries...)
 
 		ti := time.Now()
@@ -423,7 +423,7 @@ func TestMultipleJobs(t *testing.T) {
 			Name:        "my-app",
 			Description: "my-app description testing",
 			Version:     "1.0.0",
-			Logger:      logger,
+			Container:   ayaka.NewContainer(logger),
 		}).WithConfig(cfg).WithJob(jobEntries...)
 
 		ti := time.Now()
@@ -497,7 +497,7 @@ func TestMultipleJobs(t *testing.T) {
 			Name:        "my-app",
 			Description: "my-app description testing",
 			Version:     "1.0.0",
-			Logger:      logger,
+			Container:   ayaka.NewContainer(logger),
 		}).WithConfig(cfg).WithJob(jobEntries...)
 
 		ti := time.Now()
@@ -574,7 +574,7 @@ func TestMultipleJobs(t *testing.T) {
 			Name:        "my-app",
 			Description: "my-app description testing",
 			Version:     "1.0.0",
-			Logger:      logger,
+			Container:   ayaka.NewContainer(logger),
 		}).WithConfig(cfg).WithJob(jobEntries...)
 
 		ti := time.Now()
@@ -650,7 +650,7 @@ func TestMultipleJobs(t *testing.T) {
 			Name:        "my-app",
 			Description: "my-app description testing",
 			Version:     "1.0.0",
-			Logger:      logger,
+			Container:   ayaka.NewContainer(logger),
 		}).WithConfig(cfg).WithJob(jobEntries...)
 
 		ti := time.Now()
@@ -695,7 +695,7 @@ func TestJobsTimout(t *testing.T) {
 			Name:        "my-app",
 			Description: "my-app description testing",
 			Version:     "1.0.0",
-			Logger:      logger,
+			Container:   ayaka.NewContainer(logger),
 		}).WithConfig(cfg).WithJob(ayaka.JobEntry{
 			Key: "my-test-job",
 			Job: &correctJob{
@@ -744,7 +744,7 @@ func TestJobsTimout(t *testing.T) {
 			Name:        "my-app",
 			Description: "my-app description testing",
 			Version:     "1.0.0",
-			Logger:      logger,
+			Container:   ayaka.NewContainer(logger),
 		}).WithConfig(cfg).WithJob(ayaka.JobEntry{
 			Key: "my-test-job",
 			Job: &correctJob{
@@ -801,7 +801,7 @@ func TestJobsTimout(t *testing.T) {
 			Name:        "my-app",
 			Description: "my-app description testing",
 			Version:     "1.0.0",
-			Logger:      logger,
+			Container:   ayaka.NewContainer(logger),
 		}).WithConfig(cfg).WithJob(ayaka.JobEntry{
 			Key: "my-test-job",
 			Job: &correctJob{
@@ -858,7 +858,7 @@ func TestJobsTimout(t *testing.T) {
 			Name:        "my-app",
 			Description: "my-app description testing",
 			Version:     "1.0.0",
-			Logger:      logger,
+			Container:   ayaka.NewContainer(logger),
 		}).WithConfig(cfg).WithJob(ayaka.JobEntry{
 			Key: "my-test-job",
 			Job: &correctJob{

@@ -86,7 +86,7 @@ func TestLogger(t *testing.T) {
 		Name:        "my-app",
 		Description: "my-app description testing",
 		Version:     "1.0.0",
-		Logger:      logger,
+		Container:   ayaka.NewContainer(logger),
 	}).WithConfig(&ayaka.Config{
 		StartTimeout:    time.Second * 2,
 		GracefulTimeout: time.Second * 3,
