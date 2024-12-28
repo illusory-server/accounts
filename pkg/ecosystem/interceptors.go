@@ -27,7 +27,7 @@ func TimeoutInterceptor(timeout time.Duration) grpc.UnaryServerInterceptor {
 
 		select {
 		case <-childCtx.Done():
-			if errors.Is(ctx.Err(), context.DeadlineExceeded) {
+			if errors.Is(childCtx.Err(), context.DeadlineExceeded) {
 				return nil, status.New(codes.DeadlineExceeded, "Server timeout, aborting.").Err()
 			}
 
