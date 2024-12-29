@@ -7,7 +7,7 @@ import (
 	"os"
 )
 
-const helpString = `
+const CliHelpString = `
 CLI usage commands:
 
 bin [COMMAND]
@@ -23,9 +23,9 @@ type Printer interface {
 	Printf(format string, args ...interface{})
 }
 
-type DefaultPrint struct{}
+type DefaultPrinter struct{}
 
-func (p DefaultPrint) Printf(format string, args ...interface{}) {
+func (p DefaultPrinter) Printf(format string, args ...interface{}) {
 	fmt.Printf(format, args...)
 }
 
@@ -34,7 +34,7 @@ func StartWithCli(app *ayaka.App, print Printer) error {
 	info := app.Info()
 
 	if print == nil {
-		print = DefaultPrint{}
+		print = DefaultPrinter{}
 	}
 
 	cliApp := cli.App(info.Name, info.Description)
@@ -47,7 +47,7 @@ func StartWithCli(app *ayaka.App, print Printer) error {
 
 	cliApp.Command("help", "cli usage help", func(cmd *cli.Cmd) {
 		cmd.Action = func() {
-			print.Printf("%s\n", helpString)
+			print.Printf("%s\n", CliHelpString)
 		}
 	})
 
