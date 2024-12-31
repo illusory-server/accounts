@@ -25,13 +25,11 @@ func noopInterceptor(ctx context.Context, req any, info *grpc.UnaryServerInfo, h
 func TestGrpcJobBuilder(t *testing.T) {
 	t.Run("Should correct build grpc job", func(t *testing.T) {
 		address := "localhost:10101"
-		maxRetry := 5
 		requestTimeout := time.Second * 5
 
 		builder := ecosystem.NewGrpcJobBuilder()
 		job, err := builder.
 			Address(address).
-			MaxRetry(maxRetry).
 			RequestTimeout(requestTimeout).
 			Register().
 			RegisterOptions().
@@ -43,7 +41,6 @@ func TestGrpcJobBuilder(t *testing.T) {
 		assert.NotNil(t, job)
 
 		assert.Equal(t, address, job.Address())
-		assert.Equal(t, maxRetry, job.MaxRetry())
 		assert.Equal(t, requestTimeout, job.RequestTimeout())
 
 		assert.Equal(t, 0, len(job.ServerRegs()))
@@ -52,13 +49,11 @@ func TestGrpcJobBuilder(t *testing.T) {
 		assert.Equal(t, 0, len(job.Options()))
 	})
 
-	t.Run("Should correct error building grpc without address, max-retry, request-timeout", func(t *testing.T) {
+	t.Run("Should correct error building grpc without address, request-timeout", func(t *testing.T) {
 		address := "localhost:10101"
-		maxRetry := 5
 
 		builder := ecosystem.NewGrpcJobBuilder()
 		job, err := builder.
-			MaxRetry(maxRetry).
 			RequestTimeout(time.Second * 5).
 			Build()
 
@@ -68,16 +63,6 @@ func TestGrpcJobBuilder(t *testing.T) {
 		builder = ecosystem.NewGrpcJobBuilder()
 		job, err = builder.
 			Address(address).
-			RequestTimeout(time.Second * 5).
-			Build()
-
-		assert.Error(t, err)
-		assert.Nil(t, job)
-
-		builder = ecosystem.NewGrpcJobBuilder()
-		job, err = builder.
-			Address(address).
-			MaxRetry(maxRetry).
 			Build()
 
 		assert.Error(t, err)
@@ -86,13 +71,11 @@ func TestGrpcJobBuilder(t *testing.T) {
 
 	t.Run("Should correct work register, serverRegister and interceptor", func(t *testing.T) {
 		address := "localhost:10101"
-		maxRetry := 5
 		requestTimeout := time.Second * 5
 
 		builder := ecosystem.NewGrpcJobBuilder()
 		job, err := builder.
 			Address(address).
-			MaxRetry(maxRetry).
 			RequestTimeout(requestTimeout).
 			Register(noopRegister, noopRegister).
 			RegisterServer(noopServerRegister, noopServerRegister, noopServerRegister).
@@ -104,7 +87,6 @@ func TestGrpcJobBuilder(t *testing.T) {
 		assert.NotNil(t, job)
 
 		assert.Equal(t, address, job.Address())
-		assert.Equal(t, maxRetry, job.MaxRetry())
 		assert.Equal(t, requestTimeout, job.RequestTimeout())
 
 		assert.Equal(t, 3, len(job.ServerRegs()))
@@ -116,13 +98,11 @@ func TestGrpcJobBuilder(t *testing.T) {
 
 func TestGrpcJobSignature(t *testing.T) {
 	address := "localhost:10101"
-	maxRetry := 5
 	requestTimeout := time.Second * 5
 
 	builder := ecosystem.NewGrpcJobBuilder()
 	job, err := builder.
 		Address(address).
-		MaxRetry(maxRetry).
 		RequestTimeout(requestTimeout).
 		Register().
 		RegisterOptions().

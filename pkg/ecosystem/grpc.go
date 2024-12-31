@@ -15,7 +15,6 @@ type (
 	GrpcJobBuilder struct {
 		address        string
 		requestTimeout time.Duration
-		maxRetry       int
 		interceptors   []grpc.UnaryServerInterceptor
 		regs           []GrpcRegister
 		serverRegs     []GrpcServerRegister
@@ -27,7 +26,6 @@ type (
 		mu             sync.Mutex
 		address        string
 		requestTimeout time.Duration
-		maxRetry       int
 		interceptors   []grpc.UnaryServerInterceptor
 		regs           []GrpcRegister
 		serverRegs     []GrpcServerRegister
@@ -44,10 +42,6 @@ func (g *GrpcJob) Address() string {
 
 func (g *GrpcJob) RequestTimeout() time.Duration {
 	return g.requestTimeout
-}
-
-func (g *GrpcJob) MaxRetry() int {
-	return g.maxRetry
 }
 
 func (g *GrpcJob) Interceptors() []grpc.UnaryServerInterceptor {
@@ -70,7 +64,6 @@ func (g *GrpcJobBuilder) Validate() error {
 	return validation.ValidateStruct(g,
 		validation.Field(&g.address, validation.Required),
 		validation.Field(&g.requestTimeout, validation.Required),
-		validation.Field(&g.maxRetry, validation.Required),
 	)
 }
 
@@ -177,11 +170,6 @@ func (g *GrpcJobBuilder) RequestTimeout(timeout time.Duration) *GrpcJobBuilder {
 	return g
 }
 
-func (g *GrpcJobBuilder) MaxRetry(max int) *GrpcJobBuilder {
-	g.maxRetry = max
-	return g
-}
-
 func (g *GrpcJobBuilder) Interceptors(interceptors ...grpc.UnaryServerInterceptor) *GrpcJobBuilder {
 	for _, inter := range interceptors {
 		g.interceptors = append(g.interceptors, inter)
@@ -219,7 +207,6 @@ func (g *GrpcJobBuilder) Build() (*GrpcJob, error) {
 	return &GrpcJob{
 		address:        g.address,
 		requestTimeout: g.requestTimeout,
-		maxRetry:       g.maxRetry,
 		interceptors:   g.interceptors,
 		regs:           g.regs,
 		serverRegs:     g.serverRegs,
