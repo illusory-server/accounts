@@ -27,13 +27,14 @@ func validateTimeBeforeNow(value interface{}) error {
 }
 
 type Account struct {
-	id        vo.ID
-	info      vo.AccountInfo
-	role      vo.Role
-	nickname  string
-	password  vo.Password
-	updatedAt time.Time
-	createdAt time.Time
+	id         vo.ID
+	info       vo.AccountInfo
+	role       vo.Role
+	nickname   string
+	password   vo.Password
+	avatarLink vo.Link
+	updatedAt  time.Time
+	createdAt  time.Time
 }
 
 func NewAccount(
@@ -104,6 +105,10 @@ func (a *Account) CreatedAt() time.Time {
 	return a.createdAt
 }
 
+func (a *Account) AvatarLink() vo.Link {
+	return a.avatarLink
+}
+
 // setters
 
 func (a *Account) SetInfo(info vo.AccountInfo) error {
@@ -131,6 +136,14 @@ func (a *Account) SetPassword(password vo.Password) error {
 	return nil
 }
 
+func (a *Account) SetAvatarLink(link vo.Link) error {
+	if err := link.Validate(); err != nil {
+		return err
+	}
+	a.avatarLink = link
+	return nil
+}
+
 func (a *Account) SetUpdatedAt(updatedAt time.Time) error {
 	err := validation.Validate(updatedAt, validation.By(validateTimeBeforeNow))
 	if err != nil {
@@ -142,12 +155,13 @@ func (a *Account) SetUpdatedAt(updatedAt time.Time) error {
 
 func (a *Account) MarshalJSON() ([]byte, error) {
 	data := map[string]interface{}{
-		"id":         a.ID(),
-		"info":       a.Info(),
-		"role":       a.Role(),
-		"nickname":   a.Nickname(),
-		"updated_at": a.UpdatedAt(),
-		"created_at": a.CreatedAt(),
+		"id":          a.ID(),
+		"info":        a.Info(),
+		"role":        a.Role(),
+		"nickname":    a.Nickname(),
+		"avatar_link": a.AvatarLink(),
+		"updated_at":  a.UpdatedAt(),
+		"created_at":  a.CreatedAt(),
 	}
 	return json.Marshal(data)
 }

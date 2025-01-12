@@ -1,6 +1,7 @@
 package vo
 
 import (
+	"encoding/json"
 	"github.com/pkg/errors"
 )
 
@@ -57,4 +58,13 @@ func NewQuery(page, limit uint, sortBy string, sortOrder QueryOrder) (Query, err
 
 func (q Query) PaginationOffset() uint {
 	return (q.page - 1) * q.limit
+}
+
+func (q Query) MarshalJSON() ([]byte, error) {
+	return json.Marshal(map[string]interface{}{
+		"page":       q.Page(),
+		"limit":      q.Limit(),
+		"sort_by":    q.SortBy(),
+		"sort_order": q.SortOrder(),
+	})
 }

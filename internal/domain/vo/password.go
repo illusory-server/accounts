@@ -38,3 +38,7 @@ func (p Password) Validate() error {
 func (p Password) Value() string {
 	return p.value
 }
+
+func (p Password) MarshalJSON() ([]byte, error) {
+	return []byte("<secret-field>"), nil
+}

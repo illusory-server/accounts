@@ -174,6 +174,12 @@ func TestEntityAccount(t *testing.T) {
 		err = acc.SetUpdatedAt(time.Now().Add(1 * time.Hour))
 		assert.Error(t, err)
 		assert.Equal(t, newUpdatedTime, acc.UpdatedAt())
+
+		avatar, err := vo.NewLink("https://joska.com/5432435")
+		assert.NoError(t, err)
+		err = acc.SetAvatarLink(avatar)
+		assert.NoError(t, err)
+		assert.Equal(t, avatar, acc.AvatarLink())
 	})
 
 	t.Run("Should correct marshal", func(t *testing.T) {
@@ -201,10 +207,11 @@ func TestEntityAccount(t *testing.T) {
 				"last_name":  info.LastName(),
 				"email":      info.Email(),
 			},
-			"role":       role.Value(),
-			"nickname":   nick,
-			"updated_at": updatedTime,
-			"created_at": createdTime,
+			"role":        role.Value(),
+			"nickname":    nick,
+			"updated_at":  updatedTime,
+			"avatar_link": "",
+			"created_at":  createdTime,
 		}
 
 		expectedBytes, err := json.Marshal(expected)
