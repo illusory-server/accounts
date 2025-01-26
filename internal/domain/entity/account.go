@@ -3,6 +3,7 @@ package entity
 import (
 	"encoding/json"
 	validation "github.com/go-ozzo/ozzo-validation"
+	"github.com/illusory-server/accounts/internal/domain"
 	"github.com/illusory-server/accounts/internal/domain/vo"
 	"github.com/illusory-server/accounts/pkg/errors/codes"
 	"github.com/illusory-server/accounts/pkg/errors/xerr"
@@ -32,7 +33,7 @@ type Account struct {
 	role       vo.Role
 	nickname   string
 	password   vo.Password
-	avatarLink vo.Link
+	avatarLink domain.Option[vo.Link]
 	updatedAt  time.Time
 	createdAt  time.Time
 }
@@ -47,13 +48,14 @@ func NewAccount(
 	createdAt time.Time,
 ) (*Account, error) {
 	result := &Account{
-		id:        id,
-		info:      info,
-		role:      role,
-		nickname:  nickname,
-		password:  password,
-		updatedAt: updatedAt,
-		createdAt: createdAt,
+		id:         id,
+		info:       info,
+		role:       role,
+		nickname:   nickname,
+		password:   password,
+		avatarLink: domain.NewEmptyOptional[vo.Link](),
+		updatedAt:  updatedAt,
+		createdAt:  createdAt,
 	}
 
 	if err := result.Validate(); err != nil {
@@ -105,7 +107,7 @@ func (a *Account) CreatedAt() time.Time {
 	return a.createdAt
 }
 
-func (a *Account) AvatarLink() vo.Link {
+func (a *Account) AvatarLink() domain.Option[vo.Link] {
 	return a.avatarLink
 }
 
@@ -140,7 +142,7 @@ func (a *Account) SetAvatarLink(link vo.Link) error {
 	if err := link.Validate(); err != nil {
 		return err
 	}
-	a.avatarLink = link
+	a.avatarLink.Set(link)
 	return nil
 }
 

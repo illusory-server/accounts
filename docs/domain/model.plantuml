@@ -1,0 +1,132 @@
+@startuml models
+
+package vo {
+	class ID {
+		- value: String
+		+ Value(): String
+		+ Validate(): Error
+		+ MarshalJSON(): (byte[], Error)
+	}
+	class Password {
+		- value: String
+		+ Value(): String
+		+ Validate(): Error
+		+ MarshalJSON(): (byte[], Error)
+	}
+	class Link {
+		- value: String
+		+ Value(): String
+		+ Validate(): Error
+		+ MarshalJSON(): (byte[], Error)
+	}
+	class Role {
+		- value: String
+		+ Value(): String
+		+ Validate(): Error
+		+ MarshalJSON(): (byte[], Error)
+	}
+	class AccountInfo {
+		- firstName: String
+		- lastName: String
+		- email: String
+		.. Getters ..
+		+ FirstName(): String
+		+ LastName(): String
+		+ Email(): String
+		.. Methods ..
+		+ FullName(): String
+		+ MarshalJSON(): (byte[], Error)
+	}
+	class Query {
+		- page: Uint
+		- limit: Uint
+		- sortBy: String
+		- sortOrder: String
+		.. Getters ..
+		+ Page(): Uint
+		+ Limit(): Uint
+		+ SortBy(): String
+		+ SortOrder(): String
+		.. Methods ..
+		+ PaginationOffset(): Uint
+		+ MarshalJSON(): (byte[], Error)
+	}
+}
+
+package entity {
+	class Account {
+		- id: vo.ID
+		- info: vo.Info
+		- role: vo.Role
+		- nickname: String
+		- password: vo.Password
+		- avatarLink: vo.Link
+		- updatedAt: time.Time
+		- createdAt: time.Time
+		.. Getters ..
+		+ ID(): vo.ID
+		+ Info(): vo.Info
+		+ Role(): vo.Role
+		+ Nickname(): String
+		+ Password(): vo.Password
+		+ AvatarLink(): vo.Link
+		+ UpdatedAt(): time.Time
+		+ CreatedAt(): time.Time
+		.. Setters ..
+		+ SetInfo(info: vo.Info): Error
+		+ SetNickname(nick: String): Error
+		+ SetPassword(pass: vo.Password): Error
+		+ SetAvatarLink(link vo.Link): Error
+		+ SetUpdatedAt(updatedAt: time.Time): Error
+		.. Methods ..
+		+ MarshalJSON(): (byte[], Error)
+	}
+}
+
+package aggregate {
+	class Account {
+		- account: entity.Account
+		- events: event.Account
+	}
+}
+
+package repository {
+	interface AccountCommand {
+		.. Create ..
+		+ Create(ctx context.Context, account *entity.Account): (*entity.Account, Error)
+		+ CreateMany(ctx context.Context, accounts []*entity.Account): Error      
+
+		.. Update ..
+		+ UpdateInfoById(ctx context.Context, id vo.ID, info vo.AccountInfo): Error
+		+ UpdateNicknameById(ctx context.Context, id vo.ID, nickname string): Error
+		+ UpdateAvatarLinkById(ctx context.Context, id vo.ID, link vo.Link): Error
+		+ UpdatePasswordById(ctx context.Context, id vo.ID, newPassword vo.Password): Error
+		+ UpdateRoleById(ctx context.Context, id vo.ID, role vo.Role): Error
+
+		.. Delete ..
+		+ DeleteById(ctx context.Context, id string): Error
+		+ DeleteByEmail(ctx context.Context, email string): Error
+		+ DeleteByNickname(ctx context.Context, nickname string): Error
+	}
+
+	interface AccountQuery {
+		.. Has ..
+		+ HasById(ctx context.Context, id string): (Boolean, Error)
+		+ HasByEmail(ctx context.Context, email string): (Boolean, Error)
+		+ HasByNickname(ctx context.Context, nickname string): (Boolean, Error)
+
+		.. Get model ..
+		+ GetById(ctx context.Context, id string): (*entity.Account, Error)
+		+ GetByIds(ctx context.Context, ids []string): ([]*entity.Account, Error)
+		+ GetByEmail(ctx context.Context, email string): (*entity.Account, Error)
+		+ GetByNickname(ctx context.Context, nickname string): (*entity.Account, Error)
+		+ GetByQuery(ctx context.Context, query vo.Query): ([]*entity.Account, Error)
+
+		.. Get other ..
+		+ GetPageCountByLimit(ctx context.Context, limit uint64): (Uint, Error)
+
+		.. Check ..
+		+ CheckAccountRoleById(ctx context.Context, id string, expectedRole vo.AccountRoleType): (Boolean, Error)
+	}
+}
+@enduml
