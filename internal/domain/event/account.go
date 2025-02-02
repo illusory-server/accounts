@@ -6,43 +6,58 @@ import (
 )
 
 type AccountChangeNickname struct {
-	ID       vo.ID
-	Nickname string
-	Time     time.Time
+	id        vo.ID
+	nickname  string
+	timestamp time.Time
 }
 
-func (a AccountChangeNickname) Type() Type {
-	return "AccountChangeNickname"
-}
+func (a AccountChangeNickname) ID() vo.ID            { return a.id }
+func (a AccountChangeNickname) Nickname() string     { return a.nickname }
+func (a AccountChangeNickname) Timestamp() time.Time { return a.timestamp }
+func (a AccountChangeNickname) Type() Type           { return "AccountChangeNickname" }
 
-func (a AccountChangeNickname) Timestamp() time.Time {
-	return a.Time
+func NewAccountChangeNickname(id vo.ID, nickname string, t time.Time) AccountChangeNickname {
+	return AccountChangeNickname{
+		id:        id,
+		nickname:  nickname,
+		timestamp: t,
+	}
 }
 
 type AccountChangeInfo struct {
-	ID   vo.ID
-	Info vo.AccountInfo
-	Time time.Time
+	id        vo.ID
+	info      vo.AccountInfo
+	timestamp time.Time
 }
 
-func (a AccountChangeInfo) Type() Type {
-	return "AccountChangeInfo"
-}
+func (a AccountChangeInfo) ID() vo.ID            { return a.id }
+func (a AccountChangeInfo) Info() vo.AccountInfo { return a.info }
+func (a AccountChangeInfo) Timestamp() time.Time { return a.timestamp }
+func (a AccountChangeInfo) Type() Type           { return "AccountChangeInfo" }
 
-func (a AccountChangeInfo) Timestamp() time.Time {
-	return a.Time
+func NewAccountChangeInfo(id vo.ID, info vo.AccountInfo, ts time.Time) AccountChangeInfo {
+	return AccountChangeInfo{
+		id:        id,
+		info:      info,
+		timestamp: ts,
+	}
 }
 
 type AccountChangePassword struct {
-	ID       vo.ID
-	Password vo.Password
-	Time     time.Time
+	id        vo.ID
+	password  vo.Password
+	timestamp time.Time
 }
 
-func (a AccountChangePassword) Type() Type {
-	return "AccountChangePassword"
-}
+func (a AccountChangePassword) ID() vo.ID             { return a.id }
+func (a AccountChangePassword) Password() vo.Password { return a.password }
+func (a AccountChangePassword) Timestamp() time.Time  { return a.timestamp }
+func (a AccountChangePassword) Type() Type            { return "AccountChangePassword" }
 
-func (a AccountChangePassword) Timestamp() time.Time {
-	return a.Time
+func NewAccountChangePassword(id vo.ID, password vo.Password, ts time.Time) AccountChangePassword {
+	return AccountChangePassword{
+		id:        id,
+		password:  password,
+		timestamp: ts,
+	}
 }

@@ -55,11 +55,7 @@ func (a *Account) ChangeNickname(nickname string) error {
 		return errors.Wrap(err, "[Account] account.SetNickname")
 	}
 
-	a.AddEvent(event.AccountChangeNickname{
-		ID:       a.account.ID(),
-		Nickname: nickname,
-		Time:     time.Now(),
-	})
+	a.AddEvent(event.NewAccountChangeNickname(a.account.ID(), nickname, time.Now()))
 
 	return nil
 }
@@ -70,11 +66,7 @@ func (a *Account) ChangePassword(password vo.Password) error {
 		return errors.Wrap(err, "[Account] account.SetPassword")
 	}
 
-	a.AddEvent(event.AccountChangePassword{
-		ID:       a.account.ID(),
-		Password: password,
-		Time:     time.Now(),
-	})
+	a.AddEvent(event.NewAccountChangePassword(a.account.ID(), password, time.Now()))
 
 	return nil
 }
