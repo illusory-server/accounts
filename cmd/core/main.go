@@ -9,11 +9,16 @@ import (
 func main() {
 	dependencyFactory := dependency.NewFactory()
 
-	ayaka.NewApp(&ayaka.Options{
+	app := ayaka.NewApp(&ayaka.Options{
 		Name:              "Accounts",
 		Description:       "Core accounts service",
 		Version:           "0.0.1",
 		ConfigInterceptor: ecosystem.AdapterParseConfigFromEnv,
 		Container:         dependencyFactory.Container(),
 	})
+
+	err := ecosystem.StartWithCli(app, ecosystem.DefaultPrinter{})
+	if err != nil {
+		panic(err)
+	}
 }

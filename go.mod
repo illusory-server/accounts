@@ -5,6 +5,7 @@ go 1.22.5
 require (
 	github.com/go-chi/chi/v5 v5.2.0
 	github.com/go-ozzo/ozzo-validation v3.6.0+incompatible
+	github.com/golang/mock v1.6.0
 	github.com/google/uuid v1.6.0
 	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0
 	github.com/ilyakaznacheev/cleanenv v1.5.0

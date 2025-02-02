@@ -2,17 +2,20 @@ package factory
 
 import (
 	"github.com/google/uuid"
+	"github.com/illusory-server/accounts/internal/domain/aggregate"
 	"github.com/illusory-server/accounts/internal/domain/entity"
 	"github.com/illusory-server/accounts/internal/domain/vo"
 	"github.com/pkg/errors"
 	"time"
 )
 
+//go:generate mockgen -package mock_factory -source account.go -destination ../../mock/app_factory/account.go
+
 type (
 	AccountFactory interface {
 		CreateAccount(
 			firstName, lastName, email, nick, password string,
-		) (*entity.Account, error)
+		) (*aggregate.Account, error)
 	}
 
 	AccountFactoryImpl struct{}
@@ -24,7 +27,7 @@ func NewAccountFactory() AccountFactoryImpl {
 
 func (a AccountFactoryImpl) CreateAccount(
 	firstName, lastName, email, nick, password string,
-) (*entity.Account, error) {
+) (*aggregate.Account, error) {
 	id, err := vo.NewID(uuid.New().String())
 	if err != nil {
 		return nil, errors.Wrap(err, "[AccountFactory] vo.NewID")
@@ -55,5 +58,11 @@ func (a AccountFactoryImpl) CreateAccount(
 	if err != nil {
 		return nil, errors.Wrap(err, "[AccountFactory] entity.NewAccount")
 	}
-	return acc, nil
+
+	accAggregate, err := aggregate.NewAccount(acc)
+	if err != nil {
+		return nil, errors.Wrap(err, "[AccountFactory] aggregate.NewAccount")
+	}
+
+	return accAggregate, nil
 }

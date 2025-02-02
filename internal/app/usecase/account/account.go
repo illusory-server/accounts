@@ -3,21 +3,24 @@ package account
 import (
 	"context"
 	"github.com/illusory-server/accounts/internal/app/factory"
-	"github.com/illusory-server/accounts/internal/domain/entity"
+	"github.com/illusory-server/accounts/internal/domain/aggregate"
 	"github.com/illusory-server/accounts/internal/domain/repository"
 	"github.com/illusory-server/accounts/internal/domain/vo"
 	"github.com/illusory-server/accounts/pkg/logger"
 	"time"
 )
 
+//go:generate mockgen -package mock_usecase -source account.go -destination ../../../mock/usecase/account.go
+
 type (
 	WithoutPassword struct {
-		Id        vo.ID
+		ID        vo.ID
 		FirstName string
 		LastName  string
 		Email     string
 		Nickname  string
 		Role      string
+		AvatarURL string
 		UpdatedAt time.Time
 		CreatedAt time.Time
 	}
@@ -35,7 +38,7 @@ type (
 		DeleteManyByIds(ctx context.Context, ids []string) error
 
 		GetById(ctx context.Context, id string) (*WithoutPassword, error)
-		GetWithPasswordById(ctx context.Context, id string) (*entity.Account, error)
+		GetWithPasswordById(ctx context.Context, id string) (*aggregate.Account, error)
 		GetByEmail(ctx context.Context, email string) (*WithoutPassword, error)
 		GetByNickname(ctx context.Context, nickname string) (*WithoutPassword, error)
 		GetByQuery(ctx context.Context, query vo.Query) ([]*WithoutPassword, error)
@@ -50,63 +53,38 @@ type (
 	}
 )
 
-func (a *AccountsUseCase) GetWithPasswordById(ctx context.Context, id string) (*entity.Account, error) {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (a *AccountsUseCase) DeleteById(ctx context.Context, id string) error {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (a *AccountsUseCase) DeleteManyByIds(ctx context.Context, ids []string) error {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (a *AccountsUseCase) GetById(ctx context.Context, id string) (*WithoutPassword, error) {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (a *AccountsUseCase) GetByEmail(ctx context.Context, email string) (*WithoutPassword, error) {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (a *AccountsUseCase) GetByNickname(ctx context.Context, nickname string) (*WithoutPassword, error) {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (a *AccountsUseCase) GetByQuery(ctx context.Context, query vo.Query) ([]*WithoutPassword, error) {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (a *AccountsUseCase) GetByIds(ctx context.Context, ids []string) ([]*WithoutPassword, error) {
-	//TODO implement me
-	panic("implement me")
-}
-
 func NewUseCase(
+	log logger.Logger,
 	accountFactory factory.AccountFactory,
-) UseCase {
+	accountQuery repository.AccountQuery,
+	accountCommand repository.AccountCommand,
+) *AccountsUseCase {
 	return &AccountsUseCase{
+		log:            log,
 		accountFactory: accountFactory,
+		accountQuery:   accountQuery,
+		accountCommand: accountCommand,
 	}
 }
 
-func NewWithoutPasswordFromEntity(entity *entity.Account) *WithoutPassword {
+func NewWithoutPasswordFromAggregate(aggregate *aggregate.Account) *WithoutPassword {
 	return &WithoutPassword{
-		Id:        entity.ID(),
-		FirstName: entity.Info().FirstName(),
-		LastName:  entity.Info().LastName(),
-		Email:     entity.Info().Email(),
-		Nickname:  entity.Nickname(),
-		Role:      string(entity.Role().Value()),
-		UpdatedAt: entity.UpdatedAt(),
-		CreatedAt: entity.CreatedAt(),
+		ID:        aggregate.Account().ID(),
+		FirstName: aggregate.Account().Info().FirstName(),
+		LastName:  aggregate.Account().Info().LastName(),
+		Email:     aggregate.Account().Info().Email(),
+		Nickname:  aggregate.Account().Nickname(),
+		Role:      string(aggregate.Account().Role().Value()),
+		AvatarURL: aggregate.Account().AvatarLink().ValueOrDefault(vo.Link{}).Value(),
+		UpdatedAt: aggregate.Account().UpdatedAt(),
+		CreatedAt: aggregate.Account().CreatedAt(),
 	}
+}
+
+func NewWithoutPasswordsFromAggregates(aggregates []*aggregate.Account) []*WithoutPassword {
+	result := make([]*WithoutPassword, 0, len(aggregates))
+	for _, acc := range aggregates {
+		result = append(result, NewWithoutPasswordFromAggregate(acc))
+	}
+	return result
 }

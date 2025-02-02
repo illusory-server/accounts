@@ -7,6 +7,8 @@ import (
 	"github.com/illusory-server/accounts/internal/domain/vo"
 )
 
+//go:generate mockgen -package mock_repo -source account.go -destination ../../mock/repo/account.go
+
 type AccountCommand interface {
 	Create(ctx context.Context, account *aggregate.Account) (*aggregate.Account, error)
 	CreateMany(ctx context.Context, accounts []*aggregate.Account) error

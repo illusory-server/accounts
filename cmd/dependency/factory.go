@@ -1,13 +1,16 @@
 package dependency
 
-import "go.uber.org/dig"
+import (
+	ayaka "github.com/illusory-server/accounts/pkg/core"
+	"go.uber.org/dig"
+)
 
 type Factory struct {
 	di *dig.Container
 }
 
 func NewFactory() *Factory {
-	di := dig.New()
+	di := ayaka.NewContainer(ayaka.NoopLogger{})
 	return &Factory{
 		di: di,
 	}

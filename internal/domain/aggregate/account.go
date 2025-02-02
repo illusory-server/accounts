@@ -29,6 +29,10 @@ func NewAccount(account *entity.Account) (*Account, error) {
 	}, nil
 }
 
+func (a *Account) Account() *entity.Account {
+	return a.account
+}
+
 func (a *Account) Events() []event.Event {
 	return a.events
 }

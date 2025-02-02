@@ -62,5 +62,5 @@ func (a *AccountsUseCase) Create(ctx context.Context, firstName, lastName, email
 		return nil, xerr.Wrap(err, "[AccountUseCase] accountCommand.Create")
 	}
 
-	return NewWithoutPasswordFromEntity(acc), nil
+	return NewWithoutPasswordFromAggregate(acc), nil
 }
