@@ -6,6 +6,7 @@ import (
 	"github.com/illusory-server/accounts/internal/domain"
 	"github.com/illusory-server/accounts/internal/domain/vo"
 	"github.com/illusory-server/accounts/pkg/errors/codes"
+	"github.com/illusory-server/accounts/pkg/errors/errx"
 	"github.com/pkg/errors"
 	"time"
 )
@@ -58,7 +59,7 @@ func NewAccount(
 	}
 
 	if err := result.Validate(); err != nil {
-		return nil, xerr.WrapWithCode(err, codes.Unprocessable, "Account.Validate")
+		return nil, errx.WrapWithCode(err, codes.InvalidArgument, "Account.Validate")
 	}
 
 	return result, nil
@@ -141,7 +142,7 @@ func (a *Account) SetAvatarLink(link vo.Link) error {
 	if err := link.Validate(); err != nil {
 		return err
 	}
-	a.avatarLink.Set(link)
+	a.avatarLink = a.avatarLink.Set(link)
 	return nil
 }
 
@@ -160,7 +161,7 @@ func (a *Account) MarshalJSON() ([]byte, error) {
 		"info":        a.Info(),
 		"role":        a.Role(),
 		"nickname":    a.Nickname(),
-		"avatar_link": a.AvatarLink(),
+		"avatar_link": a.AvatarLink().ValueOrDefault(vo.Link{}),
 		"updated_at":  a.UpdatedAt(),
 		"created_at":  a.CreatedAt(),
 	}

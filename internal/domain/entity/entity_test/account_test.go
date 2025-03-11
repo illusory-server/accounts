@@ -5,6 +5,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/illusory-server/accounts/internal/domain/entity"
 	"github.com/illusory-server/accounts/internal/domain/vo"
+	"github.com/illusory-server/accounts/pkg/errors/codes"
+	"github.com/illusory-server/accounts/pkg/errors/errx"
 	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
@@ -53,6 +55,7 @@ func TestEntityAccount(t *testing.T) {
 			createdTime,
 		)
 		assert.Nil(t, acc)
+		assert.Equal(t, codes.InvalidArgument, errx.Code(err))
 		assert.Error(t, err)
 
 		acc, err = entity.NewAccount(
@@ -66,6 +69,7 @@ func TestEntityAccount(t *testing.T) {
 		)
 		assert.Nil(t, acc)
 		assert.Error(t, err)
+		assert.Equal(t, codes.InvalidArgument, errx.Code(err))
 
 		acc, err = entity.NewAccount(
 			id,
@@ -78,6 +82,7 @@ func TestEntityAccount(t *testing.T) {
 		)
 		assert.Nil(t, acc)
 		assert.Error(t, err)
+		assert.Equal(t, codes.InvalidArgument, errx.Code(err))
 
 		acc, err = entity.NewAccount(
 			id,
@@ -90,6 +95,7 @@ func TestEntityAccount(t *testing.T) {
 		)
 		assert.Nil(t, acc)
 		assert.Error(t, err)
+		assert.Equal(t, codes.InvalidArgument, errx.Code(err))
 
 		acc, err = entity.NewAccount(
 			id,
@@ -102,6 +108,7 @@ func TestEntityAccount(t *testing.T) {
 		)
 		assert.Nil(t, acc)
 		assert.Error(t, err)
+		assert.Equal(t, codes.InvalidArgument, errx.Code(err))
 
 		incorrectTime := time.Now().Add(1 * time.Hour)
 		acc, err = entity.NewAccount(
@@ -115,6 +122,7 @@ func TestEntityAccount(t *testing.T) {
 		)
 		assert.Nil(t, acc)
 		assert.Error(t, err)
+		assert.Equal(t, codes.InvalidArgument, errx.Code(err))
 
 		acc, err = entity.NewAccount(
 			id,
@@ -127,6 +135,7 @@ func TestEntityAccount(t *testing.T) {
 		)
 		assert.Nil(t, acc)
 		assert.Error(t, err)
+		assert.Equal(t, codes.InvalidArgument, errx.Code(err))
 	})
 
 	t.Run("Should correct setter", func(t *testing.T) {
@@ -179,7 +188,7 @@ func TestEntityAccount(t *testing.T) {
 		assert.NoError(t, err)
 		err = acc.SetAvatarLink(avatar)
 		assert.NoError(t, err)
-		assert.Equal(t, avatar, acc.AvatarLink())
+		assert.Equal(t, avatar, acc.AvatarLink().ValueOrDefault(vo.Link{}))
 	})
 
 	t.Run("Should correct marshal", func(t *testing.T) {
