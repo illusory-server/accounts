@@ -19,7 +19,7 @@ func (o Option[T]) ValueOrDefault(defaultValue T) T {
 	return *o.value
 }
 
-func (o Option[T]) Value(defaultValue T) (val T, err error) {
+func (o Option[T]) Value() (val T, err error) {
 	if o.Empty() {
 		return val, ErrEmptyOptionalValue
 	}
