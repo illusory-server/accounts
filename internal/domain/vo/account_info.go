@@ -5,7 +5,7 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/go-ozzo/ozzo-validation/is"
 	"github.com/illusory-server/accounts/pkg/errors/codes"
-	"github.com/illusory-server/accounts/pkg/errors/xerr"
+	"github.com/illusory-server/accounts/pkg/errors/errx"
 )
 
 const (
@@ -27,7 +27,7 @@ func NewAccountInfo(firstName, lastName, email string) (AccountInfo, error) {
 	}
 
 	if err := result.Validate(); err != nil {
-		return AccountInfo{}, xerr.WrapWithCode(err, codes.Unprocessable, "AccountInfo.Validate")
+		return AccountInfo{}, errx.WrapWithCode(err, codes.InvalidArgument, "AccountInfo.Validate")
 	}
 
 	return result, nil
@@ -46,15 +46,12 @@ func (a AccountInfo) Validate() error {
 func (a AccountInfo) FirstName() string {
 	return a.firstName
 }
-
 func (a AccountInfo) LastName() string {
 	return a.lastName
 }
-
 func (a AccountInfo) Email() string {
 	return a.email
 }
-
 func (a AccountInfo) FullName() string {
 	return a.firstName + " " + a.lastName
 }

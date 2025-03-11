@@ -3,7 +3,6 @@ package account
 import (
 	"context"
 	"github.com/illusory-server/accounts/pkg/errors/codes"
-	"github.com/illusory-server/accounts/pkg/errors/xerr"
 	"github.com/illusory-server/accounts/pkg/logger/log"
 )
 

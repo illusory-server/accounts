@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/go-ozzo/ozzo-validation/is"
+	"github.com/illusory-server/accounts/pkg/errors/codes"
+	"github.com/illusory-server/accounts/pkg/errors/errx"
 )
 
 type Link struct {
@@ -15,7 +17,7 @@ func NewLink(value string) (Link, error) {
 		value: value,
 	}
 	if err := res.Validate(); err != nil {
-		return Link{}, err
+		return Link{}, errx.WrapWithCode(err, codes.InvalidArgument, "Link.Validate")
 	}
 	return res, nil
 }

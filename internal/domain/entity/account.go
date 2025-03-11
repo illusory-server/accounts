@@ -6,7 +6,6 @@ import (
 	"github.com/illusory-server/accounts/internal/domain"
 	"github.com/illusory-server/accounts/internal/domain/vo"
 	"github.com/illusory-server/accounts/pkg/errors/codes"
-	"github.com/illusory-server/accounts/pkg/errors/xerr"
 	"github.com/pkg/errors"
 	"time"
 )
