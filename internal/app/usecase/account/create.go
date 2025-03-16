@@ -3,12 +3,9 @@ package account
 import (
 	"context"
 	"github.com/illusory-server/accounts/pkg/errors/codes"
+	"github.com/illusory-server/accounts/pkg/errors/errx"
 	"github.com/illusory-server/accounts/pkg/logger/log"
-)
-
-var (
-	ErrNicknameExist = xerr.New(codes.Conflict, "account nickname already exists")
-	ErrEmailExist    = xerr.New(codes.Conflict, "account email already exists")
+	"github.com/pkg/errors"
 )
 
 func (a *AccountsUseCase) Create(ctx context.Context, firstName, lastName, email, nick, password string) (*WithoutPassword, error) {
@@ -18,13 +15,13 @@ func (a *AccountsUseCase) Create(ctx context.Context, firstName, lastName, email
 			log.Err(err),
 			log.String("nickname", nick),
 		)
-		return nil, xerr.Wrap(err, "[AccountUseCase] accountQuery.HasByNickname")
+		return nil, errors.Wrap(err, "[AccountUseCase] accountQuery.HasByNickname")
 	}
 	if candidateByNick {
 		a.log.Debug(ctx, "has user by nickname query failed",
 			log.String("nickname", nick),
 		)
-		return nil, ErrNicknameExist
+		return nil, errx.New(codes.AlreadyExists, "account already exists")
 	}
 	candidateByEmail, err := a.accountQuery.HasByEmail(ctx, email)
 	if err != nil {
@@ -37,7 +34,7 @@ func (a *AccountsUseCase) Create(ctx context.Context, firstName, lastName, email
 		a.log.Debug(ctx, "has user by email query failed",
 			log.String("email", email),
 		)
-		return nil, ErrEmailExist
+		return nil, errx.New(codes.AlreadyExists, "account email already exists")
 	}
 
 	acc, err := a.accountFactory.CreateAccount(firstName, lastName, email, nick, password)
@@ -49,7 +46,7 @@ func (a *AccountsUseCase) Create(ctx context.Context, firstName, lastName, email
 			log.String("email", email),
 			log.String("nickname", nick),
 		)
-		return nil, xerr.Wrap(err, "[AccountUseCase] accountFactory.CreateAccount")
+		return nil, errors.Wrap(err, "[AccountUseCase] accountFactory.CreateAccount")
 	}
 
 	acc, err = a.accountCommand.Create(ctx, acc)
@@ -58,8 +55,8 @@ func (a *AccountsUseCase) Create(ctx context.Context, firstName, lastName, email
 			log.Err(err),
 			log.Any("account", acc),
 		)
-		return nil, xerr.Wrap(err, "[AccountUseCase] accountCommand.Create")
+		return nil, errors.Wrap(err, "[AccountUseCase] accountCommand.Create")
 	}
 
-	return NewWithoutPasswordFromAggregate(acc), nil
+	return ConvertAccountAggregateToWithoutPassword(acc), nil
 }

@@ -44,12 +44,12 @@ type AccountsServiceClient interface {
 	UpdateInfoById(ctx context.Context, in *UpdateInfoByIdRequest, opts ...grpc.CallOption) (*empty.Empty, error)
 	UpdateNicknameById(ctx context.Context, in *UpdateNickByIdRequest, opts ...grpc.CallOption) (*empty.Empty, error)
 	UpdateRoleById(ctx context.Context, in *UpdateRoleByIdRequest, opts ...grpc.CallOption) (*empty.Empty, error)
-	UpdateEmailById(ctx context.Context, in *UpdateRoleByIdRequest, opts ...grpc.CallOption) (*empty.Empty, error)
-	UpdatePasswordById(ctx context.Context, in *UpdateRoleByIdRequest, opts ...grpc.CallOption) (*empty.Empty, error)
+	UpdateEmailById(ctx context.Context, in *UpdateEmailByIdRequest, opts ...grpc.CallOption) (*empty.Empty, error)
+	UpdatePasswordById(ctx context.Context, in *UpdatePasswordByIdRequest, opts ...grpc.CallOption) (*empty.Empty, error)
 	AddAvatarLink(ctx context.Context, in *AddAvatarLinkRequest, opts ...grpc.CallOption) (*empty.Empty, error)
 	DeleteById(ctx context.Context, in *Id, opts ...grpc.CallOption) (*empty.Empty, error)
 	DeleteManyById(ctx context.Context, in *Ids, opts ...grpc.CallOption) (*empty.Empty, error)
-	GetAccountById(ctx context.Context, in *String, opts ...grpc.CallOption) (*Account, error)
+	GetAccountById(ctx context.Context, in *Id, opts ...grpc.CallOption) (*Account, error)
 	GetAccountByEmail(ctx context.Context, in *String, opts ...grpc.CallOption) (*Account, error)
 	GetAccountByNickname(ctx context.Context, in *String, opts ...grpc.CallOption) (*Account, error)
 	GetAccountsByIds(ctx context.Context, in *Ids, opts ...grpc.CallOption) (*Accounts, error)
@@ -104,7 +104,7 @@ func (c *accountsServiceClient) UpdateRoleById(ctx context.Context, in *UpdateRo
 	return out, nil
 }
 
-func (c *accountsServiceClient) UpdateEmailById(ctx context.Context, in *UpdateRoleByIdRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
+func (c *accountsServiceClient) UpdateEmailById(ctx context.Context, in *UpdateEmailByIdRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(empty.Empty)
 	err := c.cc.Invoke(ctx, AccountsService_UpdateEmailById_FullMethodName, in, out, cOpts...)
@@ -114,7 +114,7 @@ func (c *accountsServiceClient) UpdateEmailById(ctx context.Context, in *UpdateR
 	return out, nil
 }
 
-func (c *accountsServiceClient) UpdatePasswordById(ctx context.Context, in *UpdateRoleByIdRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
+func (c *accountsServiceClient) UpdatePasswordById(ctx context.Context, in *UpdatePasswordByIdRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(empty.Empty)
 	err := c.cc.Invoke(ctx, AccountsService_UpdatePasswordById_FullMethodName, in, out, cOpts...)
@@ -154,7 +154,7 @@ func (c *accountsServiceClient) DeleteManyById(ctx context.Context, in *Ids, opt
 	return out, nil
 }
 
-func (c *accountsServiceClient) GetAccountById(ctx context.Context, in *String, opts ...grpc.CallOption) (*Account, error) {
+func (c *accountsServiceClient) GetAccountById(ctx context.Context, in *Id, opts ...grpc.CallOption) (*Account, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(Account)
 	err := c.cc.Invoke(ctx, AccountsService_GetAccountById_FullMethodName, in, out, cOpts...)
@@ -212,12 +212,12 @@ type AccountsServiceServer interface {
 	UpdateInfoById(context.Context, *UpdateInfoByIdRequest) (*empty.Empty, error)
 	UpdateNicknameById(context.Context, *UpdateNickByIdRequest) (*empty.Empty, error)
 	UpdateRoleById(context.Context, *UpdateRoleByIdRequest) (*empty.Empty, error)
-	UpdateEmailById(context.Context, *UpdateRoleByIdRequest) (*empty.Empty, error)
-	UpdatePasswordById(context.Context, *UpdateRoleByIdRequest) (*empty.Empty, error)
+	UpdateEmailById(context.Context, *UpdateEmailByIdRequest) (*empty.Empty, error)
+	UpdatePasswordById(context.Context, *UpdatePasswordByIdRequest) (*empty.Empty, error)
 	AddAvatarLink(context.Context, *AddAvatarLinkRequest) (*empty.Empty, error)
 	DeleteById(context.Context, *Id) (*empty.Empty, error)
 	DeleteManyById(context.Context, *Ids) (*empty.Empty, error)
-	GetAccountById(context.Context, *String) (*Account, error)
+	GetAccountById(context.Context, *Id) (*Account, error)
 	GetAccountByEmail(context.Context, *String) (*Account, error)
 	GetAccountByNickname(context.Context, *String) (*Account, error)
 	GetAccountsByIds(context.Context, *Ids) (*Accounts, error)
@@ -244,10 +244,10 @@ func (UnimplementedAccountsServiceServer) UpdateNicknameById(context.Context, *U
 func (UnimplementedAccountsServiceServer) UpdateRoleById(context.Context, *UpdateRoleByIdRequest) (*empty.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateRoleById not implemented")
 }
-func (UnimplementedAccountsServiceServer) UpdateEmailById(context.Context, *UpdateRoleByIdRequest) (*empty.Empty, error) {
+func (UnimplementedAccountsServiceServer) UpdateEmailById(context.Context, *UpdateEmailByIdRequest) (*empty.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateEmailById not implemented")
 }
-func (UnimplementedAccountsServiceServer) UpdatePasswordById(context.Context, *UpdateRoleByIdRequest) (*empty.Empty, error) {
+func (UnimplementedAccountsServiceServer) UpdatePasswordById(context.Context, *UpdatePasswordByIdRequest) (*empty.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdatePasswordById not implemented")
 }
 func (UnimplementedAccountsServiceServer) AddAvatarLink(context.Context, *AddAvatarLinkRequest) (*empty.Empty, error) {
@@ -259,7 +259,7 @@ func (UnimplementedAccountsServiceServer) DeleteById(context.Context, *Id) (*emp
 func (UnimplementedAccountsServiceServer) DeleteManyById(context.Context, *Ids) (*empty.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteManyById not implemented")
 }
-func (UnimplementedAccountsServiceServer) GetAccountById(context.Context, *String) (*Account, error) {
+func (UnimplementedAccountsServiceServer) GetAccountById(context.Context, *Id) (*Account, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAccountById not implemented")
 }
 func (UnimplementedAccountsServiceServer) GetAccountByEmail(context.Context, *String) (*Account, error) {
@@ -368,7 +368,7 @@ func _AccountsService_UpdateRoleById_Handler(srv interface{}, ctx context.Contex
 }
 
 func _AccountsService_UpdateEmailById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdateRoleByIdRequest)
+	in := new(UpdateEmailByIdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -380,13 +380,13 @@ func _AccountsService_UpdateEmailById_Handler(srv interface{}, ctx context.Conte
 		FullMethod: AccountsService_UpdateEmailById_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccountsServiceServer).UpdateEmailById(ctx, req.(*UpdateRoleByIdRequest))
+		return srv.(AccountsServiceServer).UpdateEmailById(ctx, req.(*UpdateEmailByIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _AccountsService_UpdatePasswordById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdateRoleByIdRequest)
+	in := new(UpdatePasswordByIdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -398,7 +398,7 @@ func _AccountsService_UpdatePasswordById_Handler(srv interface{}, ctx context.Co
 		FullMethod: AccountsService_UpdatePasswordById_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccountsServiceServer).UpdatePasswordById(ctx, req.(*UpdateRoleByIdRequest))
+		return srv.(AccountsServiceServer).UpdatePasswordById(ctx, req.(*UpdatePasswordByIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -458,7 +458,7 @@ func _AccountsService_DeleteManyById_Handler(srv interface{}, ctx context.Contex
 }
 
 func _AccountsService_GetAccountById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(String)
+	in := new(Id)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -470,7 +470,7 @@ func _AccountsService_GetAccountById_Handler(srv interface{}, ctx context.Contex
 		FullMethod: AccountsService_GetAccountById_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccountsServiceServer).GetAccountById(ctx, req.(*String))
+		return srv.(AccountsServiceServer).GetAccountById(ctx, req.(*Id))
 	}
 	return interceptor(ctx, in, info, handler)
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/illusory-server/accounts/internal/domain/aggregate"
 	"github.com/illusory-server/accounts/internal/domain/vo"
+	"github.com/illusory-server/accounts/pkg/fn"
 	"github.com/illusory-server/accounts/pkg/logger/log"
 	"github.com/pkg/errors"
 	"strings"
@@ -26,7 +27,7 @@ func (a *AccountsUseCase) GetById(ctx context.Context, id string) (*WithoutPassw
 			log.String("id", id))
 		return nil, errors.Wrap(err, "[AccountsUseCase] accountQuery.GetById")
 	}
-	return NewWithoutPasswordFromAggregate(result), nil
+	return ConvertAccountAggregateToWithoutPassword(result), nil
 }
 
 func (a *AccountsUseCase) GetByEmail(ctx context.Context, email string) (*WithoutPassword, error) {
@@ -36,7 +37,7 @@ func (a *AccountsUseCase) GetByEmail(ctx context.Context, email string) (*Withou
 			log.String("email", email))
 		return nil, errors.Wrap(err, "[AccountsUseCase] accountQuery.GetByEmail")
 	}
-	return NewWithoutPasswordFromAggregate(result), nil
+	return ConvertAccountAggregateToWithoutPassword(result), nil
 }
 
 func (a *AccountsUseCase) GetByNickname(ctx context.Context, nickname string) (*WithoutPassword, error) {
@@ -46,7 +47,7 @@ func (a *AccountsUseCase) GetByNickname(ctx context.Context, nickname string) (*
 			log.String("nickname", nickname))
 		return nil, errors.Wrap(err, "[AccountsUseCase] accountQuery.GetByNickname")
 	}
-	return NewWithoutPasswordFromAggregate(result), nil
+	return ConvertAccountAggregateToWithoutPassword(result), nil
 }
 
 func (a *AccountsUseCase) GetByQuery(ctx context.Context, query vo.Query) ([]*WithoutPassword, error) {
@@ -56,7 +57,7 @@ func (a *AccountsUseCase) GetByQuery(ctx context.Context, query vo.Query) ([]*Wi
 			log.Any("query", query))
 		return nil, errors.Wrap(err, "[AccountsUseCase] accountQuery.GetByQuery")
 	}
-	return NewWithoutPasswordsFromAggregates(result), nil
+	return fn.Map(result, ConvertAccountAggregateToWithoutPassword), nil
 }
 
 func (a *AccountsUseCase) GetByIds(ctx context.Context, ids []string) ([]*WithoutPassword, error) {
@@ -67,5 +68,5 @@ func (a *AccountsUseCase) GetByIds(ctx context.Context, ids []string) ([]*Withou
 		return nil, errors.Wrap(err, "[AccountsUseCase] accountQuery.GetByIds")
 	}
 
-	return NewWithoutPasswordsFromAggregates(result), nil
+	return fn.Map(result, ConvertAccountAggregateToWithoutPassword), nil
 }

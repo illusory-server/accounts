@@ -63,7 +63,8 @@ message UpdateEmailByIdRequest {
 
 message UpdatePasswordByIdRequest {
   string account_id = 1;
-  string password = 2;
+  string old_password = 2;
+  string password = 3;
 }
 
 message AddAvatarLinkRequest {
@@ -120,14 +121,14 @@ service AccountsService {
     };
   }
 
-  rpc UpdateEmailById(UpdateRoleByIdRequest) returns (google.protobuf.Empty) {
+  rpc UpdateEmailById(UpdateEmailByIdRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       put: "v1/accounts/email"
       body: "*"
     };
   }
 
-  rpc UpdatePasswordById(UpdateRoleByIdRequest) returns (google.protobuf.Empty) {
+  rpc UpdatePasswordById(UpdatePasswordByIdRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       put: "v1/accounts/password"
       body: "*"
@@ -155,7 +156,7 @@ service AccountsService {
     };
   }
 
-  rpc GetAccountById(String) returns (Account) {
+  rpc GetAccountById(Id) returns (Account) {
     option (google.api.http) = {
       get: "v1/accounts/{id}"
     };

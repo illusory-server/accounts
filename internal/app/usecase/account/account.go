@@ -7,24 +7,11 @@ import (
 	"github.com/illusory-server/accounts/internal/domain/repository"
 	"github.com/illusory-server/accounts/internal/domain/vo"
 	"github.com/illusory-server/accounts/pkg/logger"
-	"time"
 )
 
 //go:generate mockgen -package mock_usecase -source account.go -destination ../../../mock/usecase/account.go
 
 type (
-	WithoutPassword struct {
-		ID        vo.ID
-		FirstName string
-		LastName  string
-		Email     string
-		Nickname  string
-		Role      string
-		AvatarURL string
-		UpdatedAt time.Time
-		CreatedAt time.Time
-	}
-
 	// UseCase TODO - Требования по мульти create, update?
 	UseCase interface {
 		Create(ctx context.Context, firstName, lastName, email, nick, password string) (*WithoutPassword, error)
@@ -43,7 +30,7 @@ type (
 		GetWithPasswordById(ctx context.Context, id string) (*aggregate.Account, error)
 		GetByEmail(ctx context.Context, email string) (*WithoutPassword, error)
 		GetByNickname(ctx context.Context, nickname string) (*WithoutPassword, error)
-		GetByQuery(ctx context.Context, query vo.Query) ([]*WithoutPassword, error)
+		GetByQuery(ctx context.Context, query vo.Query) ([]*WithoutPassword, uint, error)
 		GetByIds(ctx context.Context, ids []string) ([]*WithoutPassword, error)
 	}
 
@@ -69,24 +56,16 @@ func NewUseCase(
 	}
 }
 
-func NewWithoutPasswordFromAggregate(aggregate *aggregate.Account) *WithoutPassword {
+func ConvertAccountAggregateToWithoutPassword(aggregate *aggregate.Account) *WithoutPassword {
 	return &WithoutPassword{
-		ID:        aggregate.Account().ID(),
-		FirstName: aggregate.Account().Info().FirstName(),
-		LastName:  aggregate.Account().Info().LastName(),
-		Email:     aggregate.Account().Info().Email(),
-		Nickname:  aggregate.Account().Nickname(),
-		Role:      string(aggregate.Account().Role().Value()),
-		AvatarURL: aggregate.Account().AvatarLink().ValueOrDefault(vo.Link{}).Value(),
-		UpdatedAt: aggregate.Account().UpdatedAt(),
-		CreatedAt: aggregate.Account().CreatedAt(),
+		id:        aggregate.Account().ID(),
+		firstName: aggregate.Account().Info().FirstName(),
+		lastName:  aggregate.Account().Info().LastName(),
+		email:     aggregate.Account().Info().Email(),
+		nickname:  aggregate.Account().Nickname(),
+		role:      string(aggregate.Account().Role().Value()),
+		avatarURL: aggregate.Account().AvatarLink().ValueOrDefault(vo.Link{}).Value(),
+		updatedAt: aggregate.Account().UpdatedAt(),
+		createdAt: aggregate.Account().CreatedAt(),
 	}
-}
-
-func NewWithoutPasswordsFromAggregates(aggregates []*aggregate.Account) []*WithoutPassword {
-	result := make([]*WithoutPassword, 0, len(aggregates))
-	for _, acc := range aggregates {
-		result = append(result, NewWithoutPasswordFromAggregate(acc))
-	}
-	return result
 }
