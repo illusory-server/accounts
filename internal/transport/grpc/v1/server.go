@@ -143,12 +143,22 @@ func (s *Server) GetAccountsByIds(ctx context.Context, ids *v1.Ids) (*v1.Account
 	}, nil
 }
 
+func convertOrder(order v1.QueryOrder) vo.QueryOrder {
+	switch order {
+	case v1.QueryOrder_ASK:
+		return vo.Asc
+	case v1.QueryOrder_DESK:
+		return vo.Desc
+	}
+	return ""
+}
+
 func (s *Server) GetAccountsByQuery(ctx context.Context, req *v1.QueryRequest) (*v1.QueryAccountsResponse, error) {
 	query, err := vo.NewQuery(
 		uint(req.GetPage()),
 		uint(req.GetLimit()),
 		req.GetSortBy(),
-		vo.QueryOrder(req.GetOrderBy()),
+		convertOrder(req.GetOrderBy()),
 	)
 	if err != nil {
 		return nil, err
