@@ -34,6 +34,7 @@ type (
 		UpdateEmailById(ctx context.Context, id, email string) error
 		UpdatePasswordById(ctx context.Context, id, oldPassword, password string) error
 		UpdateRoleById(ctx context.Context, id, role string) error
+		AddAvatarLink(ctx context.Context, id, url string) error
 
 		DeleteById(ctx context.Context, id string) error
 		DeleteManyByIds(ctx context.Context, ids []string) error
