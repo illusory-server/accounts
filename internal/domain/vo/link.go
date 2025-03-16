@@ -26,6 +26,10 @@ func (l Link) Value() string {
 	return l.value
 }
 
+func (l Link) Empty() bool {
+	return l.value == ""
+}
+
 func (l Link) Validate() error {
 	return validation.ValidateStruct(&l,
 		validation.Field(&l.value, validation.Required, is.URL),

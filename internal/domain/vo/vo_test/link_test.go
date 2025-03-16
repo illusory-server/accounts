@@ -40,4 +40,14 @@ func TestVoLink(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(t, "\""+l+"\"", string(res))
 	})
+
+	t.Run("Should correct empty", func(t *testing.T) {
+		l := "https://joska.com"
+		link, err := vo.NewLink(l)
+		assert.NoError(t, err)
+		assert.False(t, link.Empty())
+
+		link = vo.Link{}
+		assert.True(t, link.Empty())
+	})
 }
