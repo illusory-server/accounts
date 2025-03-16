@@ -3,9 +3,10 @@ package entity
 import (
 	"encoding/json"
 	validation "github.com/go-ozzo/ozzo-validation"
+	"github.com/illusory-server/accounts/internal/domain"
 	"github.com/illusory-server/accounts/internal/domain/vo"
 	"github.com/illusory-server/accounts/pkg/errors/codes"
-	"github.com/illusory-server/accounts/pkg/errors/xerr"
+	"github.com/illusory-server/accounts/pkg/errors/errx"
 	"github.com/pkg/errors"
 	"time"
 )
@@ -27,13 +28,14 @@ func validateTimeBeforeNow(value interface{}) error {
 }
 
 type Account struct {
-	id        vo.ID
-	info      vo.AccountInfo
-	role      vo.Role
-	nickname  string
-	password  vo.Password
-	updatedAt time.Time
-	createdAt time.Time
+	id         vo.ID
+	info       vo.AccountInfo
+	role       vo.Role
+	nickname   string
+	password   vo.Password
+	avatarLink domain.Option[vo.Link]
+	updatedAt  time.Time
+	createdAt  time.Time
 }
 
 func NewAccount(
@@ -46,17 +48,18 @@ func NewAccount(
 	createdAt time.Time,
 ) (*Account, error) {
 	result := &Account{
-		id:        id,
-		info:      info,
-		role:      role,
-		nickname:  nickname,
-		password:  password,
-		updatedAt: updatedAt,
-		createdAt: createdAt,
+		id:         id,
+		info:       info,
+		role:       role,
+		nickname:   nickname,
+		password:   password,
+		avatarLink: domain.NewEmptyOptional[vo.Link](),
+		updatedAt:  updatedAt,
+		createdAt:  createdAt,
 	}
 
 	if err := result.Validate(); err != nil {
-		return nil, xerr.WrapWithCode(err, codes.Unprocessable, "Account.Validate")
+		return nil, errx.WrapWithCode(err, codes.InvalidArgument, "Account.Validate")
 	}
 
 	return result, nil
@@ -104,6 +107,10 @@ func (a *Account) CreatedAt() time.Time {
 	return a.createdAt
 }
 
+func (a *Account) AvatarLink() domain.Option[vo.Link] {
+	return a.avatarLink
+}
+
 // setters
 
 func (a *Account) SetInfo(info vo.AccountInfo) error {
@@ -131,6 +138,14 @@ func (a *Account) SetPassword(password vo.Password) error {
 	return nil
 }
 
+func (a *Account) SetAvatarLink(link vo.Link) error {
+	if err := link.Validate(); err != nil {
+		return err
+	}
+	a.avatarLink = a.avatarLink.Set(link)
+	return nil
+}
+
 func (a *Account) SetUpdatedAt(updatedAt time.Time) error {
 	err := validation.Validate(updatedAt, validation.By(validateTimeBeforeNow))
 	if err != nil {
@@ -142,12 +157,13 @@ func (a *Account) SetUpdatedAt(updatedAt time.Time) error {
 
 func (a *Account) MarshalJSON() ([]byte, error) {
 	data := map[string]interface{}{
-		"id":         a.ID(),
-		"info":       a.Info(),
-		"role":       a.Role(),
-		"nickname":   a.Nickname(),
-		"updated_at": a.UpdatedAt(),
-		"created_at": a.CreatedAt(),
+		"id":          a.ID(),
+		"info":        a.Info(),
+		"role":        a.Role(),
+		"nickname":    a.Nickname(),
+		"avatar_link": a.AvatarLink().ValueOrDefault(vo.Link{}),
+		"updated_at":  a.UpdatedAt(),
+		"created_at":  a.CreatedAt(),
 	}
 	return json.Marshal(data)
 }

@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"github.com/google/uuid"
 	"github.com/illusory-server/accounts/internal/domain/vo"
+	"github.com/illusory-server/accounts/pkg/errors/codes"
+	"github.com/illusory-server/accounts/pkg/errors/errx"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -20,6 +22,7 @@ func TestVoId(t *testing.T) {
 		id := "iccorrect-uuidv4-value"
 		voID, err := vo.NewID(id)
 		assert.Equal(t, voID, vo.ID{})
+		assert.Equal(t, codes.InvalidArgument, errx.Code(err))
 		assert.Error(t, err)
 	})
 

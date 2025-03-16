@@ -1,0 +1,10 @@
+@startuml account manager create
+participant Client
+participant Transport
+participant UseCase
+participant Database
+Client --> Transport: Request
+Transport --> UseCase: app data
+UseCase --> Database: DB Data
+
+@enduml

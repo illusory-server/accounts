@@ -2,7 +2,7 @@ package account
 
 import "context"
 
-func (a *AccountsUseCase) UpdateById(ctx context.Context, id, firstName, lastName, nick string) (*WithoutPassword, error) {
+func (a *AccountsUseCase) UpdateInfoById(ctx context.Context, id, firstName, lastName string) (*WithoutPassword, error) {
 	//TODO implement me
 	panic("implement me")
 }

@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/illusory-server/accounts/pkg/errors/codes"
-	"github.com/illusory-server/accounts/pkg/errors/xerr"
+	"github.com/illusory-server/accounts/pkg/errors/errx"
 )
 
 type AccountRoleType string
@@ -23,7 +23,7 @@ func NewRole(value AccountRoleType) (Role, error) {
 	result := Role{value: value}
 
 	if err := result.Validate(); err != nil {
-		return Role{}, xerr.WrapWithCode(err, codes.Unprocessable, "Role.Validate")
+		return Role{}, errx.WrapWithCode(err, codes.InvalidArgument, "Role.Validate")
 	}
 
 	return result, nil

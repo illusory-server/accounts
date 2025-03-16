@@ -1,0 +1,68 @@
+@startuml kek
+participant tuya_iot
+participant tuya_api
+tuya_iot --> tuya_api: GetDeviceState: YmY2NmU3ZDFlNDFhMGJiNmVldGE4cQAx
+note left 
+api GET: /v1.0/devices/[device_id]/status
+device_id = YmY2NmU3ZDFlNDFhMGJiNmVldGE4cQAx
+end note
+tuya_api --> tuya_iot: state level = 2(high)
+note left 
+status 200
+response:
+[
+	{
+		"code": "level",
+		"value": "2"
+	}
+	...other
+]
+end note
+tuya_iot --> tuya_api: UpdateDeviceState: YmY2NmU3ZDFlNDFhMGJiNmVldGE4cQAx, level = 1(low)
+note left 
+api POST: /v1.0/devices/[device_id]/commands
+request body:
+{
+	"commands": [
+		{
+			"code": "level",
+			"value": "1"
+		}	
+		...other or empty
+	]
+}
+OR
+api POST: /v2.0/cloud/thing/[device_id]/shadow/properties/issue
+request body:
+{
+	"level": "1"
+	...other or empty
+}
+end note
+tuya_api --> tuya_iot: success(status ok)
+note left: status 200
+
+tuya_iot --> tuya_api: GetDeviceState: YmY2NmU3ZDFlNDFhMGJiNmVldGE4cQAx
+tuya_api --> tuya_iot: state level = 2(high)(???)
+note left 
+api GET: /v1.0/devices/[device_id]/status
+device_id = YmY2NmU3ZDFlNDFhMGJiNmVldGE4cQAx
+end note
+tuya_api --> tuya_iot: state level = 2(high)
+note left 
+status 200 
+response:
+[
+	{
+		"code": "level",
+		"value": "2"
+	}
+	...other
+]
+
+description:
+update does not work!!!
+expected: state level = 1(low)
+actual: state level = 2(high)
+end note
+@enduml

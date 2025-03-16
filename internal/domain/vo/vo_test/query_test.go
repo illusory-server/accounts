@@ -2,6 +2,8 @@ package vo
 
 import (
 	"github.com/illusory-server/accounts/internal/domain/vo"
+	"github.com/illusory-server/accounts/pkg/errors/codes"
+	"github.com/illusory-server/accounts/pkg/errors/errx"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -26,10 +28,12 @@ func TestQuery(t *testing.T) {
 	t.Run("Should correct error with incorrect params", func(t *testing.T) {
 		query, err := vo.NewQuery(5, 20, "", "incorrect order value")
 		assert.Error(t, err)
+		assert.Equal(t, codes.InvalidArgument, errx.Code(err))
 		assert.Equal(t, vo.Query{}, query)
 
 		query, err = vo.NewQuery(5, 20, "", "k")
 		assert.Error(t, err)
+		assert.Equal(t, codes.InvalidArgument, errx.Code(err))
 		assert.Equal(t, vo.Query{}, query)
 	})
 

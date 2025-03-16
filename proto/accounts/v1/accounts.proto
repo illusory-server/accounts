@@ -1,8 +1,16 @@
 syntax = "proto3";
 
-package v1;
+package accounts.v1;
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
 
 option go_package = "https://github.com/illusory-server/auth-service/gen/accounts/v1";
+
+enum QueryOrder {
+  ASK = 0;
+  DESK = 1;
+}
 
 message String {
   string value = 1;
@@ -20,11 +28,166 @@ message Account {
   string email = 4;
   string nickname = 5;
   string role = 6;
-  string source = 7;
+  string avatarLink = 7;
   string updated_at = 8;
   string created_at = 10;
 }
 
+message Accounts {
+  repeated Account accounts = 1;
+}
+
+message CreateAccountRequest {
+  string first_name = 1;
+  string last_name = 2;
+  string email = 3;
+  string nickname = 4;
+  string password = 5;
+}
+
+message UpdateInfoByIdRequest {
+  string account_id = 1;
+  string first_name = 2;
+  string last_name = 3;
+}
+
+message UpdateNickByIdRequest {
+  string account_id = 1;
+  string nick = 2;
+}
+
+message UpdateRoleByIdRequest {
+  string account_id = 1;
+  string role = 2;
+}
+
+message UpdateEmailByIdRequest {
+  string account_id = 1;
+  string email = 2;
+}
+
+message UpdatePasswordByIdRequest {
+  string account_id = 1;
+  string old_password = 2;
+  string password = 3;
+}
+
+message AddAvatarLinkRequest {
+  string account_id = 1;
+  string avatar_link = 2;
+}
+
+message Id {
+  string id = 1;
+}
+
+message Ids {
+  repeated string ids = 1;
+}
+
+message QueryRequest {
+  uint64 page = 1;
+  uint64 limit = 2;
+  string sort_by = 3;
+  QueryOrder order_by = 4;
+}
+
+message QueryAccountsResponse {
+  repeated Account accounts = 1;
+  uint64 page_count = 2;
+}
+
 service AccountsService {
-  rpc GetAccountById(String) returns (Account) {}
+  rpc Create(CreateAccountRequest) returns (Account) {
+    option (google.api.http) = {
+      post: "v1/accounts"
+      body: "*"
+    };
+  }
+
+  rpc UpdateInfoById(UpdateInfoByIdRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "v1/accounts/info"
+      body: "*"
+    };
+  }
+
+  rpc UpdateNicknameById(UpdateNickByIdRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "v1/accounts/nick"
+      body: "*"
+    };
+  }
+
+  rpc UpdateRoleById(UpdateRoleByIdRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "v1/accounts/role"
+      body: "*"
+    };
+  }
+
+  rpc UpdateEmailById(UpdateEmailByIdRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "v1/accounts/email"
+      body: "*"
+    };
+  }
+
+  rpc UpdatePasswordById(UpdatePasswordByIdRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "v1/accounts/password"
+      body: "*"
+    };
+  }
+
+  rpc AddAvatarLink(AddAvatarLinkRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "v1/accounts/avatar"
+      body: "*"
+    };
+  }
+
+  rpc DeleteById(Id) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "v1/accounts/{id}"
+      body: "*"
+    };
+  }
+
+  rpc DeleteManyById(Ids) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "v1/accounts/many"
+      body: "*"
+    };
+  }
+
+  rpc GetAccountById(Id) returns (Account) {
+    option (google.api.http) = {
+      get: "v1/accounts/{id}"
+    };
+  }
+
+  rpc GetAccountByEmail(String) returns (Account) {
+    option (google.api.http) = {
+      get: "v1/accounts/{id}"
+    };
+  }
+
+  rpc GetAccountByNickname(String) returns (Account) {
+    option (google.api.http) = {
+      get: "v1/accounts/{id}"
+    };
+  }
+
+  rpc GetAccountsByIds(Ids) returns (Accounts) {
+    option (google.api.http) = {
+      get: "v1/accounts/many"
+    };
+  }
+
+  rpc GetAccountsByQuery(QueryRequest) returns (QueryAccountsResponse) {
+    option (google.api.http) = {
+      get: "v1/accounts"
+    };
+  }
 }

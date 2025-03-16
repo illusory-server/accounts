@@ -3,7 +3,7 @@ package vo
 import (
 	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/illusory-server/accounts/pkg/errors/codes"
-	"github.com/illusory-server/accounts/pkg/errors/xerr"
+	"github.com/illusory-server/accounts/pkg/errors/errx"
 )
 
 const (
@@ -19,7 +19,7 @@ func NewPassword(value string) (Password, error) {
 	result := Password{value: value}
 
 	if err := result.Validate(); err != nil {
-		return Password{}, xerr.WrapWithCode(err, codes.Unprocessable, "Password.Validate")
+		return Password{}, errx.WrapWithCode(err, codes.InvalidArgument, "Password.Validate")
 	}
 
 	return result, nil
@@ -37,4 +37,8 @@ func (p Password) Validate() error {
 
 func (p Password) Value() string {
 	return p.value
+}
+
+func (p Password) MarshalJSON() ([]byte, error) {
+	return []byte("<secret-field>"), nil
 }

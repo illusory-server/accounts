@@ -1,7 +1,7 @@
 version: 3
 
 env:
-  PATH_MAIN: cmd/main/main.go
+  PATH_MAIN: cmd/core/main.go
   PATH_DEV_CFG: config/dev.yaml
   PATH_PROD_CFG: config/prod.yaml
   PATH_LOCAL_CFG: config/local.yaml
@@ -14,6 +14,8 @@ env:
   PROTO_OUT: './gen/'
 
 tasks:
+  mock:
+    go generate ./...
   clean:
     cmds:
       - rm -rf ./main
@@ -26,7 +28,10 @@ tasks:
       - CONFIG_PATH=$PATH_DEV_CFG ./main
   dev:
     cmds:
-      - CONFIG_PATH=$PATH_DEV_CFG go run -race $PATH_MAIN
+      - CONFIG_PATH=$PATH_DEV_CFG go run -race $PATH_MAIN run
+  version:
+    cmds:
+      - go run $PATH_MAIN version
   migration:
     # goose -dir migration/pgx_goose_migration create name_file psql
     cmds:

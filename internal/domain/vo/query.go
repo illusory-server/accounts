@@ -1,6 +1,9 @@
 package vo
 
 import (
+	"encoding/json"
+	"github.com/illusory-server/accounts/pkg/errors/codes"
+	"github.com/illusory-server/accounts/pkg/errors/errx"
 	"github.com/pkg/errors"
 )
 
@@ -45,7 +48,7 @@ func (q Query) SortOrder() QueryOrder {
 
 func NewQuery(page, limit uint, sortBy string, sortOrder QueryOrder) (Query, error) {
 	if err := sortOrder.Validate(); err != nil {
-		return Query{}, err
+		return Query{}, errx.WrapWithCode(err, codes.InvalidArgument, "Query.Validate")
 	}
 	return Query{
 		page:      page,
@@ -57,4 +60,13 @@ func NewQuery(page, limit uint, sortBy string, sortOrder QueryOrder) (Query, err
 
 func (q Query) PaginationOffset() uint {
 	return (q.page - 1) * q.limit
+}
+
+func (q Query) MarshalJSON() ([]byte, error) {
+	return json.Marshal(map[string]interface{}{
+		"page":       q.Page(),
+		"limit":      q.Limit(),
+		"sort_by":    q.SortBy(),
+		"sort_order": q.SortOrder(),
+	})
 }
