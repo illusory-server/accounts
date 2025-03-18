@@ -1,6 +1,7 @@
 package vo
 
 import (
+	"encoding/json"
 	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/illusory-server/accounts/pkg/errors/codes"
 	"github.com/illusory-server/accounts/pkg/errors/errx"
@@ -40,5 +41,5 @@ func (p Password) Value() string {
 }
 
 func (p Password) MarshalJSON() ([]byte, error) {
-	return []byte("<secret-field>"), nil
+	return json.Marshal("secret-value")
 }

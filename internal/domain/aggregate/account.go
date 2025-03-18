@@ -5,6 +5,7 @@ import (
 	"github.com/illusory-server/accounts/internal/domain/event"
 	"github.com/illusory-server/accounts/internal/domain/vo"
 	"github.com/pkg/errors"
+	"golang.org/x/crypto/bcrypt"
 	"time"
 )
 
@@ -56,6 +57,59 @@ func (a *Account) ChangeNickname(nickname string) error {
 	}
 
 	a.AddEvent(event.NewAccountChangeNickname(a.account.ID(), nickname, time.Now()))
+
+	return nil
+}
+
+func (a *Account) ComparePassword(password string) error {
+	current := a.account.Password().Value()
+	err := bcrypt.CompareHashAndPassword([]byte(current), []byte(password))
+	if err != nil {
+		return errors.Wrap(err, "[Account] bcrypt.CompareHashAndPassword")
+	}
+	return nil
+}
+
+func (a *Account) ChangeAccountInfo(info vo.AccountInfo) error {
+	err := a.account.SetInfo(info)
+	if err != nil {
+		return errors.Wrap(err, "[Account] account.SetInfo")
+	}
+
+	a.AddEvent(event.NewAccountChangeInfo(a.account.ID(), info, time.Now()))
+
+	return nil
+}
+
+func (a *Account) ChangeEmail(info vo.AccountInfo) error {
+	err := a.account.SetInfo(info)
+	if err != nil {
+		return errors.Wrap(err, "[Account] account.SetInfo")
+	}
+
+	a.AddEvent(event.NewAccountChangeEmail(a.account.ID(), info.Email(), time.Now()))
+
+	return nil
+}
+
+func (a *Account) ChangeRole(role vo.Role) error {
+	err := a.account.SetRole(role)
+	if err != nil {
+		return errors.Wrap(err, "[Account] account.SetRole")
+	}
+
+	a.AddEvent(event.NewAccountChangeRole(a.account.ID(), role, time.Now()))
+
+	return nil
+}
+
+func (a *Account) ChangeAvatarLink(link vo.Link) error {
+	err := a.account.SetAvatarLink(link)
+	if err != nil {
+		return errors.Wrap(err, "[Account] account.SetAvatarLink")
+	}
+
+	a.AddEvent(event.NewAccountChangeAvatarLink(a.account.ID(), link, time.Now()))
 
 	return nil
 }

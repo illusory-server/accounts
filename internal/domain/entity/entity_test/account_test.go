@@ -189,6 +189,20 @@ func TestEntityAccount(t *testing.T) {
 		err = acc.SetAvatarLink(avatar)
 		assert.NoError(t, err)
 		assert.Equal(t, avatar, acc.AvatarLink().ValueOrDefault(vo.Link{}))
+
+		err = acc.SetAvatarLink(vo.Link{})
+		assert.Error(t, err)
+
+		roleSet, err := vo.NewRole(vo.RoleUser)
+		assert.NoError(t, err)
+		assert.Equal(t, vo.RoleSuperAdmin, acc.Role().Value())
+		err = acc.SetRole(roleSet)
+		assert.NoError(t, err)
+		assert.Equal(t, roleSet.Value(), acc.Role().Value())
+
+		err = acc.SetRole(vo.Role{})
+		assert.Error(t, err)
+		assert.Equal(t, roleSet.Value(), acc.Role().Value())
 	})
 
 	t.Run("Should correct marshal", func(t *testing.T) {

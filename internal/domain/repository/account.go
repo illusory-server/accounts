@@ -13,11 +13,7 @@ type AccountCommand interface {
 	Create(ctx context.Context, account *aggregate.Account) (*aggregate.Account, error)
 	CreateMany(ctx context.Context, accounts []*aggregate.Account) error
 
-	UpdateInfoById(ctx context.Context, id vo.ID, info vo.AccountInfo) error
-	UpdateNicknameById(ctx context.Context, id vo.ID, nickname string) error
-	UpdateAvatarLinkById(ctx context.Context, id vo.ID, link vo.Link) error
-	UpdatePasswordById(ctx context.Context, id vo.ID, newPassword vo.Password) error
-	UpdateRoleById(ctx context.Context, id vo.ID, role vo.Role) error
+	Update(ctx context.Context, account *aggregate.Account) error
 
 	DeleteById(ctx context.Context, id string) error
 	DeleteByEmail(ctx context.Context, email string) error

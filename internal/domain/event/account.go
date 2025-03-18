@@ -6,9 +6,12 @@ import (
 )
 
 const (
-	AccountChangeNicknameType Type = "NicknameChanged"
-	AccountChangeInfoType     Type = "AccountChangeInfo"
-	AccountChangePasswordType Type = "AccountChangePassword"
+	AccountChangeNicknameType   Type = "NicknameChanged"
+	AccountChangeInfoType       Type = "AccountChangeInfo"
+	AccountChangePasswordType   Type = "AccountChangePassword"
+	AccountChangeEmailType      Type = "AccountChangeEmail"
+	AccountChangeRoleType       Type = "AccountChangeRole"
+	AccountChangeAvatarLinkType Type = "AccountChangeAvatarLink"
 )
 
 type AccountChangeNickname struct {
@@ -65,5 +68,84 @@ func NewAccountChangePassword(id vo.ID, password vo.Password, ts time.Time) Acco
 		id:        id,
 		password:  password,
 		timestamp: ts,
+	}
+}
+
+type AccountChangeEmail struct {
+	id        vo.ID
+	email     string
+	timestamp time.Time
+}
+
+func (a AccountChangeEmail) ID() vo.ID {
+	return a.id
+}
+
+func (a AccountChangeEmail) Email() string {
+	return a.email
+}
+
+func (a AccountChangeEmail) Timestamp() time.Time {
+	return a.timestamp
+}
+
+func (a AccountChangeEmail) Type() Type {
+	return AccountChangeEmailType
+}
+
+func NewAccountChangeEmail(id vo.ID, email string, t time.Time) AccountChangeEmail {
+	return AccountChangeEmail{
+		id:        id,
+		email:     email,
+		timestamp: t,
+	}
+}
+
+type AccountChangeRole struct {
+	id        vo.ID
+	role      vo.Role
+	timestamp time.Time
+}
+
+func (a AccountChangeRole) ID() vo.ID {
+	return a.id
+}
+
+func (a AccountChangeRole) Role() vo.Role {
+	return a.role
+}
+
+func (a AccountChangeRole) Timestamp() time.Time {
+	return a.timestamp
+}
+
+func (a AccountChangeRole) Type() Type {
+	return AccountChangeRoleType
+}
+
+func NewAccountChangeRole(id vo.ID, role vo.Role, ts time.Time) AccountChangeRole {
+	return AccountChangeRole{
+		id:        id,
+		role:      role,
+		timestamp: ts,
+	}
+}
+
+type AccountChangeAvatarLink struct {
+	id         vo.ID
+	avatarLink vo.Link
+	timestamp  time.Time
+}
+
+func (a AccountChangeAvatarLink) ID() vo.ID            { return a.id }
+func (a AccountChangeAvatarLink) AvatarLink() vo.Link  { return a.avatarLink }
+func (a AccountChangeAvatarLink) Timestamp() time.Time { return a.timestamp }
+func (a AccountChangeAvatarLink) Type() Type           { return AccountChangeAvatarLinkType }
+
+func NewAccountChangeAvatarLink(id vo.ID, avatarLink vo.Link, t time.Time) AccountChangeAvatarLink {
+	return AccountChangeAvatarLink{
+		id:         id,
+		avatarLink: avatarLink,
+		timestamp:  t,
 	}
 }

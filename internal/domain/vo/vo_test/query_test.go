@@ -1,6 +1,7 @@
 package vo
 
 import (
+	"encoding/json"
 	"github.com/illusory-server/accounts/internal/domain/vo"
 	"github.com/illusory-server/accounts/pkg/errors/codes"
 	"github.com/illusory-server/accounts/pkg/errors/errx"
@@ -53,5 +54,13 @@ func TestQuery(t *testing.T) {
 		query, err = vo.NewQuery(4, 20, "name", "")
 		assert.NoError(t, err)
 		assert.Equal(t, uint(60), query.PaginationOffset())
+	})
+
+	t.Run("Should correct marshal json", func(t *testing.T) {
+		query, err := vo.NewQuery(2, 20, "name", vo.Asc)
+		assert.NoError(t, err)
+		js, err := json.Marshal(query)
+		assert.NoError(t, err)
+		assert.Equal(t, "{\"limit\":20,\"page\":2,\"sort_by\":\"name\",\"sort_order\":\"ASC\"}", string(js))
 	})
 }

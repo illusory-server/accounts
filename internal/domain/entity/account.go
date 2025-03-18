@@ -17,10 +17,7 @@ const (
 )
 
 func validateTimeBeforeNow(value interface{}) error {
-	t, ok := value.(time.Time)
-	if !ok {
-		return errors.New("invalid time type")
-	}
+	t := value.(time.Time)
 	if !t.Before(time.Now()) {
 		return errors.New("invalid time value")
 	}
@@ -127,6 +124,14 @@ func (a *Account) SetNickname(nickname string) error {
 		return err
 	}
 	a.nickname = nickname
+	return nil
+}
+
+func (a *Account) SetRole(role vo.Role) error {
+	if err := role.Validate(); err != nil {
+		return err
+	}
+	a.role = role
 	return nil
 }
 
