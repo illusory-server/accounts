@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/go-ozzo/ozzo-validation/is"
-	"github.com/illusory-server/accounts/pkg/errors/codes"
+	"github.com/illusory-server/accounts/pkg/errors/codex"
 	"github.com/illusory-server/accounts/pkg/errors/errx"
 )
 
@@ -17,7 +17,7 @@ func NewLink(value string) (Link, error) {
 		value: value,
 	}
 	if err := res.Validate(); err != nil {
-		return Link{}, errx.WrapWithCode(err, codes.InvalidArgument, "Link.Validate")
+		return Link{}, errx.WrapWithCode(err, codex.InvalidArgument, "Link.Validate")
 	}
 	return res, nil
 }

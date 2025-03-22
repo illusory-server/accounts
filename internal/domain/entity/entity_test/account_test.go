@@ -5,7 +5,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/illusory-server/accounts/internal/domain/entity"
 	"github.com/illusory-server/accounts/internal/domain/vo"
-	"github.com/illusory-server/accounts/pkg/errors/codes"
+	"github.com/illusory-server/accounts/pkg/errors/codex"
 	"github.com/illusory-server/accounts/pkg/errors/errx"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -55,7 +55,7 @@ func TestEntityAccount(t *testing.T) {
 			createdTime,
 		)
 		assert.Nil(t, acc)
-		assert.Equal(t, codes.InvalidArgument, errx.Code(err))
+		assert.Equal(t, codex.InvalidArgument, errx.Code(err))
 		assert.Error(t, err)
 
 		acc, err = entity.NewAccount(
@@ -69,7 +69,7 @@ func TestEntityAccount(t *testing.T) {
 		)
 		assert.Nil(t, acc)
 		assert.Error(t, err)
-		assert.Equal(t, codes.InvalidArgument, errx.Code(err))
+		assert.Equal(t, codex.InvalidArgument, errx.Code(err))
 
 		acc, err = entity.NewAccount(
 			id,
@@ -82,7 +82,7 @@ func TestEntityAccount(t *testing.T) {
 		)
 		assert.Nil(t, acc)
 		assert.Error(t, err)
-		assert.Equal(t, codes.InvalidArgument, errx.Code(err))
+		assert.Equal(t, codex.InvalidArgument, errx.Code(err))
 
 		acc, err = entity.NewAccount(
 			id,
@@ -95,7 +95,7 @@ func TestEntityAccount(t *testing.T) {
 		)
 		assert.Nil(t, acc)
 		assert.Error(t, err)
-		assert.Equal(t, codes.InvalidArgument, errx.Code(err))
+		assert.Equal(t, codex.InvalidArgument, errx.Code(err))
 
 		acc, err = entity.NewAccount(
 			id,
@@ -108,7 +108,7 @@ func TestEntityAccount(t *testing.T) {
 		)
 		assert.Nil(t, acc)
 		assert.Error(t, err)
-		assert.Equal(t, codes.InvalidArgument, errx.Code(err))
+		assert.Equal(t, codex.InvalidArgument, errx.Code(err))
 
 		incorrectTime := time.Now().Add(1 * time.Hour)
 		acc, err = entity.NewAccount(
@@ -122,7 +122,7 @@ func TestEntityAccount(t *testing.T) {
 		)
 		assert.Nil(t, acc)
 		assert.Error(t, err)
-		assert.Equal(t, codes.InvalidArgument, errx.Code(err))
+		assert.Equal(t, codex.InvalidArgument, errx.Code(err))
 
 		acc, err = entity.NewAccount(
 			id,
@@ -135,7 +135,7 @@ func TestEntityAccount(t *testing.T) {
 		)
 		assert.Nil(t, acc)
 		assert.Error(t, err)
-		assert.Equal(t, codes.InvalidArgument, errx.Code(err))
+		assert.Equal(t, codex.InvalidArgument, errx.Code(err))
 	})
 
 	t.Run("Should correct setter", func(t *testing.T) {
@@ -157,6 +157,7 @@ func TestEntityAccount(t *testing.T) {
 		assert.Equal(t, newPass, acc.Password())
 		err = acc.SetPassword(vo.Password{})
 		assert.Error(t, err)
+		assert.Equal(t, codex.InvalidArgument, errx.Code(err))
 		assert.Equal(t, newPass, acc.Password())
 
 		newInfo, err := vo.NewAccountInfo("eer0-2", "kirov-2", "kuru2@gmail.com")
@@ -166,6 +167,7 @@ func TestEntityAccount(t *testing.T) {
 		assert.Equal(t, newInfo, acc.Info())
 		err = acc.SetInfo(vo.AccountInfo{})
 		assert.Error(t, err)
+		assert.Equal(t, codex.InvalidArgument, errx.Code(err))
 		assert.Equal(t, newInfo, acc.Info())
 
 		newNick := "new-eer0"
@@ -174,6 +176,7 @@ func TestEntityAccount(t *testing.T) {
 		assert.Equal(t, newNick, acc.Nickname())
 		err = acc.SetNickname("s")
 		assert.Error(t, err)
+		assert.Equal(t, codex.InvalidArgument, errx.Code(err))
 		assert.Equal(t, newNick, acc.Nickname())
 
 		newUpdatedTime := time.Now()
@@ -182,6 +185,7 @@ func TestEntityAccount(t *testing.T) {
 		assert.Equal(t, newUpdatedTime, acc.UpdatedAt())
 		err = acc.SetUpdatedAt(time.Now().Add(1 * time.Hour))
 		assert.Error(t, err)
+		assert.Equal(t, codex.InvalidArgument, errx.Code(err))
 		assert.Equal(t, newUpdatedTime, acc.UpdatedAt())
 
 		avatar, err := vo.NewLink("https://joska.com/5432435")
@@ -192,6 +196,7 @@ func TestEntityAccount(t *testing.T) {
 
 		err = acc.SetAvatarLink(vo.Link{})
 		assert.Error(t, err)
+		assert.Equal(t, codex.InvalidArgument, errx.Code(err))
 
 		roleSet, err := vo.NewRole(vo.RoleUser)
 		assert.NoError(t, err)
@@ -202,6 +207,7 @@ func TestEntityAccount(t *testing.T) {
 
 		err = acc.SetRole(vo.Role{})
 		assert.Error(t, err)
+		assert.Equal(t, codex.InvalidArgument, errx.Code(err))
 		assert.Equal(t, roleSet.Value(), acc.Role().Value())
 	})
 

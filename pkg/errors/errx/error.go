@@ -2,17 +2,17 @@ package errx
 
 import (
 	"fmt"
-	"github.com/illusory-server/accounts/pkg/errors/codes"
+	"github.com/illusory-server/accounts/pkg/errors/codex"
 
 	errors "github.com/pkg/errors"
 )
 
 type Error struct {
 	err  error
-	code codes.Code
+	code codex.Code
 }
 
-func New(code codes.Code, msg string) error {
+func New(code codex.Code, msg string) error {
 	return &Error{
 		code: code,
 		err:  errors.New(msg),
@@ -30,7 +30,7 @@ func (e *Error) Unwrap() error {
 	return e.err
 }
 
-func (e *Error) Code() codes.Code {
+func (e *Error) Code() codex.Code {
 	return e.code
 }
 
@@ -69,20 +69,20 @@ func (e *Error) StackTrace() errors.StackTrace {
 	return nil
 }
 
-func WrapWithCode(err error, code codes.Code, msg string) error {
+func WrapWithCode(err error, code codex.Code, msg string) error {
 	return &Error{
 		code: code,
 		err:  errors.WithMessage(err, msg),
 	}
 }
 
-func Code(err error) codes.Code {
+func Code(err error) codex.Code {
 	if err == nil {
-		return codes.Unknown
+		return codex.Unknown
 	}
 	var e *Error
 	if errors.As(err, &e) {
 		return e.code
 	}
-	return codes.Unknown
+	return codex.Unknown
 }

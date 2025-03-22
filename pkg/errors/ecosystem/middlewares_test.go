@@ -9,7 +9,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	libCodes "github.com/illusory-server/accounts/pkg/errors/codes"
+	libCodes "github.com/illusory-server/accounts/pkg/errors/codex"
 	libErr "github.com/illusory-server/accounts/pkg/errors/errx"
 )
 

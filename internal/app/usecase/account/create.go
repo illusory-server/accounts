@@ -2,7 +2,7 @@ package account
 
 import (
 	"context"
-	"github.com/illusory-server/accounts/pkg/errors/codes"
+	"github.com/illusory-server/accounts/pkg/errors/codex"
 	"github.com/illusory-server/accounts/pkg/errors/errx"
 	"github.com/illusory-server/accounts/pkg/logger/log"
 	"github.com/pkg/errors"
@@ -21,7 +21,7 @@ func (a *AccountsUseCase) Create(ctx context.Context, firstName, lastName, email
 		a.log.Debug(ctx, "has user by nickname query failed",
 			log.String("nickname", nick),
 		)
-		return nil, errx.New(codes.AlreadyExists, "account already exists")
+		return nil, errx.New(codex.AlreadyExists, "account already exists")
 	}
 	candidateByEmail, err := a.accountQuery.HasByEmail(ctx, email)
 	if err != nil {
@@ -34,7 +34,7 @@ func (a *AccountsUseCase) Create(ctx context.Context, firstName, lastName, email
 		a.log.Debug(ctx, "has user by email query failed",
 			log.String("email", email),
 		)
-		return nil, errx.New(codes.AlreadyExists, "account email already exists")
+		return nil, errx.New(codex.AlreadyExists, "account email already exists")
 	}
 
 	acc, err := a.accountFactory.CreateAccount(firstName, lastName, email, nick, password)

@@ -1,7 +1,7 @@
 package ecosystem
 
 import (
-	libCodes "github.com/illusory-server/accounts/pkg/errors/codes"
+	libCodes "github.com/illusory-server/accounts/pkg/errors/codex"
 	"google.golang.org/grpc/codes"
 	"net/http"
 )

@@ -4,6 +4,8 @@ import (
 	"github.com/illusory-server/accounts/internal/domain/entity"
 	"github.com/illusory-server/accounts/internal/domain/event"
 	"github.com/illusory-server/accounts/internal/domain/vo"
+	"github.com/illusory-server/accounts/pkg/errors/codex"
+	"github.com/illusory-server/accounts/pkg/errors/errx"
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/bcrypt"
 	"time"
@@ -20,7 +22,7 @@ const (
 
 func NewAccount(account *entity.Account) (*Account, error) {
 	if err := account.Validate(); err != nil {
-		return nil, errors.Wrap(err, "[Account] account.Validate")
+		return nil, errx.WrapWithCode(err, codex.InvalidArgument, "[Account] account.Validate")
 	}
 	events := make([]event.Event, 0, DefaultEventCapacity)
 
@@ -65,7 +67,7 @@ func (a *Account) ComparePassword(password string) error {
 	current := a.account.Password().Value()
 	err := bcrypt.CompareHashAndPassword([]byte(current), []byte(password))
 	if err != nil {
-		return errors.Wrap(err, "[Account] bcrypt.CompareHashAndPassword")
+		return errx.WrapWithCode(err, codex.InvalidArgument, "[Account] bcrypt.CompareHashAndPassword")
 	}
 	return nil
 }

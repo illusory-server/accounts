@@ -3,13 +3,13 @@ package account
 import (
 	"context"
 	"github.com/illusory-server/accounts/internal/domain/vo"
-	"github.com/illusory-server/accounts/pkg/errors/codes"
+	"github.com/illusory-server/accounts/pkg/errors/codex"
 	"github.com/illusory-server/accounts/pkg/errors/errx"
 	"github.com/pkg/errors"
 )
 
 var (
-	ErrOldPasswordNotEqual = errx.New(codes.PermissionDenied, "old password not equal")
+	ErrOldPasswordNotEqual = errx.New(codex.PermissionDenied, "old password not equal")
 )
 
 func (a *AccountsUseCase) UpdateInfoById(ctx context.Context, id, firstName, lastName string) error {

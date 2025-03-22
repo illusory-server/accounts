@@ -3,7 +3,7 @@ package vo
 import (
 	"encoding/json"
 	"github.com/illusory-server/accounts/internal/domain/vo"
-	"github.com/illusory-server/accounts/pkg/errors/codes"
+	"github.com/illusory-server/accounts/pkg/errors/codex"
 	"github.com/illusory-server/accounts/pkg/errors/errx"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -20,12 +20,12 @@ func TestVoLink(t *testing.T) {
 	t.Run("Should correct error with incorrect url", func(t *testing.T) {
 		link, err := vo.NewLink("no url xdddd random text")
 		assert.Error(t, err)
-		assert.Equal(t, codes.InvalidArgument, errx.Code(err))
+		assert.Equal(t, codex.InvalidArgument, errx.Code(err))
 		assert.Equal(t, vo.Link{}, link)
 
 		link, err = vo.NewLink("empty")
 		assert.Error(t, err)
-		assert.Equal(t, codes.InvalidArgument, errx.Code(err))
+		assert.Equal(t, codex.InvalidArgument, errx.Code(err))
 		assert.Equal(t, vo.Link{}, link)
 
 	})

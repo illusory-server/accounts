@@ -5,7 +5,7 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/illusory-server/accounts/internal/domain"
 	"github.com/illusory-server/accounts/internal/domain/vo"
-	"github.com/illusory-server/accounts/pkg/errors/codes"
+	"github.com/illusory-server/accounts/pkg/errors/codex"
 	"github.com/illusory-server/accounts/pkg/errors/errx"
 	"github.com/pkg/errors"
 	"time"
@@ -56,7 +56,7 @@ func NewAccount(
 	}
 
 	if err := result.Validate(); err != nil {
-		return nil, errx.WrapWithCode(err, codes.InvalidArgument, "Account.Validate")
+		return nil, errx.WrapWithCode(err, codex.InvalidArgument, "Account.Validate")
 	}
 
 	return result, nil
@@ -112,7 +112,7 @@ func (a *Account) AvatarLink() domain.Option[vo.Link] {
 
 func (a *Account) SetInfo(info vo.AccountInfo) error {
 	if err := info.Validate(); err != nil {
-		return err
+		return errx.WrapWithCode(err, codex.InvalidArgument, "AccountInfo.Validate")
 	}
 	a.info = info
 	return nil
@@ -121,7 +121,7 @@ func (a *Account) SetInfo(info vo.AccountInfo) error {
 func (a *Account) SetNickname(nickname string) error {
 	err := validation.Validate(nickname, validation.Required, validation.Length(MinNickLen, MaxNickLen))
 	if err != nil {
-		return err
+		return errx.WrapWithCode(err, codex.InvalidArgument, "[Account] validation.Validate")
 	}
 	a.nickname = nickname
 	return nil
@@ -129,7 +129,7 @@ func (a *Account) SetNickname(nickname string) error {
 
 func (a *Account) SetRole(role vo.Role) error {
 	if err := role.Validate(); err != nil {
-		return err
+		return errx.WrapWithCode(err, codex.InvalidArgument, "[Account] validation.Validate")
 	}
 	a.role = role
 	return nil
@@ -137,7 +137,7 @@ func (a *Account) SetRole(role vo.Role) error {
 
 func (a *Account) SetPassword(password vo.Password) error {
 	if err := password.Validate(); err != nil {
-		return err
+		return errx.WrapWithCode(err, codex.InvalidArgument, "[Account] validation.Validate")
 	}
 	a.password = password
 	return nil
@@ -145,7 +145,7 @@ func (a *Account) SetPassword(password vo.Password) error {
 
 func (a *Account) SetAvatarLink(link vo.Link) error {
 	if err := link.Validate(); err != nil {
-		return err
+		return errx.WrapWithCode(err, codex.InvalidArgument, "[Account] validation.Validate")
 	}
 	a.avatarLink = a.avatarLink.Set(link)
 	return nil
@@ -154,7 +154,7 @@ func (a *Account) SetAvatarLink(link vo.Link) error {
 func (a *Account) SetUpdatedAt(updatedAt time.Time) error {
 	err := validation.Validate(updatedAt, validation.By(validateTimeBeforeNow))
 	if err != nil {
-		return err
+		return errx.WrapWithCode(err, codex.InvalidArgument, "[Account] validation.Validate")
 	}
 	a.updatedAt = updatedAt
 	return nil

@@ -2,28 +2,28 @@ package main
 
 import (
 	"fmt"
-	"github.com/illusory-server/accounts/pkg/errors/codes"
+	"github.com/illusory-server/accounts/pkg/errors/codex"
 	"github.com/illusory-server/accounts/pkg/errors/errx"
 	"github.com/pkg/errors"
 )
 
 func repo(i int) error {
 	if i == 10 {
-		return errx.New(codes.NotFound, "user not found")
+		return errx.New(codex.NotFound, "user not found")
 	}
 	return nil
 }
 
 func repo2(i int) error {
 	if i == 9 {
-		return errx.New(codes.AlreadyExists, "user exists")
+		return errx.New(codex.AlreadyExists, "user exists")
 	}
 	return nil
 }
 
 func repo3(i int) error {
 	if i == 8 {
-		return errx.New(codes.Internal, "internal server error")
+		return errx.New(codex.Internal, "internal server error")
 	}
 	return nil
 }
