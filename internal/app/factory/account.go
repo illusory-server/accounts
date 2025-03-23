@@ -12,17 +12,24 @@ import (
 //go:generate mockgen -package mock_factory -source account.go -destination ../../mock/app_factory/account.go
 
 type (
+	Timer interface {
+		Now() time.Time
+	}
 	AccountFactory interface {
 		CreateAccount(
 			firstName, lastName, email, nick, password string,
 		) (*aggregate.Account, error)
 	}
 
-	AccountFactoryImpl struct{}
+	AccountFactoryImpl struct {
+		now Timer
+	}
 )
 
-func NewAccountFactory() AccountFactoryImpl {
-	return AccountFactoryImpl{}
+func NewAccountFactory(timer Timer) AccountFactoryImpl {
+	return AccountFactoryImpl{
+		now: timer,
+	}
 }
 
 func (a AccountFactoryImpl) CreateAccount(
@@ -44,7 +51,7 @@ func (a AccountFactoryImpl) CreateAccount(
 	if err != nil {
 		return nil, errors.Wrap(err, "[AccountFactory] vo.NewPassword")
 	}
-	t := time.Now()
+	t := a.now.Now()
 
 	acc, err := entity.NewAccount(
 		id,

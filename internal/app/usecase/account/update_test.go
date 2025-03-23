@@ -87,7 +87,7 @@ func TestAccountsUseCase_UpdateInfoById(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	ctx := context.TODO()
-	accFactory := factory.NewAccountFactory()
+	accFactory := factory.NewAccountFactory(&timer{})
 
 	type params struct {
 		id, firstName, lastName string
