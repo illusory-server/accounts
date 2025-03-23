@@ -3,6 +3,7 @@ package entity_test
 import (
 	"encoding/json"
 	"github.com/google/uuid"
+	"github.com/illusory-server/accounts/internal/domain"
 	"github.com/illusory-server/accounts/internal/domain/entity"
 	"github.com/illusory-server/accounts/internal/domain/vo"
 	"github.com/illusory-server/accounts/pkg/errors/codex"
@@ -249,5 +250,18 @@ func TestEntityAccount(t *testing.T) {
 		err = json.Unmarshal(expectedBytes, &expectedMap)
 		assert.NoError(t, err)
 		assert.Equal(t, expectedMap, m)
+	})
+
+	t.Run("Should correct getter", func(t *testing.T) {
+		var acc *entity.Account
+		assert.Equal(t, vo.ID{}, acc.ID())
+		assert.Equal(t, vo.AccountInfo{}, acc.Info())
+		assert.Equal(t, vo.Password{}, acc.Password())
+		assert.Equal(t, vo.Role{}, acc.Role())
+		assert.Equal(t, "", acc.Nickname())
+		assert.Equal(t, domain.NewEmptyOptional[vo.Link](), acc.AvatarLink())
+		assert.Equal(t, time.Time{}, acc.UpdatedAt())
+		assert.Equal(t, time.Time{}, acc.CreatedAt())
+
 	})
 }

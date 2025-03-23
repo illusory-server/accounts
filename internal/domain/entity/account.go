@@ -77,34 +77,58 @@ func (a *Account) Validate() error {
 // getters
 
 func (a *Account) ID() vo.ID {
+	if a == nil {
+		return vo.ID{}
+	}
 	return a.id
 }
 
 func (a *Account) Info() vo.AccountInfo {
+	if a == nil {
+		return vo.AccountInfo{}
+	}
 	return a.info
 }
 
 func (a *Account) Role() vo.Role {
+	if a == nil {
+		return vo.Role{}
+	}
 	return a.role
 }
 
 func (a *Account) Nickname() string {
+	if a == nil {
+		return ""
+	}
 	return a.nickname
 }
 
 func (a *Account) Password() vo.Password {
+	if a == nil {
+		return vo.Password{}
+	}
 	return a.password
 }
 
 func (a *Account) UpdatedAt() time.Time {
+	if a == nil {
+		return time.Time{}
+	}
 	return a.updatedAt
 }
 
 func (a *Account) CreatedAt() time.Time {
+	if a == nil {
+		return time.Time{}
+	}
 	return a.createdAt
 }
 
 func (a *Account) AvatarLink() domain.Option[vo.Link] {
+	if a == nil {
+		return domain.NewEmptyOptional[vo.Link]()
+	}
 	return a.avatarLink
 }
 
