@@ -56,6 +56,11 @@ func (a *AccountsUseCase) UpdateInfoById(ctx context.Context, id, firstName, las
 		)
 		return errors.Wrap(err, "[AccountsUseCase] accountCommand.Update")
 	}
+	a.log.Debug(
+		ctx,
+		"update account aggregate",
+		logger.Any("aggregate", aggregate),
+	)
 	return nil
 }
 

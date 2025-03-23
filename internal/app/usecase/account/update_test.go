@@ -10,6 +10,7 @@ import (
 	"github.com/illusory-server/accounts/internal/app/factory"
 	"github.com/illusory-server/accounts/internal/domain/aggregate"
 	"github.com/illusory-server/accounts/internal/domain/entity"
+	"github.com/illusory-server/accounts/internal/domain/event"
 	"github.com/illusory-server/accounts/internal/domain/repository"
 	"github.com/illusory-server/accounts/internal/domain/vo"
 	mockRepo "github.com/illusory-server/accounts/internal/mock/repo"
@@ -297,7 +298,24 @@ func TestAccountsUseCase_UpdateInfoById(t *testing.T) {
 			} else {
 				assert.NoError(t, err)
 				assert.Equal(t, 1, counter.updateCount)
+				logData := dump.Dumps[0]
+				m := map[string]interface{}{}
+				errU := json.Unmarshal(logData, &m)
+				assert.NoError(t, errU)
+				assert.NotEmpty(t, m["message"])
+				data, ok := m["aggregate"]
+				assert.True(t, ok)
+				t.Log(data)
+				temp, ok := data.(map[string]interface{})
+				assert.True(t, ok)
+				tmp := temp["events"].([]interface{})
+
+				assert.Equal(t, []interface{}{string(event.AccountChangeInfoType)}, tmp)
 			}
 		})
 	}
+}
+
+func TestAccountsUseCase_UpdateEmailById(t *testing.T) {
+
 }
