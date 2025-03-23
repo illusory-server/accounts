@@ -1,6 +1,8 @@
 package domain
 
-import "github.com/pkg/errors"
+import (
+	"github.com/pkg/errors"
+)
 
 var ErrEmptyOptionalValue = errors.New("empty optional value")
 

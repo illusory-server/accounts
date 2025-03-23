@@ -1,6 +1,7 @@
 package aggregate
 
 import (
+	"encoding/json"
 	"github.com/illusory-server/accounts/internal/domain/entity"
 	"github.com/illusory-server/accounts/internal/domain/event"
 	"github.com/illusory-server/accounts/internal/domain/vo"
@@ -13,7 +14,7 @@ import (
 
 type Account struct {
 	account *entity.Account
-	events  []event.Event
+	events  event.Events
 }
 
 const (
@@ -52,13 +53,13 @@ func (a *Account) ClearEvent() {
 	a.events = a.events[:0]
 }
 
-func (a *Account) ChangeNickname(nickname string) error {
+func (a *Account) ChangeNickname(nickname string, t time.Time) error {
 	err := a.account.SetNickname(nickname)
 	if err != nil {
 		return errors.Wrap(err, "[Account] account.SetNickname")
 	}
 
-	a.AddEvent(event.NewAccountChangeNickname(a.account.ID(), nickname, time.Now()))
+	a.AddEvent(event.NewAccountChangeNickname(a.account.ID(), nickname, t))
 
 	return nil
 }
@@ -72,57 +73,65 @@ func (a *Account) ComparePassword(password string) error {
 	return nil
 }
 
-func (a *Account) ChangeAccountInfo(info vo.AccountInfo) error {
+func (a *Account) ChangeAccountInfo(info vo.AccountInfo, t time.Time) error {
 	err := a.account.SetInfo(info)
 	if err != nil {
 		return errors.Wrap(err, "[Account] account.SetInfo")
 	}
 
-	a.AddEvent(event.NewAccountChangeInfo(a.account.ID(), info, time.Now()))
+	a.AddEvent(event.NewAccountChangeInfo(a.account.ID(), info, t))
 
 	return nil
 }
 
-func (a *Account) ChangeEmail(info vo.AccountInfo) error {
+func (a *Account) ChangeEmail(info vo.AccountInfo, t time.Time) error {
 	err := a.account.SetInfo(info)
 	if err != nil {
 		return errors.Wrap(err, "[Account] account.SetInfo")
 	}
 
-	a.AddEvent(event.NewAccountChangeEmail(a.account.ID(), info.Email(), time.Now()))
+	a.AddEvent(event.NewAccountChangeEmail(a.account.ID(), info.Email(), t))
 
 	return nil
 }
 
-func (a *Account) ChangeRole(role vo.Role) error {
+func (a *Account) ChangeRole(role vo.Role, t time.Time) error {
 	err := a.account.SetRole(role)
 	if err != nil {
 		return errors.Wrap(err, "[Account] account.SetRole")
 	}
 
-	a.AddEvent(event.NewAccountChangeRole(a.account.ID(), role, time.Now()))
+	a.AddEvent(event.NewAccountChangeRole(a.account.ID(), role, t))
 
 	return nil
 }
 
-func (a *Account) ChangeAvatarLink(link vo.Link) error {
+func (a *Account) ChangeAvatarLink(link vo.Link, t time.Time) error {
 	err := a.account.SetAvatarLink(link)
 	if err != nil {
 		return errors.Wrap(err, "[Account] account.SetAvatarLink")
 	}
 
-	a.AddEvent(event.NewAccountChangeAvatarLink(a.account.ID(), link, time.Now()))
+	a.AddEvent(event.NewAccountChangeAvatarLink(a.account.ID(), link, t))
 
 	return nil
 }
 
-func (a *Account) ChangePassword(password vo.Password) error {
+func (a *Account) ChangePassword(password vo.Password, t time.Time) error {
 	err := a.account.SetPassword(password)
 	if err != nil {
 		return errors.Wrap(err, "[Account] account.SetPassword")
 	}
 
-	a.AddEvent(event.NewAccountChangePassword(a.account.ID(), password, time.Now()))
+	a.AddEvent(event.NewAccountChangePassword(a.account.ID(), password, t))
 
 	return nil
+}
+
+func (a *Account) MarshalJSON() ([]byte, error) {
+	data := map[string]interface{}{
+		"account": a.account,
+		"events":  a.events,
+	}
+	return json.Marshal(data)
 }

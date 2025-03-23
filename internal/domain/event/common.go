@@ -1,6 +1,9 @@
 package event
 
-import "time"
+import (
+	"encoding/json"
+	"time"
+)
 
 type (
 	Type string
@@ -9,4 +12,14 @@ type (
 		Type() Type
 		Timestamp() time.Time
 	}
+
+	Events []Event
 )
+
+func (e Events) MarshalJSON() ([]byte, error) {
+	result := make([]string, len(e))
+	for i, event := range e {
+		result[i] = string(event.Type())
+	}
+	return json.Marshal(result)
+}

@@ -63,7 +63,8 @@ func TestAccount_ChangeNickname(t *testing.T) {
 	acc := createTestAccount(t)
 	newNickname := "new_nickname"
 
-	err := acc.ChangeNickname(newNickname)
+	ti := time.Now()
+	err := acc.ChangeNickname(newNickname, ti)
 	require.NoError(t, err)
 
 	assert.Equal(t, newNickname, acc.Account().Nickname())
@@ -72,8 +73,9 @@ func TestAccount_ChangeNickname(t *testing.T) {
 	assert.Equal(t, 1, len(acc.Events()))
 	e := acc.Events()[0]
 	assert.Equal(t, event.AccountChangeNicknameType, e.Type())
+	assert.Equal(t, ti, e.Timestamp())
 
-	err = acc.ChangeNickname("")
+	err = acc.ChangeNickname("", ti)
 	assert.Error(t, err)
 	assert.Equal(t, codex.InvalidArgument, errx.Code(err))
 
@@ -97,11 +99,12 @@ func TestAccount_ComparePassword(t *testing.T) {
 
 func TestAccount_ChangeAccountInfo(t *testing.T) {
 	acc := createTestAccount(t)
+	ti := time.Now()
 
 	newInfo, err := vo.NewAccountInfo("Петр", "Петров", "petr@example.com")
 	require.NoError(t, err)
 
-	err = acc.ChangeAccountInfo(newInfo)
+	err = acc.ChangeAccountInfo(newInfo, ti)
 	require.NoError(t, err)
 
 	assert.Equal(t, newInfo, acc.Account().Info())
@@ -110,8 +113,9 @@ func TestAccount_ChangeAccountInfo(t *testing.T) {
 	assert.Equal(t, 1, len(acc.Events()))
 	e := acc.Events()[0]
 	assert.Equal(t, event.AccountChangeInfoType, e.Type())
+	assert.Equal(t, ti, e.Timestamp())
 
-	err = acc.ChangeAccountInfo(vo.AccountInfo{})
+	err = acc.ChangeAccountInfo(vo.AccountInfo{}, ti)
 	assert.Error(t, err)
 	assert.Equal(t, codex.InvalidArgument, errx.Code(err))
 
@@ -123,11 +127,12 @@ func TestAccount_ChangeAccountInfo(t *testing.T) {
 
 func TestAccount_ChangeRole(t *testing.T) {
 	acc := createTestAccount(t)
+	ti := time.Now()
 
 	newRole, err := vo.NewRole(vo.RoleAdmin)
 	require.NoError(t, err)
 
-	err = acc.ChangeRole(newRole)
+	err = acc.ChangeRole(newRole, ti)
 	require.NoError(t, err)
 
 	assert.Equal(t, newRole, acc.Account().Role())
@@ -136,8 +141,9 @@ func TestAccount_ChangeRole(t *testing.T) {
 	assert.Equal(t, 1, len(acc.Events()))
 	e := acc.Events()[0]
 	assert.Equal(t, event.AccountChangeRoleType, e.Type())
+	assert.Equal(t, ti, e.Timestamp())
 
-	err = acc.ChangeRole(vo.Role{})
+	err = acc.ChangeRole(vo.Role{}, ti)
 	assert.Error(t, err)
 	assert.Equal(t, codex.InvalidArgument, errx.Code(err))
 
@@ -149,11 +155,12 @@ func TestAccount_ChangeRole(t *testing.T) {
 
 func TestAccount_ChangeAvatarLink(t *testing.T) {
 	acc := createTestAccount(t)
+	ti := time.Now()
 
 	newLink, err := vo.NewLink("https://example.com/new-avatar.jpg")
 	require.NoError(t, err)
 
-	err = acc.ChangeAvatarLink(newLink)
+	err = acc.ChangeAvatarLink(newLink, ti)
 	require.NoError(t, err)
 
 	avatarLink, err := acc.Account().AvatarLink().Value()
@@ -164,8 +171,9 @@ func TestAccount_ChangeAvatarLink(t *testing.T) {
 	assert.Equal(t, 1, len(acc.Events()))
 	e := acc.Events()[0]
 	assert.Equal(t, event.AccountChangeAvatarLinkType, e.Type())
+	assert.Equal(t, ti, e.Timestamp())
 
-	err = acc.ChangeAvatarLink(vo.Link{})
+	err = acc.ChangeAvatarLink(vo.Link{}, ti)
 	assert.Error(t, err)
 	assert.Equal(t, codex.InvalidArgument, errx.Code(err))
 
@@ -180,10 +188,12 @@ func TestAccount_ChangeAvatarLink(t *testing.T) {
 
 func TestAccount_ChangeEmail(t *testing.T) {
 	acc := createTestAccount(t)
+	ti := time.Now()
 	email := "new_email@gmail.com"
 	newEmail, err := vo.NewAccountInfo(acc.account.Info().FirstName(), acc.account.Info().LastName(), email)
 	assert.NoError(t, err)
-	err = acc.ChangeEmail(newEmail)
+
+	err = acc.ChangeEmail(newEmail, ti)
 	assert.NoError(t, err)
 
 	assert.Equal(t, email, acc.account.Info().Email())
@@ -192,8 +202,9 @@ func TestAccount_ChangeEmail(t *testing.T) {
 	assert.Equal(t, 1, len(acc.Events()))
 	e := acc.Events()[0]
 	assert.Equal(t, event.AccountChangeEmailType, e.Type())
+	assert.Equal(t, ti, e.Timestamp())
 
-	err = acc.ChangeEmail(vo.AccountInfo{})
+	err = acc.ChangeEmail(vo.AccountInfo{}, ti)
 	assert.Error(t, err)
 	assert.Equal(t, codex.InvalidArgument, errx.Code(err))
 
@@ -206,11 +217,12 @@ func TestAccount_ChangeEmail(t *testing.T) {
 
 func TestAccount_ChangePassword(t *testing.T) {
 	acc := createTestAccount(t)
+	ti := time.Now()
 
 	newPassword, err := vo.NewPassword("new_secure_password123")
 	require.NoError(t, err)
 
-	err = acc.ChangePassword(newPassword)
+	err = acc.ChangePassword(newPassword, ti)
 	require.NoError(t, err)
 
 	assert.Equal(t, newPassword, acc.Account().Password())
@@ -219,8 +231,9 @@ func TestAccount_ChangePassword(t *testing.T) {
 	assert.Equal(t, 1, len(acc.Events()))
 	e := acc.Events()[0]
 	assert.Equal(t, event.AccountChangePasswordType, e.Type())
+	assert.Equal(t, ti, e.Timestamp())
 
-	err = acc.ChangePassword(vo.Password{})
+	err = acc.ChangePassword(vo.Password{}, ti)
 	assert.Error(t, err)
 	assert.Equal(t, codex.InvalidArgument, errx.Code(err))
 
@@ -232,14 +245,15 @@ func TestAccount_ChangePassword(t *testing.T) {
 
 func TestAccount_ClearEvents(t *testing.T) {
 	acc := createTestAccount(t)
+	ti := time.Now()
 
 	newNickname := "new_nickname"
-	err := acc.ChangeNickname(newNickname)
+	err := acc.ChangeNickname(newNickname, ti)
 	require.NoError(t, err)
 
 	newRole, err := vo.NewRole(vo.RoleAdmin)
 	require.NoError(t, err)
-	err = acc.ChangeRole(newRole)
+	err = acc.ChangeRole(newRole, ti)
 	require.NoError(t, err)
 
 	assert.True(t, acc.HasEvents())

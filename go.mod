@@ -3,6 +3,7 @@ module github.com/illusory-server/accounts
 go 1.23.7
 
 require (
+	bou.ke/monkey v1.0.2
 	github.com/getsentry/sentry-go v0.31.1
 	github.com/go-chi/chi/v5 v5.2.0
 	github.com/go-ozzo/ozzo-validation v3.6.0+incompatible
@@ -19,6 +20,7 @@ require (
 	github.com/stretchr/testify v1.9.0
 	github.com/uber/jaeger-client-go v2.30.0+incompatible
 	go.uber.org/dig v1.18.0
+	golang.org/x/crypto v0.36.0
 	google.golang.org/genproto/googleapis/api v0.0.0-20250313205543-e70fdf4c4cb4
 	google.golang.org/grpc v1.67.1
 	google.golang.org/protobuf v1.36.5
@@ -44,7 +46,6 @@ require (
 	github.com/rogpeppe/go-internal v1.13.1 // indirect
 	github.com/uber/jaeger-lib v2.4.1+incompatible // indirect
 	go.uber.org/atomic v1.11.0 // indirect
-	golang.org/x/crypto v0.36.0 // indirect
 	golang.org/x/net v0.37.0 // indirect
 	golang.org/x/sys v0.31.0 // indirect
 	golang.org/x/text v0.23.0 // indirect

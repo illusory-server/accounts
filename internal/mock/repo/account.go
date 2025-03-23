@@ -107,74 +107,18 @@ func (mr *MockAccountCommandMockRecorder) DeleteByNickname(ctx, nickname interfa
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteByNickname", reflect.TypeOf((*MockAccountCommand)(nil).DeleteByNickname), ctx, nickname)
 }
 
-// UpdateAvatarLinkById mocks base method.
-func (m *MockAccountCommand) UpdateAvatarLinkById(ctx context.Context, id vo.ID, link vo.Link) error {
+// Update mocks base method.
+func (m *MockAccountCommand) Update(ctx context.Context, account *aggregate.Account) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdateAvatarLinkById", ctx, id, link)
+	ret := m.ctrl.Call(m, "Update", ctx, account)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// UpdateAvatarLinkById indicates an expected call of UpdateAvatarLinkById.
-func (mr *MockAccountCommandMockRecorder) UpdateAvatarLinkById(ctx, id, link interface{}) *gomock.Call {
+// Update indicates an expected call of Update.
+func (mr *MockAccountCommandMockRecorder) Update(ctx, account interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAvatarLinkById", reflect.TypeOf((*MockAccountCommand)(nil).UpdateAvatarLinkById), ctx, id, link)
-}
-
-// UpdateInfoById mocks base method.
-func (m *MockAccountCommand) UpdateInfoById(ctx context.Context, id vo.ID, info vo.AccountInfo) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdateInfoById", ctx, id, info)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// UpdateInfoById indicates an expected call of UpdateInfoById.
-func (mr *MockAccountCommandMockRecorder) UpdateInfoById(ctx, id, info interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateInfoById", reflect.TypeOf((*MockAccountCommand)(nil).UpdateInfoById), ctx, id, info)
-}
-
-// UpdateNicknameById mocks base method.
-func (m *MockAccountCommand) UpdateNicknameById(ctx context.Context, id vo.ID, nickname string) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdateNicknameById", ctx, id, nickname)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// UpdateNicknameById indicates an expected call of UpdateNicknameById.
-func (mr *MockAccountCommandMockRecorder) UpdateNicknameById(ctx, id, nickname interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateNicknameById", reflect.TypeOf((*MockAccountCommand)(nil).UpdateNicknameById), ctx, id, nickname)
-}
-
-// UpdatePasswordById mocks base method.
-func (m *MockAccountCommand) UpdatePasswordById(ctx context.Context, id vo.ID, newPassword vo.Password) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdatePasswordById", ctx, id, newPassword)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// UpdatePasswordById indicates an expected call of UpdatePasswordById.
-func (mr *MockAccountCommandMockRecorder) UpdatePasswordById(ctx, id, newPassword interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdatePasswordById", reflect.TypeOf((*MockAccountCommand)(nil).UpdatePasswordById), ctx, id, newPassword)
-}
-
-// UpdateRoleById mocks base method.
-func (m *MockAccountCommand) UpdateRoleById(ctx context.Context, id vo.ID, role vo.Role) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdateRoleById", ctx, id, role)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// UpdateRoleById indicates an expected call of UpdateRoleById.
-func (mr *MockAccountCommandMockRecorder) UpdateRoleById(ctx, id, role interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateRoleById", reflect.TypeOf((*MockAccountCommand)(nil).UpdateRoleById), ctx, id, role)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockAccountCommand)(nil).Update), ctx, account)
 }
 
 // MockAccountQuery is a mock of AccountQuery interface.

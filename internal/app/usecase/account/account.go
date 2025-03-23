@@ -7,11 +7,16 @@ import (
 	"github.com/illusory-server/accounts/internal/domain/repository"
 	"github.com/illusory-server/accounts/internal/domain/vo"
 	"github.com/illusory-server/accounts/pkg/logger"
+	"time"
 )
 
 //go:generate mockgen -package mock_usecase -source account.go -destination ../../../mock/usecase/account.go
 
 type (
+	Timer interface {
+		Now() time.Time
+	}
+
 	// UseCase TODO - Требования по мульти create, update?
 	UseCase interface {
 		Create(ctx context.Context, firstName, lastName, email, nick, password string) (*WithoutPassword, error)
@@ -39,6 +44,7 @@ type (
 		accountFactory factory.AccountFactory
 		accountQuery   repository.AccountQuery
 		accountCommand repository.AccountCommand
+		now            Timer
 	}
 )
 
@@ -47,12 +53,14 @@ func NewUseCase(
 	accountFactory factory.AccountFactory,
 	accountQuery repository.AccountQuery,
 	accountCommand repository.AccountCommand,
+	nowTimer Timer,
 ) *AccountsUseCase {
 	return &AccountsUseCase{
 		log:            log,
 		accountFactory: accountFactory,
 		accountQuery:   accountQuery,
 		accountCommand: accountCommand,
+		now:            nowTimer,
 	}
 }
 
