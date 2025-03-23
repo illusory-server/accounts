@@ -224,7 +224,7 @@ func TestAccountsUseCase_UpdateInfoById(t *testing.T) {
 			},
 		},
 		{
-			name: "Should handle incorrect first name update error",
+			name: "Should handle incorrect change account info",
 			params: params{
 				id:        uuid.New().String(),
 				firstName: "UPDATED_John",
