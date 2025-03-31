@@ -618,7 +618,7 @@ func TestAccount_UpdatePasswordById(t *testing.T) {
 			expectedErrCode:   codex.InvalidArgument,
 			setupQuery: func(t *testing.T, p params) *mockRepo.MockAccountQuery {
 				repo := mockRepo.NewMockAccountQuery(ctrl)
-				agg := createUpdatePasswordByIdTestAccount(t, p.id, "correct@gmail.com", createdAt)
+				agg := createUpdatePasswordByIdTestAccount(t, p.id, "Old_password4142@", createdAt)
 				repo.EXPECT().GetById(gomock.Any(), p.id).Return(agg, nil)
 				return repo
 			},
@@ -630,15 +630,15 @@ func TestAccount_UpdatePasswordById(t *testing.T) {
 			name: "Should handle incorrect new password update error",
 			params: params{
 				id:  uuid.New().String(),
-				old: "Old_password4142@_incorrect",
-				new: "not_correct",
+				old: "Old_password4142@",
+				new: "no",
 			},
 			logNotEmptyFields: []string{"id"},
 			expectedErr:       anyErr,
 			expectedErrCode:   codex.InvalidArgument,
 			setupQuery: func(t *testing.T, p params) *mockRepo.MockAccountQuery {
 				repo := mockRepo.NewMockAccountQuery(ctrl)
-				agg := createUpdatePasswordByIdTestAccount(t, p.id, "correct@gmail.com", createdAt)
+				agg := createUpdatePasswordByIdTestAccount(t, p.id, p.old, createdAt)
 				repo.EXPECT().GetById(gomock.Any(), p.id).Return(agg, nil)
 				return repo
 			},
