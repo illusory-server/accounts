@@ -6,10 +6,85 @@ package mock_factory
 
 import (
 	reflect "reflect"
+	time "time"
 
 	gomock "github.com/golang/mock/gomock"
 	aggregate "github.com/illusory-server/accounts/internal/domain/aggregate"
 )
+
+// MockTimer is a mock of Timer interface.
+type MockTimer struct {
+	ctrl     *gomock.Controller
+	recorder *MockTimerMockRecorder
+}
+
+// MockTimerMockRecorder is the mock recorder for MockTimer.
+type MockTimerMockRecorder struct {
+	mock *MockTimer
+}
+
+// NewMockTimer creates a new mock instance.
+func NewMockTimer(ctrl *gomock.Controller) *MockTimer {
+	mock := &MockTimer{ctrl: ctrl}
+	mock.recorder = &MockTimerMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockTimer) EXPECT() *MockTimerMockRecorder {
+	return m.recorder
+}
+
+// Now mocks base method.
+func (m *MockTimer) Now() time.Time {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Now")
+	ret0, _ := ret[0].(time.Time)
+	return ret0
+}
+
+// Now indicates an expected call of Now.
+func (mr *MockTimerMockRecorder) Now() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Now", reflect.TypeOf((*MockTimer)(nil).Now))
+}
+
+// MockIDGenerator is a mock of IDGenerator interface.
+type MockIDGenerator struct {
+	ctrl     *gomock.Controller
+	recorder *MockIDGeneratorMockRecorder
+}
+
+// MockIDGeneratorMockRecorder is the mock recorder for MockIDGenerator.
+type MockIDGeneratorMockRecorder struct {
+	mock *MockIDGenerator
+}
+
+// NewMockIDGenerator creates a new mock instance.
+func NewMockIDGenerator(ctrl *gomock.Controller) *MockIDGenerator {
+	mock := &MockIDGenerator{ctrl: ctrl}
+	mock.recorder = &MockIDGeneratorMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockIDGenerator) EXPECT() *MockIDGeneratorMockRecorder {
+	return m.recorder
+}
+
+// GenerateID mocks base method.
+func (m *MockIDGenerator) GenerateID() string {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GenerateID")
+	ret0, _ := ret[0].(string)
+	return ret0
+}
+
+// GenerateID indicates an expected call of GenerateID.
+func (mr *MockIDGeneratorMockRecorder) GenerateID() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateID", reflect.TypeOf((*MockIDGenerator)(nil).GenerateID))
+}
 
 // MockAccountFactory is a mock of AccountFactory interface.
 type MockAccountFactory struct {
