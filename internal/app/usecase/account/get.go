@@ -2,6 +2,7 @@ package account
 
 import (
 	"context"
+
 	"github.com/illusory-server/accounts/internal/domain/aggregate"
 	"github.com/illusory-server/accounts/internal/domain/vo"
 	"github.com/illusory-server/accounts/pkg/errors/codex"
@@ -22,13 +23,11 @@ func (a *AccountsUseCase) GetWithPasswordById(ctx context.Context, id string) (*
 }
 
 func (a *AccountsUseCase) logHandle(ctx context.Context, err error, message string, fields ...logger.Field) {
-	c := errx.Code(err)
-	switch c {
-	case codex.NotFound:
+	if errx.Code(err) == codex.NotFound {
 		a.log.Info(ctx, message, fields...)
-	default:
-		a.log.Error(ctx, message, fields...)
+		return
 	}
+	a.log.Error(ctx, message, fields...)
 }
 
 func (a *AccountsUseCase) GetById(ctx context.Context, id string) (*WithoutPassword, error) {
