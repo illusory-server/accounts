@@ -19,6 +19,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"golang.org/x/crypto/bcrypt"
 	"testing"
 	"time"
 )
@@ -479,6 +480,230 @@ func TestAccountsUseCase_UpdateEmailById(t *testing.T) {
 					assert.True(t, ok)
 					tmp := temp["events"].([]interface{})
 					assert.Equal(t, []interface{}{string(event.AccountChangeEmailType)}, tmp)
+				}
+			}
+		})
+	}
+}
+
+func createUpdatePasswordByIdTestAccount(t *testing.T, idp, pass string, ti time.Time) *aggregate.Account {
+	// Подготовка тестовых данных
+	id, err := vo.NewID(idp)
+	require.NoError(t, err)
+
+	info, err := vo.NewAccountInfo("John", "Doe", "correct@gmail.com")
+	require.NoError(t, err)
+
+	role, err := vo.NewRole(vo.RoleUser)
+	require.NoError(t, err)
+
+	hash, err := bcrypt.GenerateFromPassword([]byte(pass), bcrypt.DefaultCost)
+	assert.NoError(t, err)
+	password, err := vo.NewPassword(string(hash))
+	require.NoError(t, err)
+
+	acc, err := entity.NewAccount(
+		id,
+		info,
+		role,
+		"test_nickname",
+		password,
+		ti,
+		ti,
+	)
+	require.NoError(t, err)
+
+	agg, err := aggregate.NewAccount(acc)
+	require.NoError(t, err)
+
+	return agg
+}
+
+func TestAccount_UpdatePasswordById(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	ctx := context.TODO()
+	accFactory := factory.NewAccountFactory(&timer{})
+
+	type params struct {
+		id, old, new string
+	}
+
+	createdAt := time.Now().Add(-time.Hour)
+	eventTime := time.Now().Add(time.Millisecond)
+
+	anyErr := errors.New("any error")
+
+	testCases := []struct {
+		name              string
+		params            params
+		expectedErr       error
+		expectedErrCode   codex.Code
+		eventTime         time.Time
+		logNotEmptyFields []string
+		setupCommand      func(*testing.T, params) *mockRepo.MockAccountCommand
+		setupQuery        func(*testing.T, params) *mockRepo.MockAccountQuery
+	}{
+		{
+			name: "Should update password by id",
+			params: params{
+				id:  uuid.New().String(),
+				old: "Old_password4142@",
+				new: "New_password4142@",
+			},
+			setupQuery: func(t *testing.T, p params) *mockRepo.MockAccountQuery {
+				repo := mockRepo.NewMockAccountQuery(ctrl)
+				agg := createUpdatePasswordByIdTestAccount(t, p.id, p.old, createdAt)
+				repo.EXPECT().GetById(gomock.Any(), p.id).Return(agg, nil)
+				return repo
+			},
+			setupCommand: func(t *testing.T, p params) *mockRepo.MockAccountCommand {
+				repo := mockRepo.NewMockAccountCommand(ctrl)
+				agg := createUpdatePasswordByIdTestAccount(t, p.id, p.old, createdAt)
+				pass, err := vo.NewPassword(p.new)
+				require.NoError(t, err)
+				err = agg.ChangePassword(pass, eventTime)
+				assert.NoError(t, err)
+				repo.EXPECT().Update(gomock.Any(), agg).Return(nil)
+				return repo
+			},
+		},
+		{
+			name: "Should handle update error",
+			params: params{
+				id:  uuid.New().String(),
+				old: "Old_password4142@",
+				new: "New_password4142@",
+			},
+			logNotEmptyFields: []string{"aggregate"},
+			expectedErr:       errx.New(codex.Internal, "connect refuse"),
+			expectedErrCode:   codex.Internal,
+			setupQuery: func(t *testing.T, p params) *mockRepo.MockAccountQuery {
+				repo := mockRepo.NewMockAccountQuery(ctrl)
+				agg := createUpdatePasswordByIdTestAccount(t, p.id, p.old, createdAt)
+				repo.EXPECT().GetById(gomock.Any(), p.id).Return(agg, nil)
+				return repo
+			},
+			setupCommand: func(t *testing.T, p params) *mockRepo.MockAccountCommand {
+				repo := mockRepo.NewMockAccountCommand(ctrl)
+				agg := createUpdatePasswordByIdTestAccount(t, p.id, p.old, createdAt)
+				pass, err := vo.NewPassword(p.new)
+				require.NoError(t, err)
+				err = agg.ChangePassword(pass, eventTime)
+				assert.NoError(t, err)
+				repo.EXPECT().Update(gomock.Any(), agg).Return(errx.New(codex.Internal, "connect refuse"))
+				return repo
+			},
+		},
+		{
+			name: "Should handle incorrect password update error",
+			params: params{
+				id:  uuid.New().String(),
+				old: "Old_password4142@_incorrect",
+				new: "New_password4142@",
+			},
+			logNotEmptyFields: []string{"id"},
+			expectedErr:       anyErr,
+			expectedErrCode:   codex.InvalidArgument,
+			setupQuery: func(t *testing.T, p params) *mockRepo.MockAccountQuery {
+				repo := mockRepo.NewMockAccountQuery(ctrl)
+				agg := createUpdatePasswordByIdTestAccount(t, p.id, "correct@gmail.com", createdAt)
+				repo.EXPECT().GetById(gomock.Any(), p.id).Return(agg, nil)
+				return repo
+			},
+			setupCommand: func(t *testing.T, p params) *mockRepo.MockAccountCommand {
+				return nil
+			},
+		},
+		{
+			name: "Should handle incorrect new password update error",
+			params: params{
+				id:  uuid.New().String(),
+				old: "Old_password4142@_incorrect",
+				new: "not_correct",
+			},
+			logNotEmptyFields: []string{"id"},
+			expectedErr:       anyErr,
+			expectedErrCode:   codex.InvalidArgument,
+			setupQuery: func(t *testing.T, p params) *mockRepo.MockAccountQuery {
+				repo := mockRepo.NewMockAccountQuery(ctrl)
+				agg := createUpdatePasswordByIdTestAccount(t, p.id, "correct@gmail.com", createdAt)
+				repo.EXPECT().GetById(gomock.Any(), p.id).Return(agg, nil)
+				return repo
+			},
+			setupCommand: func(t *testing.T, p params) *mockRepo.MockAccountCommand {
+				return nil
+			},
+		},
+		{
+			name: "Should handle incorrect get by id",
+			params: params{
+				id:  uuid.New().String(),
+				old: "Old_password4142@",
+				new: "New_password4142@",
+			},
+			logNotEmptyFields: []string{"id"},
+			expectedErr:       errx.New(codex.NotFound, "user not found"),
+			expectedErrCode:   codex.NotFound,
+			setupQuery: func(t *testing.T, p params) *mockRepo.MockAccountQuery {
+				repo := mockRepo.NewMockAccountQuery(ctrl)
+				repo.EXPECT().GetById(gomock.Any(), p.id).Return(nil, errx.New(codex.NotFound, "user not found"))
+				return repo
+			},
+			setupCommand: func(t *testing.T, p params) *mockRepo.MockAccountCommand {
+				return nil
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			command := tc.setupCommand(t, tc.params)
+			query := tc.setupQuery(t, tc.params)
+			timeDep := &timer{
+				t: eventTime,
+			}
+			counter := &commandCounter{
+				AccountCommand: command,
+			}
+			l, dump := setupLogger()
+			useCase := NewUseCase(l, accFactory, query, counter, timeDep)
+
+			err := useCase.UpdatePasswordById(ctx, tc.params.id, tc.params.old, tc.params.new)
+			if tc.expectedErr != nil {
+				assert.Error(t, err)
+				if !errors.Is(tc.expectedErr, anyErr) {
+					assert.Equal(t, errors.Cause(tc.expectedErr).Error(), errors.Cause(err).Error())
+				}
+				c := errx.Code(err)
+				assert.Equal(t, tc.expectedErrCode, c)
+				assert.Equal(t, 1, len(dump.Dumps))
+				logData := dump.Dumps[0]
+
+				m := map[string]interface{}{}
+				errU := json.Unmarshal(logData, &m)
+				assert.NoError(t, errU)
+				assert.NotEmpty(t, m["message"])
+				assert.NotEmpty(t, m["error"])
+
+				for _, f := range tc.logNotEmptyFields {
+					assert.NotEmpty(t, m[f])
+				}
+			} else {
+				assert.NoError(t, err)
+				if len(dump.Dumps) > 0 {
+					logData := dump.Dumps[0]
+					m := map[string]interface{}{}
+					errU := json.Unmarshal(logData, &m)
+					assert.NoError(t, errU)
+					assert.NotEmpty(t, m["message"])
+					data, ok := m["aggregate"]
+					assert.True(t, ok)
+					t.Log(data)
+					temp, ok := data.(map[string]interface{})
+					assert.True(t, ok)
+					tmp := temp["events"].([]interface{})
+					assert.Equal(t, []interface{}{string(event.AccountChangePasswordType)}, tmp)
 				}
 			}
 		})

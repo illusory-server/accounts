@@ -168,6 +168,7 @@ func (a *AccountsUseCase) UpdatePasswordById(ctx context.Context, id, oldPasswor
 	return nil
 }
 
+// UpdateRoleById TODO - написать тесты на функцию
 func (a *AccountsUseCase) UpdateRoleById(ctx context.Context, id, role string) error {
 	aggregate, err := a.accountQuery.GetById(ctx, id)
 	if err != nil {
@@ -212,6 +213,7 @@ func (a *AccountsUseCase) UpdateRoleById(ctx context.Context, id, role string) e
 	return nil
 }
 
+// UpdateNickById TODO - написать тесты на функцию
 func (a *AccountsUseCase) UpdateNickById(ctx context.Context, id, nick string) error {
 	aggregate, err := a.accountQuery.GetById(ctx, id)
 	if err != nil {
@@ -246,6 +248,7 @@ func (a *AccountsUseCase) UpdateNickById(ctx context.Context, id, nick string) e
 	return nil
 }
 
+// AddAvatarLink TODO - написать тесты на функцию
 func (a *AccountsUseCase) AddAvatarLink(ctx context.Context, id, url string) error {
 	aggregate, err := a.accountQuery.GetById(ctx, id)
 	if err != nil {

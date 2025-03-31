@@ -15,6 +15,7 @@ type (
 	Timer interface {
 		Now() time.Time
 	}
+
 	AccountFactory interface {
 		CreateAccount(
 			firstName, lastName, email, nick, password string,
