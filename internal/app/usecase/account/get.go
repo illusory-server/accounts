@@ -2,6 +2,8 @@ package account
 
 import (
 	"context"
+	"github.com/illusory-server/accounts/pkg/errors/codex"
+	"github.com/illusory-server/accounts/pkg/errors/errx"
 	"strings"
 
 	"github.com/illusory-server/accounts/internal/domain/aggregate"
@@ -21,11 +23,22 @@ func (a *AccountsUseCase) GetWithPasswordById(ctx context.Context, id string) (*
 	return result, nil
 }
 
+func (a *AccountsUseCase) logHandle(ctx context.Context, err error, message string, fields ...logger.Field) {
+	c := errx.Code(err)
+	switch c {
+	case codex.NotFound:
+		a.log.Info(ctx, message, fields...)
+	default:
+		a.log.Error(ctx, message, fields...)
+	}
+}
+
 func (a *AccountsUseCase) GetById(ctx context.Context, id string) (*WithoutPassword, error) {
 	result, err := a.accountQuery.GetById(ctx, id)
 	if err != nil {
-		a.log.Error(ctx, "failed get account by id",
-			logger.String("id", id))
+		a.logHandle(ctx, err, "failed get account by id",
+			logger.String("id", id),
+			logger.Err(err))
 		return nil, errors.Wrap(err, "[AccountsUseCase] accountQuery.GetById")
 	}
 	return ConvertAccountAggregateToWithoutPassword(result), nil
@@ -34,8 +47,9 @@ func (a *AccountsUseCase) GetById(ctx context.Context, id string) (*WithoutPassw
 func (a *AccountsUseCase) GetByEmail(ctx context.Context, email string) (*WithoutPassword, error) {
 	result, err := a.accountQuery.GetByEmail(ctx, email)
 	if err != nil {
-		a.log.Error(ctx, "failed get account by email",
-			logger.String("email", email))
+		a.logHandle(ctx, err, "failed get account by email",
+			logger.String("email", email),
+			logger.Err(err))
 		return nil, errors.Wrap(err, "[AccountsUseCase] accountQuery.GetByEmail")
 	}
 	return ConvertAccountAggregateToWithoutPassword(result), nil
@@ -44,8 +58,9 @@ func (a *AccountsUseCase) GetByEmail(ctx context.Context, email string) (*Withou
 func (a *AccountsUseCase) GetByNickname(ctx context.Context, nickname string) (*WithoutPassword, error) {
 	result, err := a.accountQuery.GetByNickname(ctx, nickname)
 	if err != nil {
-		a.log.Error(ctx, "failed get account by nickname",
-			logger.String("nickname", nickname))
+		a.logHandle(ctx, err, "failed get account by nickname",
+			logger.String("nickname", nickname),
+			logger.Err(err))
 		return nil, errors.Wrap(err, "[AccountsUseCase] accountQuery.GetByNickname")
 	}
 	return ConvertAccountAggregateToWithoutPassword(result), nil
@@ -55,7 +70,8 @@ func (a *AccountsUseCase) GetByQuery(ctx context.Context, query vo.Query) ([]*Wi
 	result, pageCount, err := a.accountQuery.GetByQuery(ctx, query)
 	if err != nil {
 		a.log.Error(ctx, "failed get account by query",
-			logger.Any("query", query))
+			logger.Any("query", query),
+			logger.Err(err))
 		return nil, 0, errors.Wrap(err, "[AccountsUseCase] accountQuery.GetByQuery")
 	}
 	return fn.Map(result, ConvertAccountAggregateToWithoutPassword), pageCount, nil
@@ -65,7 +81,8 @@ func (a *AccountsUseCase) GetByIds(ctx context.Context, ids []string) ([]*Withou
 	result, err := a.accountQuery.GetByIds(ctx, ids)
 	if err != nil {
 		a.log.Error(ctx, "failed get account by ids",
-			logger.String("ids", strings.Join(ids, ",")))
+			logger.String("ids", strings.Join(ids, ",")),
+			logger.Err(err))
 		return nil, errors.Wrap(err, "[AccountsUseCase] accountQuery.GetByIds")
 	}
 
