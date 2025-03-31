@@ -2,12 +2,13 @@ package middlewares
 
 import (
 	"bufio"
-	"github.com/illusory-server/accounts/pkg/logger"
-	"github.com/pkg/errors"
 	"net"
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/illusory-server/accounts/pkg/logger"
+	"github.com/pkg/errors"
 )
 
 type statusRecorder struct {
@@ -85,7 +86,7 @@ func Logging(handler http.Handler, l logger.Logger) http.Handler {
 			logger.Int("http-status", wRec.Status()),
 		}
 
-		if wRec.Status() > 400 {
+		if wRec.Status() > http.StatusBadRequest {
 			l.Error(ctx, "http error", fields...)
 			return
 		}

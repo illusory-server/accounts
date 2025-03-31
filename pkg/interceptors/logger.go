@@ -2,6 +2,10 @@ package interceptors
 
 import (
 	"context"
+	"path"
+	"strings"
+	"time"
+
 	"github.com/illusory-server/accounts/pkg/logger"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
@@ -9,9 +13,6 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
-	"path"
-	"strings"
-	"time"
 )
 
 var Marshaller = &protojson.MarshalOptions{}
@@ -21,6 +22,7 @@ const (
 	DebugLoggingInterceptorMessage = "logging interceptor debug"
 	InfoLoggingInterceptorMessage  = "logging interceptor info"
 	MaxSize                        = 2048000
+	sliceCap                       = 7
 )
 
 func requestField(req interface{}) (logger.Field, bool) {
@@ -32,8 +34,8 @@ func requestField(req interface{}) (logger.Field, bool) {
 	return logger.Field{}, false
 }
 
-func debugLogFields(ctx context.Context, method string, t time.Time, req interface{}) []logger.Field {
-	fields := make([]logger.Field, 0, 7)
+func debugLogFields(ctx context.Context, method string, t time.Time, _ interface{}) []logger.Field {
+	fields := make([]logger.Field, 0, sliceCap)
 	fields = append(
 		fields,
 		logger.Time("time", t),

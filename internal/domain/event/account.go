@@ -1,8 +1,9 @@
 package event
 
 import (
-	"github.com/illusory-server/accounts/internal/domain/vo"
 	"time"
+
+	"github.com/illusory-server/accounts/internal/domain/vo"
 )
 
 const (

@@ -1,7 +1,9 @@
+//nolint:mnd
 package main
 
 import (
 	"fmt"
+
 	"github.com/illusory-server/accounts/pkg/errors/codex"
 	"github.com/illusory-server/accounts/pkg/errors/errx"
 	"github.com/pkg/errors"

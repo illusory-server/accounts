@@ -1,11 +1,12 @@
 package factory
 
 import (
+	"time"
+
 	"github.com/illusory-server/accounts/internal/domain/aggregate"
 	"github.com/illusory-server/accounts/internal/domain/entity"
 	"github.com/illusory-server/accounts/internal/domain/vo"
 	"github.com/pkg/errors"
-	"time"
 )
 
 //go:generate mockgen -package mock_factory -source account.go -destination ../../mock/app_factory/account.go

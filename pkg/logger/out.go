@@ -1,5 +1,9 @@
 package logger
 
+var (
+	sliceCap = 4
+)
+
 type OutDump struct {
 	Dump []byte
 }
@@ -24,6 +28,6 @@ func (d *OutMultiDump) Write(p []byte) (n int, err error) {
 
 func NewOutMultiDump() *OutMultiDump {
 	return &OutMultiDump{
-		Dumps: make([][]byte, 0, 4),
+		Dumps: make([][]byte, 0, sliceCap),
 	}
 }

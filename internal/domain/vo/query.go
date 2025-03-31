@@ -2,6 +2,7 @@ package vo
 
 import (
 	"encoding/json"
+
 	"github.com/illusory-server/accounts/pkg/errors/codex"
 	"github.com/illusory-server/accounts/pkg/errors/errx"
 	"github.com/pkg/errors"

@@ -1,10 +1,11 @@
 package middlewares
 
 import (
+	"net/http"
+
 	"github.com/illusory-server/accounts/pkg/trace"
 	"github.com/opentracing/opentracing-go"
 	"github.com/opentracing/opentracing-go/ext"
-	"net/http"
 )
 
 func Tracer(handler http.Handler, tracer opentracing.Tracer) http.Handler {
@@ -27,7 +28,7 @@ func Tracer(handler http.Handler, tracer opentracing.Tracer) http.Handler {
 		wRec := newStatusRecorder(w)
 		handler.ServeHTTP(wRec, r.WithContext(ctx))
 
-		ext.HTTPStatusCode.Set(span, uint16(wRec.Status()))
+		ext.HTTPStatusCode.Set(span, uint16(wRec.Status())) //nolint:gosec
 		if wRec.Status() >= http.StatusBadRequest {
 			ext.Error.Set(span, true)
 		}

@@ -2,6 +2,8 @@ package aggregate
 
 import (
 	"encoding/json"
+	"time"
+
 	"github.com/illusory-server/accounts/internal/domain"
 	"github.com/illusory-server/accounts/internal/domain/entity"
 	"github.com/illusory-server/accounts/internal/domain/event"
@@ -10,7 +12,6 @@ import (
 	"github.com/illusory-server/accounts/pkg/errors/errx"
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/bcrypt"
-	"time"
 )
 
 type ReadOnlyAccountEntity struct {

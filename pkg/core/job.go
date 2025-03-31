@@ -3,9 +3,10 @@ package ayaka
 import (
 	"context"
 	"fmt"
-	"github.com/pkg/errors"
 	"sync"
 	"time"
+
+	"github.com/pkg/errors"
 )
 
 const (

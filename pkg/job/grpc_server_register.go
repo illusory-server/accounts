@@ -2,6 +2,7 @@ package job
 
 import (
 	"context"
+
 	grpcPrometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
 	"github.com/prometheus/client_golang/prometheus"
 	"google.golang.org/grpc"

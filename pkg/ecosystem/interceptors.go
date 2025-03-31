@@ -2,16 +2,17 @@ package ecosystem
 
 import (
 	"context"
+	"time"
+
 	"github.com/pkg/errors"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"time"
 )
 
 func TimeoutInterceptor(timeout time.Duration) grpc.UnaryServerInterceptor {
 	return func(
-		ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler,
+		ctx context.Context, req interface{}, _ *grpc.UnaryServerInfo, handler grpc.UnaryHandler,
 	) (interface{}, error) {
 		var err error
 		var result interface{}
@@ -50,7 +51,7 @@ type RetryInterceptorOptions struct {
 	CodeCount map[codes.Code]uint
 }
 
-func RetryInterceptor(opt *RetryInterceptorOptions) grpc.UnaryServerInterceptor {
+func RetryInterceptor(_ *RetryInterceptorOptions) grpc.UnaryServerInterceptor {
 	return func(
 		ctx context.Context,
 		req interface{},

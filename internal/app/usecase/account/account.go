@@ -2,15 +2,16 @@ package account
 
 import (
 	"context"
+	"time"
+
 	"github.com/illusory-server/accounts/internal/app/factory"
 	"github.com/illusory-server/accounts/internal/domain/aggregate"
 	"github.com/illusory-server/accounts/internal/domain/repository"
 	"github.com/illusory-server/accounts/internal/domain/vo"
 	"github.com/illusory-server/accounts/pkg/logger"
-	"time"
 )
 
-var check UseCase = &AccountsUseCase{}
+var _ UseCase = &AccountsUseCase{}
 
 //go:generate mockgen -package mock_usecase -source account.go -destination ../../../mock/usecase/account.go
 

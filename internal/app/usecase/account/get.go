@@ -2,12 +2,13 @@ package account
 
 import (
 	"context"
+	"strings"
+
 	"github.com/illusory-server/accounts/internal/domain/aggregate"
 	"github.com/illusory-server/accounts/internal/domain/vo"
 	"github.com/illusory-server/accounts/pkg/fn"
 	"github.com/illusory-server/accounts/pkg/logger"
 	"github.com/pkg/errors"
-	"strings"
 )
 
 func (a *AccountsUseCase) GetWithPasswordById(ctx context.Context, id string) (*aggregate.Account, error) {

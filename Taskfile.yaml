@@ -54,3 +54,9 @@ tasks:
   exp:
     cmds:
       - CONFIG_PATH=$PATH_DEV_CFG LOG_LEVEL=debug LOG_PRETTY=true go run main.go
+  lint:
+    cmds:
+      - golangci-lint run
+  lintfix:
+    cmds:
+      - golangci-lint run --fix

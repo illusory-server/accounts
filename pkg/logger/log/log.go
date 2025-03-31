@@ -2,6 +2,7 @@ package log
 
 import (
 	"context"
+
 	"github.com/illusory-server/accounts/pkg/logger"
 	"github.com/rs/zerolog"
 )

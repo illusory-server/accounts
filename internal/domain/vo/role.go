@@ -2,6 +2,7 @@ package vo
 
 import (
 	"encoding/json"
+
 	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/illusory-server/accounts/pkg/errors/codex"
 	"github.com/illusory-server/accounts/pkg/errors/errx"

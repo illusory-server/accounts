@@ -2,6 +2,7 @@ package errx
 
 import (
 	"fmt"
+
 	"github.com/illusory-server/accounts/pkg/errors/codex"
 
 	errors "github.com/pkg/errors"

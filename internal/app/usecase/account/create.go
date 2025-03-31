@@ -2,6 +2,7 @@ package account
 
 import (
 	"context"
+
 	"github.com/illusory-server/accounts/pkg/errors/codex"
 	"github.com/illusory-server/accounts/pkg/errors/errx"
 	"github.com/illusory-server/accounts/pkg/logger"
@@ -13,7 +14,9 @@ var (
 	ErrEmailExists    = errx.New(codex.AlreadyExists, "email already exists")
 )
 
-func (a *AccountsUseCase) Create(ctx context.Context, firstName, lastName, email, nick, password string) (*WithoutPassword, error) {
+func (a *AccountsUseCase) Create(
+	ctx context.Context, firstName, lastName, email, nick, password string,
+) (*WithoutPassword, error) {
 	candidateByNick, err := a.accountQuery.HasByNickname(ctx, nick)
 	if err != nil {
 		a.log.Error(ctx, "has user by nickname query failed",

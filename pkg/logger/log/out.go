@@ -1,9 +1,10 @@
 package log
 
 import (
-	"github.com/rs/zerolog"
 	"io"
 	"os"
+
+	"github.com/rs/zerolog"
 )
 
 type OutAndErrOutput struct {

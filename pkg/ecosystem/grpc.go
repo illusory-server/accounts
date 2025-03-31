@@ -2,13 +2,18 @@ package ecosystem
 
 import (
 	"context"
+	"net"
+	"sync"
+	"time"
+
 	validation "github.com/go-ozzo/ozzo-validation"
 	ayaka "github.com/illusory-server/accounts/pkg/core"
 	"github.com/pkg/errors"
 	"google.golang.org/grpc"
-	"net"
-	"sync"
-	"time"
+)
+
+const (
+	sliceCap = 8
 )
 
 type (
@@ -69,15 +74,16 @@ func (g *GrpcJobBuilder) Validate() error {
 
 func NewGrpcJobBuilder() *GrpcJobBuilder {
 	return &GrpcJobBuilder{
-		regs:         make([]GrpcRegister, 0, 8),
-		serverRegs:   make([]GrpcServerRegister, 0, 8),
-		interceptors: make([]grpc.UnaryServerInterceptor, 0, 8),
-		options:      make([]grpc.ServerOption, 0, 8),
+		regs:         make([]GrpcRegister, 0, sliceCap),
+		serverRegs:   make([]GrpcServerRegister, 0, sliceCap),
+		interceptors: make([]grpc.UnaryServerInterceptor, 0, sliceCap),
+		options:      make([]grpc.ServerOption, 0, sliceCap),
 	}
 }
 
 func (g *GrpcJob) Init(ctx context.Context, di ayaka.Container) error {
-	sliceInterceptors := append(g.interceptors)
+	sliceInterceptors := make([]grpc.UnaryServerInterceptor, 0, len(g.interceptors))
+	copy(sliceInterceptors, g.interceptors)
 
 	if g.requestTimeout > 0 {
 		sliceInterceptors = append(sliceInterceptors, TimeoutInterceptor(g.requestTimeout))
@@ -171,29 +177,29 @@ func (g *GrpcJobBuilder) RequestTimeout(timeout time.Duration) *GrpcJobBuilder {
 }
 
 func (g *GrpcJobBuilder) Interceptors(interceptors ...grpc.UnaryServerInterceptor) *GrpcJobBuilder {
-	for _, inter := range interceptors {
-		g.interceptors = append(g.interceptors, inter)
+	if len(interceptors) > 0 {
+		g.interceptors = append(g.interceptors, interceptors...)
 	}
 	return g
 }
 
 func (g *GrpcJobBuilder) Register(regs ...GrpcRegister) *GrpcJobBuilder {
-	for _, reg := range regs {
-		g.regs = append(g.regs, reg)
+	if len(regs) > 0 {
+		g.regs = append(g.regs, regs...)
 	}
 	return g
 }
 
 func (g *GrpcJobBuilder) RegisterServer(regs ...GrpcServerRegister) *GrpcJobBuilder {
-	for _, reg := range regs {
-		g.serverRegs = append(g.serverRegs, reg)
+	if len(regs) > 0 {
+		g.serverRegs = append(g.serverRegs, regs...)
 	}
 	return g
 }
 
 func (g *GrpcJobBuilder) RegisterOptions(options ...grpc.ServerOption) *GrpcJobBuilder {
-	for _, opt := range options {
-		g.options = append(g.options, opt)
+	if len(options) > 0 {
+		g.options = append(g.options, options...)
 	}
 	return g
 }

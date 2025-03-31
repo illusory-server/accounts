@@ -2,13 +2,14 @@ package entity
 
 import (
 	"encoding/json"
+	"time"
+
 	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/illusory-server/accounts/internal/domain"
 	"github.com/illusory-server/accounts/internal/domain/vo"
 	"github.com/illusory-server/accounts/pkg/errors/codex"
 	"github.com/illusory-server/accounts/pkg/errors/errx"
 	"github.com/pkg/errors"
-	"time"
 )
 
 const (

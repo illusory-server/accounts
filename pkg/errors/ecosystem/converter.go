@@ -1,13 +1,14 @@
 package ecosystem
 
 import (
+	"net/http"
+
 	libCodes "github.com/illusory-server/accounts/pkg/errors/codex"
 	"google.golang.org/grpc/codes"
-	"net/http"
 )
 
 func ToGRPC(code libCodes.Code) codes.Code {
-	return codes.Code(code)
+	return codes.Code(code) //nolint:gosec
 }
 
 func ToHTTP(code libCodes.Code) int {
