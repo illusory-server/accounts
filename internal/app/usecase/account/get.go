@@ -2,12 +2,10 @@ package account
 
 import (
 	"context"
-	"github.com/illusory-server/accounts/pkg/errors/codex"
-	"github.com/illusory-server/accounts/pkg/errors/errx"
-	"strings"
-
 	"github.com/illusory-server/accounts/internal/domain/aggregate"
 	"github.com/illusory-server/accounts/internal/domain/vo"
+	"github.com/illusory-server/accounts/pkg/errors/codex"
+	"github.com/illusory-server/accounts/pkg/errors/errx"
 	"github.com/illusory-server/accounts/pkg/fn"
 	"github.com/illusory-server/accounts/pkg/logger"
 	"github.com/pkg/errors"
@@ -66,6 +64,7 @@ func (a *AccountsUseCase) GetByNickname(ctx context.Context, nickname string) (*
 	return ConvertAccountAggregateToWithoutPassword(result), nil
 }
 
+// GetByQuery TODO - Написать тесты
 func (a *AccountsUseCase) GetByQuery(ctx context.Context, query vo.Query) ([]*WithoutPassword, uint, error) {
 	result, pageCount, err := a.accountQuery.GetByQuery(ctx, query)
 	if err != nil {
@@ -77,14 +76,7 @@ func (a *AccountsUseCase) GetByQuery(ctx context.Context, query vo.Query) ([]*Wi
 	return fn.Map(result, ConvertAccountAggregateToWithoutPassword), pageCount, nil
 }
 
+// GetByIds TODO - написать реализацию, переделать сигнатуру
 func (a *AccountsUseCase) GetByIds(ctx context.Context, ids []string) ([]*WithoutPassword, error) {
-	result, err := a.accountQuery.GetByIds(ctx, ids)
-	if err != nil {
-		a.log.Error(ctx, "failed get account by ids",
-			logger.String("ids", strings.Join(ids, ",")),
-			logger.Err(err))
-		return nil, errors.Wrap(err, "[AccountsUseCase] accountQuery.GetByIds")
-	}
-
-	return fn.Map(result, ConvertAccountAggregateToWithoutPassword), nil
+	panic("implement me")
 }
