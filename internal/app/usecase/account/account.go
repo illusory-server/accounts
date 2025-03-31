@@ -10,6 +10,8 @@ import (
 	"time"
 )
 
+var check UseCase = &AccountsUseCase{}
+
 //go:generate mockgen -package mock_usecase -source account.go -destination ../../../mock/usecase/account.go
 
 type (

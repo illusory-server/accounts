@@ -29,7 +29,7 @@ type AccountQuery interface {
 	GetByIds(ctx context.Context, ids []string) ([]*aggregate.Account, error)
 	GetByEmail(ctx context.Context, email string) (*aggregate.Account, error)
 	GetByNickname(ctx context.Context, nickname string) (*aggregate.Account, error)
-	GetByQuery(ctx context.Context, query vo.Query) ([]*aggregate.Account, error)
+	GetByQuery(ctx context.Context, query vo.Query) ([]*aggregate.Account, uint, error)
 
 	GetPageCountByLimit(ctx context.Context, limit uint64) (uint64, error)
 

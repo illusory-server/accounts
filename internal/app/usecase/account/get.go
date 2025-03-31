@@ -50,14 +50,14 @@ func (a *AccountsUseCase) GetByNickname(ctx context.Context, nickname string) (*
 	return ConvertAccountAggregateToWithoutPassword(result), nil
 }
 
-func (a *AccountsUseCase) GetByQuery(ctx context.Context, query vo.Query) ([]*WithoutPassword, error) {
-	result, err := a.accountQuery.GetByQuery(ctx, query)
+func (a *AccountsUseCase) GetByQuery(ctx context.Context, query vo.Query) ([]*WithoutPassword, uint, error) {
+	result, pageCount, err := a.accountQuery.GetByQuery(ctx, query)
 	if err != nil {
 		a.log.Error(ctx, "failed get account by query",
 			logger.Any("query", query))
-		return nil, errors.Wrap(err, "[AccountsUseCase] accountQuery.GetByQuery")
+		return nil, 0, errors.Wrap(err, "[AccountsUseCase] accountQuery.GetByQuery")
 	}
-	return fn.Map(result, ConvertAccountAggregateToWithoutPassword), nil
+	return fn.Map(result, ConvertAccountAggregateToWithoutPassword), pageCount, nil
 }
 
 func (a *AccountsUseCase) GetByIds(ctx context.Context, ids []string) ([]*WithoutPassword, error) {
