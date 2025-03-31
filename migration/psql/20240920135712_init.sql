@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS accounts (
     last_name VARCHAR(128),
     email VARCHAR(255) NOT NULL UNIQUE,
     role VARCHAR(128) NOT NULL,
+    avatar_link VARCHAR(255),
     password VARCHAR(255) NOT NULL,
     updated_at TIMESTAMP NOT NULL,
     created_at TIMESTAMP NOT NULL
