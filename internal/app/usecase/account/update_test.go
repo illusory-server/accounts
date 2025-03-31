@@ -42,6 +42,17 @@ func (t *timer) Now() time.Time {
 	return t.t
 }
 
+type genID struct {
+	id string
+}
+
+func (g genID) GenerateID() string {
+	if g.id == "" {
+		g.id = uuid.New().String()
+	}
+	return g.id
+}
+
 func createUpdateInfoByIdTestAccount(t *testing.T, idp, firstName, lastName string, ti time.Time) *aggregate.Account {
 	// Подготовка тестовых данных
 	id, err := vo.NewID(idp)
@@ -86,7 +97,7 @@ func TestAccountsUseCase_UpdateInfoById(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	ctx := context.TODO()
-	accFactory := factory.NewAccountFactory(&timer{})
+	accFactory := factory.NewAccountFactory(&timer{}, genID{})
 
 	type params struct {
 		id, firstName, lastName string
@@ -316,7 +327,7 @@ func TestAccountsUseCase_UpdateEmailById(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	ctx := context.TODO()
-	accFactory := factory.NewAccountFactory(&timer{})
+	accFactory := factory.NewAccountFactory(&timer{}, genID{})
 
 	type params struct {
 		id, email string
@@ -523,7 +534,7 @@ func TestAccount_UpdatePasswordById(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	ctx := context.TODO()
-	accFactory := factory.NewAccountFactory(&timer{})
+	accFactory := factory.NewAccountFactory(&timer{}, genID{})
 
 	type params struct {
 		id, old, new string

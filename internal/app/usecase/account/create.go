@@ -8,6 +8,11 @@ import (
 	"github.com/pkg/errors"
 )
 
+var (
+	ErrNicknameExists = errx.New(codex.AlreadyExists, "nickname already exists")
+	ErrEmailExists    = errx.New(codex.AlreadyExists, "email already exists")
+)
+
 func (a *AccountsUseCase) Create(ctx context.Context, firstName, lastName, email, nick, password string) (*WithoutPassword, error) {
 	candidateByNick, err := a.accountQuery.HasByNickname(ctx, nick)
 	if err != nil {
@@ -21,7 +26,7 @@ func (a *AccountsUseCase) Create(ctx context.Context, firstName, lastName, email
 		a.log.Debug(ctx, "has user by nickname query failed",
 			logger.String("nickname", nick),
 		)
-		return nil, errx.New(codex.AlreadyExists, "account already exists")
+		return nil, ErrNicknameExists
 	}
 	candidateByEmail, err := a.accountQuery.HasByEmail(ctx, email)
 	if err != nil {
@@ -29,12 +34,13 @@ func (a *AccountsUseCase) Create(ctx context.Context, firstName, lastName, email
 			logger.Err(err),
 			logger.String("email", email),
 		)
+		return nil, errors.Wrap(err, "[AccountUseCase] accountQuery.HasByEmail")
 	}
 	if candidateByEmail {
 		a.log.Debug(ctx, "has user by email query failed",
 			logger.String("email", email),
 		)
-		return nil, errx.New(codex.AlreadyExists, "account email already exists")
+		return nil, ErrEmailExists
 	}
 
 	acc, err := a.accountFactory.CreateAccount(firstName, lastName, email, nick, password)
@@ -49,7 +55,7 @@ func (a *AccountsUseCase) Create(ctx context.Context, firstName, lastName, email
 		return nil, errors.Wrap(err, "[AccountUseCase] accountFactory.CreateAccount")
 	}
 
-	acc, err = a.accountCommand.Create(ctx, acc)
+	resAcc, err := a.accountCommand.Create(ctx, acc)
 	if err != nil {
 		a.log.Error(ctx, "failed to create account",
 			logger.Err(err),
@@ -58,5 +64,5 @@ func (a *AccountsUseCase) Create(ctx context.Context, firstName, lastName, email
 		return nil, errors.Wrap(err, "[AccountUseCase] accountCommand.Create")
 	}
 
-	return ConvertAccountAggregateToWithoutPassword(acc), nil
+	return ConvertAccountAggregateToWithoutPassword(resAcc), nil
 }
