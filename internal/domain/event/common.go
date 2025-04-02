@@ -10,6 +10,7 @@ type (
 
 	Event interface {
 		Type() Type
+		Value() any
 		Timestamp() time.Time
 	}
 

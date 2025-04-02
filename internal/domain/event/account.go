@@ -15,6 +15,15 @@ const (
 	AccountChangeAvatarLinkType Type = "AccountChangeAvatarLink"
 )
 
+var (
+	_ Event = (*AccountChangeNickname)(nil)
+	_ Event = (*AccountChangeInfo)(nil)
+	_ Event = (*AccountChangePassword)(nil)
+	_ Event = (*AccountChangeEmail)(nil)
+	_ Event = (*AccountChangeRole)(nil)
+	_ Event = (*AccountChangeAvatarLink)(nil)
+)
+
 type AccountChangeNickname struct {
 	id        vo.ID
 	nickname  string
@@ -25,6 +34,7 @@ func (a AccountChangeNickname) ID() vo.ID            { return a.id }
 func (a AccountChangeNickname) Nickname() string     { return a.nickname }
 func (a AccountChangeNickname) Timestamp() time.Time { return a.timestamp }
 func (a AccountChangeNickname) Type() Type           { return AccountChangeNicknameType }
+func (a AccountChangeNickname) Value() any           { return a.nickname }
 
 func NewAccountChangeNickname(id vo.ID, nickname string, t time.Time) AccountChangeNickname {
 	return AccountChangeNickname{
@@ -44,6 +54,7 @@ func (a AccountChangeInfo) ID() vo.ID            { return a.id }
 func (a AccountChangeInfo) Info() vo.AccountInfo { return a.info }
 func (a AccountChangeInfo) Timestamp() time.Time { return a.timestamp }
 func (a AccountChangeInfo) Type() Type           { return AccountChangeInfoType }
+func (a AccountChangeInfo) Value() any           { return a.info }
 
 func NewAccountChangeInfo(id vo.ID, info vo.AccountInfo, ts time.Time) AccountChangeInfo {
 	return AccountChangeInfo{
@@ -63,6 +74,7 @@ func (a AccountChangePassword) ID() vo.ID             { return a.id }
 func (a AccountChangePassword) Password() vo.Password { return a.password }
 func (a AccountChangePassword) Timestamp() time.Time  { return a.timestamp }
 func (a AccountChangePassword) Type() Type            { return AccountChangePasswordType }
+func (a AccountChangePassword) Value() any            { return a.password }
 
 func NewAccountChangePassword(id vo.ID, password vo.Password, ts time.Time) AccountChangePassword {
 	return AccountChangePassword{
@@ -81,17 +93,17 @@ type AccountChangeEmail struct {
 func (a AccountChangeEmail) ID() vo.ID {
 	return a.id
 }
-
 func (a AccountChangeEmail) Email() string {
 	return a.email
 }
-
 func (a AccountChangeEmail) Timestamp() time.Time {
 	return a.timestamp
 }
-
 func (a AccountChangeEmail) Type() Type {
 	return AccountChangeEmailType
+}
+func (a AccountChangeEmail) Value() any {
+	return a.email
 }
 
 func NewAccountChangeEmail(id vo.ID, email string, t time.Time) AccountChangeEmail {
@@ -111,17 +123,17 @@ type AccountChangeRole struct {
 func (a AccountChangeRole) ID() vo.ID {
 	return a.id
 }
-
 func (a AccountChangeRole) Role() vo.Role {
 	return a.role
 }
-
 func (a AccountChangeRole) Timestamp() time.Time {
 	return a.timestamp
 }
-
 func (a AccountChangeRole) Type() Type {
 	return AccountChangeRoleType
+}
+func (a AccountChangeRole) Value() any {
+	return a.role
 }
 
 func NewAccountChangeRole(id vo.ID, role vo.Role, ts time.Time) AccountChangeRole {
@@ -142,6 +154,7 @@ func (a AccountChangeAvatarLink) ID() vo.ID            { return a.id }
 func (a AccountChangeAvatarLink) AvatarLink() vo.Link  { return a.avatarLink }
 func (a AccountChangeAvatarLink) Timestamp() time.Time { return a.timestamp }
 func (a AccountChangeAvatarLink) Type() Type           { return AccountChangeAvatarLinkType }
+func (a AccountChangeAvatarLink) Value() any           { return a.avatarLink }
 
 func NewAccountChangeAvatarLink(id vo.ID, avatarLink vo.Link, t time.Time) AccountChangeAvatarLink {
 	return AccountChangeAvatarLink{

@@ -350,7 +350,8 @@ func TestAccountsUseCase_Create(t *testing.T) {
 				AccountCommand: command,
 			}
 			l, dump := setupLogger()
-			useCase := NewUseCase(l, accFactory, query, counter, timeDep)
+			useCase, err := NewUseCase(l, accFactory, query, counter, timeDep)
+			assert.NoError(t, err)
 
 			result, err := useCase.Create(
 				ctx, tc.params.firstName, tc.params.lastName,

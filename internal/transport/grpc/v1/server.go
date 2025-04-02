@@ -12,7 +12,7 @@ import (
 )
 
 type Server struct {
-	accountUseCase account.UseCase
+	accountUseCase account.Account
 }
 
 const timeFormat = time.RFC3339

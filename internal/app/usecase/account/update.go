@@ -14,7 +14,7 @@ var (
 	ErrOldPasswordNotEqual = errx.New(codex.InvalidArgument, "old password not equal")
 )
 
-func (a *AccountsUseCase) UpdateInfoById(ctx context.Context, id, firstName, lastName string) error {
+func (a *UseCase) UpdateInfoById(ctx context.Context, id, firstName, lastName string) error {
 	aggregate, err := a.accountQuery.GetById(ctx, id)
 	if err != nil {
 		a.log.Error(
@@ -23,7 +23,7 @@ func (a *AccountsUseCase) UpdateInfoById(ctx context.Context, id, firstName, las
 			logger.String("id", id),
 			logger.Err(err),
 		)
-		return errors.Wrap(err, "[AccountsUseCase] accountQuery.GetById")
+		return errors.Wrap(err, "[UseCase] accountQuery.GetById")
 	}
 	newInfo, err := vo.NewAccountInfo(firstName, lastName, aggregate.Account().Info().Email())
 	if err != nil {
@@ -35,7 +35,7 @@ func (a *AccountsUseCase) UpdateInfoById(ctx context.Context, id, firstName, las
 			logger.String("email", aggregate.Account().Info().Email()),
 			logger.Err(err),
 		)
-		return errors.Wrap(err, "[AccountsUseCase] vo.NewAccountInfo")
+		return errors.Wrap(err, "[UseCase] vo.NewAccountInfo")
 	}
 	err = aggregate.ChangeAccountInfo(newInfo, a.now.Now())
 	if err != nil {
@@ -45,7 +45,7 @@ func (a *AccountsUseCase) UpdateInfoById(ctx context.Context, id, firstName, las
 			logger.Any("info", newInfo),
 			logger.Err(err),
 		)
-		return errors.Wrap(err, "[AccountsUseCase] aggregate.ChangeAccountInfo")
+		return errors.Wrap(err, "[UseCase] aggregate.ChangeAccountInfo")
 	}
 	err = a.accountCommand.Update(ctx, aggregate)
 	if err != nil {
@@ -55,7 +55,7 @@ func (a *AccountsUseCase) UpdateInfoById(ctx context.Context, id, firstName, las
 			logger.Any("aggregate", aggregate),
 			logger.Err(err),
 		)
-		return errors.Wrap(err, "[AccountsUseCase] accountCommand.Update")
+		return errors.Wrap(err, "[UseCase] accountCommand.Update")
 	}
 	a.log.Debug(
 		ctx,
@@ -65,7 +65,7 @@ func (a *AccountsUseCase) UpdateInfoById(ctx context.Context, id, firstName, las
 	return nil
 }
 
-func (a *AccountsUseCase) UpdateEmailById(ctx context.Context, id, email string) error {
+func (a *UseCase) UpdateEmailById(ctx context.Context, id, email string) error {
 	aggregate, err := a.accountQuery.GetById(ctx, id)
 	if err != nil {
 		a.log.Error(
@@ -74,7 +74,7 @@ func (a *AccountsUseCase) UpdateEmailById(ctx context.Context, id, email string)
 			logger.String("id", id),
 			logger.Err(err),
 		)
-		return errors.Wrap(err, "[AccountsUseCase] accountQuery.GetById")
+		return errors.Wrap(err, "[UseCase] accountQuery.GetById")
 	}
 	newEmail, err := vo.NewAccountInfo(
 		aggregate.Account().Info().FirstName(),
@@ -90,7 +90,7 @@ func (a *AccountsUseCase) UpdateEmailById(ctx context.Context, id, email string)
 			logger.String("email", email),
 			logger.Err(err),
 		)
-		return errors.Wrap(err, "[AccountsUseCase] vo.NewAccountInfo")
+		return errors.Wrap(err, "[UseCase] vo.NewAccountInfo")
 	}
 	err = aggregate.ChangeEmail(newEmail, a.now.Now())
 	if err != nil {
@@ -100,7 +100,7 @@ func (a *AccountsUseCase) UpdateEmailById(ctx context.Context, id, email string)
 			logger.Any("info", newEmail),
 			logger.Err(err),
 		)
-		return errors.Wrap(err, "[AccountsUseCase] aggregate.ChangeEmail")
+		return errors.Wrap(err, "[UseCase] aggregate.ChangeEmail")
 	}
 	err = a.accountCommand.Update(ctx, aggregate)
 	if err != nil {
@@ -110,12 +110,12 @@ func (a *AccountsUseCase) UpdateEmailById(ctx context.Context, id, email string)
 			logger.Any("aggregate", aggregate),
 			logger.Err(err),
 		)
-		return errors.Wrap(err, "[AccountsUseCase] a.accountCommand.Update")
+		return errors.Wrap(err, "[UseCase] a.accountCommand.Update")
 	}
 	return nil
 }
 
-func (a *AccountsUseCase) UpdatePasswordById(ctx context.Context, id, oldPassword, password string) error {
+func (a *UseCase) UpdatePasswordById(ctx context.Context, id, oldPassword, password string) error {
 	aggregate, err := a.accountQuery.GetById(ctx, id)
 	if err != nil {
 		a.log.Error(
@@ -124,7 +124,7 @@ func (a *AccountsUseCase) UpdatePasswordById(ctx context.Context, id, oldPasswor
 			logger.String("id", id),
 			logger.Err(err),
 		)
-		return errors.Wrap(err, "[AccountsUseCase] accountQuery.GetById")
+		return errors.Wrap(err, "[UseCase] accountQuery.GetById")
 	}
 	err = aggregate.ComparePassword(oldPassword)
 	if err != nil {
@@ -134,7 +134,7 @@ func (a *AccountsUseCase) UpdatePasswordById(ctx context.Context, id, oldPasswor
 			logger.String("id", id),
 			logger.Err(err),
 		)
-		return errors.Wrap(ErrOldPasswordNotEqual, "[AccountsUseCase] aggregate.ComparePassword")
+		return errors.Wrap(ErrOldPasswordNotEqual, "[UseCase] aggregate.ComparePassword")
 	}
 	newPass, err := vo.NewPassword(password)
 	if err != nil {
@@ -144,7 +144,7 @@ func (a *AccountsUseCase) UpdatePasswordById(ctx context.Context, id, oldPasswor
 			logger.String("id", id),
 			logger.Err(err),
 		)
-		return errors.Wrap(err, "[AccountsUseCase] vo.NewPassword")
+		return errors.Wrap(err, "[UseCase] vo.NewPassword")
 	}
 	err = aggregate.ChangePassword(newPass, a.now.Now())
 	if err != nil {
@@ -154,7 +154,7 @@ func (a *AccountsUseCase) UpdatePasswordById(ctx context.Context, id, oldPasswor
 			logger.Any("aggregate", aggregate),
 			logger.Err(err),
 		)
-		return errors.Wrap(err, "[AccountsUseCase] aggregate.ChangePassword")
+		return errors.Wrap(err, "[UseCase] aggregate.ChangePassword")
 	}
 	err = a.accountCommand.Update(ctx, aggregate)
 	if err != nil {
@@ -164,13 +164,13 @@ func (a *AccountsUseCase) UpdatePasswordById(ctx context.Context, id, oldPasswor
 			logger.Any("aggregate", aggregate),
 			logger.Err(err),
 		)
-		return errors.Wrap(err, "[AccountsUseCase] a.accountCommand.Update")
+		return errors.Wrap(err, "[UseCase] a.accountCommand.Update")
 	}
 	return nil
 }
 
 // UpdateRoleById TODO - написать тесты на функцию
-func (a *AccountsUseCase) UpdateRoleById(ctx context.Context, id, role string) error {
+func (a *UseCase) UpdateRoleById(ctx context.Context, id, role string) error {
 	aggregate, err := a.accountQuery.GetById(ctx, id)
 	if err != nil {
 		a.log.Error(
@@ -179,7 +179,7 @@ func (a *AccountsUseCase) UpdateRoleById(ctx context.Context, id, role string) e
 			logger.String("id", id),
 			logger.Err(err),
 		)
-		return errors.Wrap(err, "[AccountsUseCase] accountQuery.GetById")
+		return errors.Wrap(err, "[UseCase] accountQuery.GetById")
 	}
 	newRole, err := vo.NewRole(vo.AccountRoleType(role))
 	if err != nil {
@@ -189,7 +189,7 @@ func (a *AccountsUseCase) UpdateRoleById(ctx context.Context, id, role string) e
 			logger.String("role", role),
 			logger.Err(err),
 		)
-		return errors.Wrap(err, "[AccountsUseCase] vo.NewRole")
+		return errors.Wrap(err, "[UseCase] vo.NewRole")
 	}
 	err = aggregate.ChangeRole(newRole, a.now.Now())
 	if err != nil {
@@ -199,7 +199,7 @@ func (a *AccountsUseCase) UpdateRoleById(ctx context.Context, id, role string) e
 			logger.Any("role", newRole),
 			logger.Err(err),
 		)
-		return errors.Wrap(err, "[AccountsUseCase] aggregate.ChangeRole")
+		return errors.Wrap(err, "[UseCase] aggregate.ChangeRole")
 	}
 	err = a.accountCommand.Update(ctx, aggregate)
 	if err != nil {
@@ -209,13 +209,13 @@ func (a *AccountsUseCase) UpdateRoleById(ctx context.Context, id, role string) e
 			logger.Any("aggregate", aggregate),
 			logger.Err(err),
 		)
-		return errors.Wrap(err, "[AccountsUseCase] a.accountCommand.Update")
+		return errors.Wrap(err, "[UseCase] a.accountCommand.Update")
 	}
 	return nil
 }
 
 // UpdateNickById TODO - написать тесты на функцию
-func (a *AccountsUseCase) UpdateNickById(ctx context.Context, id, nick string) error {
+func (a *UseCase) UpdateNickById(ctx context.Context, id, nick string) error {
 	aggregate, err := a.accountQuery.GetById(ctx, id)
 	if err != nil {
 		a.log.Error(
@@ -224,7 +224,7 @@ func (a *AccountsUseCase) UpdateNickById(ctx context.Context, id, nick string) e
 			logger.String("id", id),
 			logger.Err(err),
 		)
-		return errors.Wrap(err, "[AccountsUseCase] accountQuery.GetById")
+		return errors.Wrap(err, "[UseCase] accountQuery.GetById")
 	}
 	err = aggregate.ChangeNickname(nick, a.now.Now())
 	if err != nil {
@@ -234,7 +234,7 @@ func (a *AccountsUseCase) UpdateNickById(ctx context.Context, id, nick string) e
 			logger.String("nickname", nick),
 			logger.Err(err),
 		)
-		return errors.Wrap(err, "[AccountsUseCase] vo.NewRole")
+		return errors.Wrap(err, "[UseCase] vo.NewRole")
 	}
 	err = a.accountCommand.Update(ctx, aggregate)
 	if err != nil {
@@ -244,13 +244,13 @@ func (a *AccountsUseCase) UpdateNickById(ctx context.Context, id, nick string) e
 			logger.Any("aggregate", aggregate),
 			logger.Err(err),
 		)
-		return errors.Wrap(err, "[AccountsUseCase] a.accountCommand.Update")
+		return errors.Wrap(err, "[UseCase] a.accountCommand.Update")
 	}
 	return nil
 }
 
 // AddAvatarLink TODO - написать тесты на функцию
-func (a *AccountsUseCase) AddAvatarLink(ctx context.Context, id, url string) error {
+func (a *UseCase) AddAvatarLink(ctx context.Context, id, url string) error {
 	aggregate, err := a.accountQuery.GetById(ctx, id)
 	if err != nil {
 		a.log.Error(
@@ -259,7 +259,7 @@ func (a *AccountsUseCase) AddAvatarLink(ctx context.Context, id, url string) err
 			logger.String("id", id),
 			logger.Err(err),
 		)
-		return errors.Wrap(err, "[AccountsUseCase] accountQuery.GetById")
+		return errors.Wrap(err, "[UseCase] accountQuery.GetById")
 	}
 	link, err := vo.NewLink(url)
 	if err != nil {
@@ -269,7 +269,7 @@ func (a *AccountsUseCase) AddAvatarLink(ctx context.Context, id, url string) err
 			logger.String("url", url),
 			logger.Err(err),
 		)
-		return errors.Wrap(err, "[AccountsUseCase] vo.NewLink")
+		return errors.Wrap(err, "[UseCase] vo.NewLink")
 	}
 	err = aggregate.ChangeAvatarLink(link, a.now.Now())
 	if err != nil {
@@ -279,7 +279,7 @@ func (a *AccountsUseCase) AddAvatarLink(ctx context.Context, id, url string) err
 			logger.Any("link", link),
 			logger.Err(err),
 		)
-		return errors.Wrap(err, "[AccountsUseCase] aggregate.ChangeAvatarLink")
+		return errors.Wrap(err, "[UseCase] aggregate.ChangeAvatarLink")
 	}
 	err = a.accountCommand.Update(ctx, aggregate)
 	if err != nil {
@@ -289,7 +289,7 @@ func (a *AccountsUseCase) AddAvatarLink(ctx context.Context, id, url string) err
 			logger.Any("aggregate", aggregate),
 			logger.Err(err),
 		)
-		return errors.Wrap(err, "[AccountsUseCase] accountCommand.Update")
+		return errors.Wrap(err, "[UseCase] accountCommand.Update")
 	}
 	return nil
 }

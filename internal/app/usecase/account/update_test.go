@@ -247,7 +247,8 @@ func TestAccountsUseCase_UpdateInfoById(t *testing.T) {
 			}
 			l, dump := setupLogger()
 
-			useCase := NewUseCase(l, accFactory, query, counter, timeDep)
+			useCase, err := NewUseCase(l, accFactory, query, counter, timeDep)
+			assert.NoError(t, err)
 
 			err := useCase.UpdateInfoById(ctx, tc.params.id, tc.params.firstName, tc.params.lastName)
 			if tc.expectedErr != nil {
@@ -453,7 +454,8 @@ func TestAccountsUseCase_UpdateEmailById(t *testing.T) {
 			}
 			l, dump := setupLogger()
 
-			useCase := NewUseCase(l, accFactory, query, counter, timeDep)
+			useCase, err := NewUseCase(l, accFactory, query, counter, timeDep)
+			assert.NoError(t, err)
 
 			err := useCase.UpdateEmailById(ctx, tc.params.id, tc.params.email)
 			if tc.expectedErr != nil {
@@ -678,7 +680,9 @@ func TestAccount_UpdatePasswordById(t *testing.T) {
 				AccountCommand: command,
 			}
 			l, dump := setupLogger()
-			useCase := NewUseCase(l, accFactory, query, counter, timeDep)
+
+			useCase, err := NewUseCase(l, accFactory, query, counter, timeDep)
+			assert.NoError(t, err)
 
 			err := useCase.UpdatePasswordById(ctx, tc.params.id, tc.params.old, tc.params.new)
 			if tc.expectedErr != nil {

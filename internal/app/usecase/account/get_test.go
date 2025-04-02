@@ -112,7 +112,8 @@ func TestAccountsUseCase_GetById(t *testing.T) {
 
 			l, dump := setupLogger()
 
-			useCase := NewUseCase(l, nil, query, nil, timeDep)
+			useCase, err := NewUseCase(l, nil, query, nil, timeDep)
+			assert.NoError(t, err)
 
 			result, err := useCase.GetById(ctx, tc.params.id)
 			if tc.expectedErr != nil {
@@ -235,7 +236,8 @@ func TestAccountsUseCase_GetByEmail(t *testing.T) {
 
 			l, dump := setupLogger()
 
-			useCase := NewUseCase(l, nil, query, nil, timeDep)
+			useCase, err := NewUseCase(l, nil, query, nil, timeDep)
+			assert.NoError(t, err)
 
 			result, err := useCase.GetByEmail(ctx, tc.params.email)
 			if tc.expectedErr != nil {
@@ -358,7 +360,8 @@ func TestAccountsUseCase_GetByNickname(t *testing.T) {
 
 			l, dump := setupLogger()
 
-			useCase := NewUseCase(l, nil, query, nil, timeDep)
+			useCase, err := NewUseCase(l, nil, query, nil, timeDep)
+			assert.NoError(t, err)
 
 			result, err := useCase.GetByNickname(ctx, tc.params.nickname)
 			if tc.expectedErr != nil {

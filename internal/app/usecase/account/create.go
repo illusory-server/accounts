@@ -14,7 +14,7 @@ var (
 	ErrEmailExists    = errx.New(codex.AlreadyExists, "email already exists")
 )
 
-func (a *AccountsUseCase) Create(
+func (a *UseCase) Create(
 	ctx context.Context, firstName, lastName, email, nick, password string,
 ) (*WithoutPassword, error) {
 	candidateByNick, err := a.accountQuery.HasByNickname(ctx, nick)
