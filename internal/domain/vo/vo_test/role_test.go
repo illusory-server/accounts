@@ -3,7 +3,7 @@ package vo
 import (
 	"encoding/json"
 	"github.com/illusory-server/accounts/internal/domain/vo"
-	"github.com/illusory-server/accounts/pkg/errors/codes"
+	"github.com/illusory-server/accounts/pkg/errors/codex"
 	"github.com/illusory-server/accounts/pkg/errors/errx"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -30,7 +30,7 @@ func TestRole(t *testing.T) {
 		var incorrectRole vo.AccountRoleType = "KEK"
 		role, err := vo.NewRole(incorrectRole)
 		assert.Error(t, err)
-		assert.Equal(t, codes.InvalidArgument, errx.Code(err))
+		assert.Equal(t, codex.InvalidArgument, errx.Code(err))
 		assert.Equal(t, vo.Role{}, role)
 	})
 

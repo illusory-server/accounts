@@ -1,34 +1,48 @@
 package factory
 
 import (
-	"github.com/google/uuid"
+	"time"
+
 	"github.com/illusory-server/accounts/internal/domain/aggregate"
 	"github.com/illusory-server/accounts/internal/domain/entity"
 	"github.com/illusory-server/accounts/internal/domain/vo"
 	"github.com/pkg/errors"
-	"time"
 )
 
 //go:generate mockgen -package mock_factory -source account.go -destination ../../mock/app_factory/account.go
 
 type (
+	Timer interface {
+		Now() time.Time
+	}
+
+	IDGenerator interface {
+		GenerateID() string
+	}
+
 	AccountFactory interface {
 		CreateAccount(
 			firstName, lastName, email, nick, password string,
 		) (*aggregate.Account, error)
 	}
 
-	AccountFactoryImpl struct{}
+	AccountFactoryImpl struct {
+		now   Timer
+		genID IDGenerator
+	}
 )
 
-func NewAccountFactory() AccountFactoryImpl {
-	return AccountFactoryImpl{}
+func NewAccountFactory(timer Timer, generatorID IDGenerator) AccountFactoryImpl {
+	return AccountFactoryImpl{
+		now:   timer,
+		genID: generatorID,
+	}
 }
 
 func (a AccountFactoryImpl) CreateAccount(
 	firstName, lastName, email, nick, password string,
 ) (*aggregate.Account, error) {
-	id, err := vo.NewID(uuid.New().String())
+	id, err := vo.NewID(a.genID.GenerateID())
 	if err != nil {
 		return nil, errors.Wrap(err, "[AccountFactory] vo.NewID")
 	}
@@ -44,7 +58,7 @@ func (a AccountFactoryImpl) CreateAccount(
 	if err != nil {
 		return nil, errors.Wrap(err, "[AccountFactory] vo.NewPassword")
 	}
-	t := time.Now()
+	t := a.now.Now()
 
 	acc, err := entity.NewAccount(
 		id,

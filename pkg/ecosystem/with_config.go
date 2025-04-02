@@ -2,12 +2,13 @@ package ecosystem
 
 import (
 	"context"
-	ayaka "github.com/illusory-server/accounts/pkg/core"
-	"github.com/ilyakaznacheev/cleanenv"
-	"github.com/pkg/errors"
 	"os"
 	"strconv"
 	"time"
+
+	ayaka "github.com/illusory-server/accounts/pkg/core"
+	"github.com/ilyakaznacheev/cleanenv"
+	"github.com/pkg/errors"
 )
 
 const (
@@ -22,7 +23,7 @@ type LibCfg struct {
 }
 
 func AdapterParseLibConfigFromYaml(path string) ayaka.ConfigInterceptor {
-	return func(ctx context.Context, conf *ayaka.Config) (*ayaka.Config, error) {
+	return func(_ context.Context, conf *ayaka.Config) (*ayaka.Config, error) {
 		_, err := os.Stat(path)
 		if err != nil {
 			return nil, errors.Wrap(err, "cannot stat config file")
@@ -42,7 +43,7 @@ func AdapterParseLibConfigFromYaml(path string) ayaka.ConfigInterceptor {
 	}
 }
 
-func AdapterParseConfigFromEnv(ctx context.Context, cfg *ayaka.Config) (*ayaka.Config, error) {
+func AdapterParseConfigFromEnv(_ context.Context, cfg *ayaka.Config) (*ayaka.Config, error) {
 	startTimeoutEnv := os.Getenv(EnvAyakaStartTimeout)
 	if startTimeoutEnv == "" {
 		return cfg, errors.Errorf("%s env variable is not set", EnvAyakaStartTimeout)

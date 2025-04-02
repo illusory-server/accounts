@@ -2,7 +2,8 @@ package vo
 
 import (
 	"encoding/json"
-	"github.com/illusory-server/accounts/pkg/errors/codes"
+
+	"github.com/illusory-server/accounts/pkg/errors/codex"
 	"github.com/illusory-server/accounts/pkg/errors/errx"
 	"github.com/pkg/errors"
 )
@@ -48,7 +49,7 @@ func (q Query) SortOrder() QueryOrder {
 
 func NewQuery(page, limit uint, sortBy string, sortOrder QueryOrder) (Query, error) {
 	if err := sortOrder.Validate(); err != nil {
-		return Query{}, errx.WrapWithCode(err, codes.InvalidArgument, "Query.Validate")
+		return Query{}, errx.WrapWithCode(err, codex.InvalidArgument, "Query.Validate")
 	}
 	return Query{
 		page:      page,

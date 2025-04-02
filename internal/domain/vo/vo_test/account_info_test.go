@@ -3,7 +3,7 @@ package vo_test
 import (
 	"encoding/json"
 	"github.com/illusory-server/accounts/internal/domain/vo"
-	"github.com/illusory-server/accounts/pkg/errors/codes"
+	"github.com/illusory-server/accounts/pkg/errors/codex"
 	"github.com/illusory-server/accounts/pkg/errors/errx"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -33,7 +33,7 @@ func TestVoAccountInfo(t *testing.T) {
 			firstName, lastName, email,
 		)
 		assert.Error(t, err)
-		assert.Equal(t, codes.InvalidArgument, errx.Code(err))
+		assert.Equal(t, codex.InvalidArgument, errx.Code(err))
 		assert.Equal(t, vo.AccountInfo{}, info)
 
 		firstName = "eer0"
@@ -42,7 +42,7 @@ func TestVoAccountInfo(t *testing.T) {
 			firstName, lastName, email,
 		)
 		assert.Error(t, err)
-		assert.Equal(t, codes.InvalidArgument, errx.Code(err))
+		assert.Equal(t, codex.InvalidArgument, errx.Code(err))
 		assert.Equal(t, vo.AccountInfo{}, info)
 
 		lastName = "kirov"
@@ -51,7 +51,7 @@ func TestVoAccountInfo(t *testing.T) {
 			firstName, lastName, email,
 		)
 		assert.Error(t, err)
-		assert.Equal(t, codes.InvalidArgument, errx.Code(err))
+		assert.Equal(t, codex.InvalidArgument, errx.Code(err))
 		assert.Equal(t, vo.AccountInfo{}, info)
 	})
 

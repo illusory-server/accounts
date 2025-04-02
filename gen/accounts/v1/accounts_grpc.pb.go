@@ -205,7 +205,7 @@ func (c *accountsServiceClient) GetAccountsByQuery(ctx context.Context, in *Quer
 }
 
 // AccountsServiceServer is the server API for AccountsService service.
-// All implementations must embed UnimplementedAccountsServiceServer
+// All implementations should embed UnimplementedAccountsServiceServer
 // for forward compatibility.
 type AccountsServiceServer interface {
 	Create(context.Context, *CreateAccountRequest) (*Account, error)
@@ -222,10 +222,9 @@ type AccountsServiceServer interface {
 	GetAccountByNickname(context.Context, *String) (*Account, error)
 	GetAccountsByIds(context.Context, *Ids) (*Accounts, error)
 	GetAccountsByQuery(context.Context, *QueryRequest) (*QueryAccountsResponse, error)
-	mustEmbedUnimplementedAccountsServiceServer()
 }
 
-// UnimplementedAccountsServiceServer must be embedded to have
+// UnimplementedAccountsServiceServer should be embedded to have
 // forward compatible implementations.
 //
 // NOTE: this should be embedded by value instead of pointer to avoid a nil
@@ -274,8 +273,7 @@ func (UnimplementedAccountsServiceServer) GetAccountsByIds(context.Context, *Ids
 func (UnimplementedAccountsServiceServer) GetAccountsByQuery(context.Context, *QueryRequest) (*QueryAccountsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAccountsByQuery not implemented")
 }
-func (UnimplementedAccountsServiceServer) mustEmbedUnimplementedAccountsServiceServer() {}
-func (UnimplementedAccountsServiceServer) testEmbeddedByValue()                         {}
+func (UnimplementedAccountsServiceServer) testEmbeddedByValue() {}
 
 // UnsafeAccountsServiceServer may be embedded to opt out of forward compatibility for this service.
 // Use of this interface is not recommended, as added methods to AccountsServiceServer will

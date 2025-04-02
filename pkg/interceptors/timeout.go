@@ -3,15 +3,16 @@ package interceptors
 import (
 	"context"
 	"errors"
+	"time"
+
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"time"
 )
 
 func Timeout(timeout time.Duration) grpc.UnaryServerInterceptor {
 	return func(
-		ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler,
+		ctx context.Context, req interface{}, _ *grpc.UnaryServerInfo, handler grpc.UnaryHandler,
 	) (interface{}, error) {
 		var err error
 		var result interface{}

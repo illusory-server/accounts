@@ -2,9 +2,10 @@ package vo
 
 import (
 	"encoding/json"
+
 	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/go-ozzo/ozzo-validation/is"
-	"github.com/illusory-server/accounts/pkg/errors/codes"
+	"github.com/illusory-server/accounts/pkg/errors/codex"
 	"github.com/illusory-server/accounts/pkg/errors/errx"
 )
 
@@ -27,7 +28,7 @@ func NewAccountInfo(firstName, lastName, email string) (AccountInfo, error) {
 	}
 
 	if err := result.Validate(); err != nil {
-		return AccountInfo{}, errx.WrapWithCode(err, codes.InvalidArgument, "AccountInfo.Validate")
+		return AccountInfo{}, errx.WrapWithCode(err, codex.InvalidArgument, "AccountInfo.Validate")
 	}
 
 	return result, nil

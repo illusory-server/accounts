@@ -2,12 +2,13 @@ package ecosystem
 
 import (
 	"context"
+	"net/http"
+	"time"
+
 	"github.com/go-chi/chi/v5"
 	validation "github.com/go-ozzo/ozzo-validation"
 	ayaka "github.com/illusory-server/accounts/pkg/core"
 	"github.com/pkg/errors"
-	"net/http"
-	"time"
 )
 
 const (
@@ -134,8 +135,8 @@ func (h *HttpJob) Run(ctx context.Context, container ayaka.Container) error {
 
 func NewHttpJobBuilder() *HttpJobBuilder {
 	return &HttpJobBuilder{
-		regs:        make([]HttpRegister, 0, 8),
-		middlewares: make([]func(http.Handler) http.Handler, 0, 8),
+		regs:        make([]HttpRegister, 0, sliceCap),
+		middlewares: make([]func(http.Handler) http.Handler, 0, sliceCap),
 	}
 }
 
@@ -160,15 +161,15 @@ func (b *HttpJobBuilder) MaxHeaderBytes(maxHeaderBytes int) *HttpJobBuilder {
 }
 
 func (b *HttpJobBuilder) Middleware(middlewares ...func(http.Handler) http.Handler) *HttpJobBuilder {
-	for _, middleware := range middlewares {
-		b.middlewares = append(b.middlewares, middleware)
+	if len(middlewares) > 0 {
+		b.middlewares = append(b.middlewares, middlewares...)
 	}
 	return b
 }
 
 func (b *HttpJobBuilder) Register(regs ...HttpRegister) *HttpJobBuilder {
-	for _, reg := range regs {
-		b.regs = append(b.regs, reg)
+	if len(regs) > 0 {
+		b.regs = append(b.regs, regs...)
 	}
 	return b
 }

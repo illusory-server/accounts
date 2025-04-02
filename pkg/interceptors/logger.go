@@ -2,17 +2,17 @@ package interceptors
 
 import (
 	"context"
+	"path"
+	"strings"
+	"time"
+
 	"github.com/illusory-server/accounts/pkg/logger"
-	"github.com/illusory-server/accounts/pkg/logger/log"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/peer"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
-	"path"
-	"strings"
-	"time"
 )
 
 var Marshaller = &protojson.MarshalOptions{}
@@ -22,25 +22,26 @@ const (
 	DebugLoggingInterceptorMessage = "logging interceptor debug"
 	InfoLoggingInterceptorMessage  = "logging interceptor info"
 	MaxSize                        = 2048000
+	sliceCap                       = 7
 )
 
 func requestField(req interface{}) (logger.Field, bool) {
 	if pb, ok := req.(proto.Message); ok {
 		if b, err := Marshaller.Marshal(pb); err == nil && len(b) < MaxSize {
-			return log.RawJson("request", b), true
+			return logger.RawJson("request", b), true
 		}
 	}
 	return logger.Field{}, false
 }
 
-func debugLogFields(ctx context.Context, method string, t time.Time, req interface{}) []logger.Field {
-	fields := make([]logger.Field, 0, 7)
+func debugLogFields(ctx context.Context, method string, t time.Time, _ interface{}) []logger.Field {
+	fields := make([]logger.Field, 0, sliceCap)
 	fields = append(
 		fields,
-		log.Time("time", t),
-		log.String("method", path.Base(method)),
-		log.Duration("duration", time.Since(t)),
-		log.String("service", path.Dir(method)[1:]),
+		logger.Time("time", t),
+		logger.String("method", path.Base(method)),
+		logger.Duration("duration", time.Since(t)),
+		logger.String("service", path.Dir(method)[1:]),
 	)
 
 	if md, ok := metadata.FromIncomingContext(ctx); ok {
@@ -48,11 +49,11 @@ func debugLogFields(ctx context.Context, method string, t time.Time, req interfa
 		for i := range md {
 			metas[i] = strings.Join(md.Get(i), ",")
 		}
-		fields = append(fields, log.Any("metadata", metas))
+		fields = append(fields, logger.Any("metadata", metas))
 	}
 
 	if p, ok := peer.FromContext(ctx); ok {
-		fields = append(fields, log.String("ip", p.Addr.String()))
+		fields = append(fields, logger.String("ip", p.Addr.String()))
 	}
 
 	return fields
@@ -61,10 +62,10 @@ func debugLogFields(ctx context.Context, method string, t time.Time, req interfa
 func errorLogFields(err error) []logger.Field {
 	statusErr := status.Convert(err)
 	return []logger.Field{
-		log.Err(err),
-		log.String("code", statusErr.Code().String()),
-		log.String("message", statusErr.Message()),
-		log.Any("details", statusErr.Details()),
+		logger.Err(err),
+		logger.String("code", statusErr.Code().String()),
+		logger.String("message", statusErr.Message()),
+		logger.Any("details", statusErr.Details()),
 	}
 }
 

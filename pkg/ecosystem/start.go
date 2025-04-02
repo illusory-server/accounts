@@ -2,9 +2,10 @@ package ecosystem
 
 import (
 	"fmt"
+	"os"
+
 	ayaka "github.com/illusory-server/accounts/pkg/core"
 	cli "github.com/jawher/mow.cli"
-	"os"
 )
 
 const CliHelpString = `

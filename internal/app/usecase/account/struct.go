@@ -1,8 +1,9 @@
 package account
 
 import (
-	"github.com/illusory-server/accounts/internal/domain/vo"
 	"time"
+
+	"github.com/illusory-server/accounts/internal/domain/vo"
 )
 
 type WithoutPassword struct {

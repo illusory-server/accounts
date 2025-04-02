@@ -2,61 +2,70 @@ package account
 
 import (
 	"context"
-	"github.com/illusory-server/accounts/pkg/errors/codes"
+
+	"github.com/illusory-server/accounts/pkg/errors/codex"
 	"github.com/illusory-server/accounts/pkg/errors/errx"
-	"github.com/illusory-server/accounts/pkg/logger/log"
+	"github.com/illusory-server/accounts/pkg/logger"
 	"github.com/pkg/errors"
 )
 
-func (a *AccountsUseCase) Create(ctx context.Context, firstName, lastName, email, nick, password string) (*WithoutPassword, error) {
+var (
+	ErrNicknameExists = errx.New(codex.AlreadyExists, "nickname already exists")
+	ErrEmailExists    = errx.New(codex.AlreadyExists, "email already exists")
+)
+
+func (a *UseCase) Create(
+	ctx context.Context, firstName, lastName, email, nick, password string,
+) (*WithoutPassword, error) {
 	candidateByNick, err := a.accountQuery.HasByNickname(ctx, nick)
 	if err != nil {
 		a.log.Error(ctx, "has user by nickname query failed",
-			log.Err(err),
-			log.String("nickname", nick),
+			logger.Err(err),
+			logger.String("nickname", nick),
 		)
 		return nil, errors.Wrap(err, "[AccountUseCase] accountQuery.HasByNickname")
 	}
 	if candidateByNick {
 		a.log.Debug(ctx, "has user by nickname query failed",
-			log.String("nickname", nick),
+			logger.String("nickname", nick),
 		)
-		return nil, errx.New(codes.AlreadyExists, "account already exists")
+		return nil, ErrNicknameExists
 	}
 	candidateByEmail, err := a.accountQuery.HasByEmail(ctx, email)
 	if err != nil {
 		a.log.Error(ctx, "has user by email query failed",
-			log.Err(err),
-			log.String("email", email),
+			logger.Err(err),
+			logger.String("email", email),
 		)
+		return nil, errors.Wrap(err, "[AccountUseCase] accountQuery.HasByEmail")
 	}
 	if candidateByEmail {
 		a.log.Debug(ctx, "has user by email query failed",
-			log.String("email", email),
+			logger.String("email", email),
 		)
-		return nil, errx.New(codes.AlreadyExists, "account email already exists")
+		return nil, ErrEmailExists
 	}
 
 	acc, err := a.accountFactory.CreateAccount(firstName, lastName, email, nick, password)
 	if err != nil {
 		a.log.Error(ctx, "failed to create account",
-			log.Err(err),
-			log.String("first_name", firstName),
-			log.String("last_name", lastName),
-			log.String("email", email),
-			log.String("nickname", nick),
+			logger.Err(err),
+			logger.String("first_name", firstName),
+			logger.String("last_name", lastName),
+			logger.String("email", email),
+			logger.String("nickname", nick),
 		)
 		return nil, errors.Wrap(err, "[AccountUseCase] accountFactory.CreateAccount")
 	}
 
-	acc, err = a.accountCommand.Create(ctx, acc)
+	resAcc, err := a.accountCommand.Create(ctx, acc)
 	if err != nil {
 		a.log.Error(ctx, "failed to create account",
-			log.Err(err),
-			log.Any("account", acc),
+			logger.Err(err),
+			logger.Any("account", acc),
 		)
 		return nil, errors.Wrap(err, "[AccountUseCase] accountCommand.Create")
 	}
 
-	return ConvertAccountAggregateToWithoutPassword(acc), nil
+	return ConvertAccountAggregateToWithoutPassword(resAcc), nil
 }

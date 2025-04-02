@@ -2,6 +2,7 @@ package ecosystem
 
 import (
 	"context"
+
 	"github.com/illusory-server/accounts/pkg/errors/errx"
 
 	"github.com/pkg/errors"

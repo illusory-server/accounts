@@ -2,12 +2,14 @@ package account
 
 import "context"
 
-func (a *AccountsUseCase) DeleteById(ctx context.Context, id string) error {
+// DeleteById GetByIds TODO - написать реализацию
+func (a *UseCase) DeleteById(ctx context.Context, id string) error {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (a *AccountsUseCase) DeleteManyByIds(ctx context.Context, ids []string) error {
+// DeleteManyByIds GetByIds TODO - написать реализацию, переделать сигнатуру
+func (a *UseCase) DeleteManyByIds(ctx context.Context, ids []string) error {
 	//TODO implement me
 	panic("implement me")
 }

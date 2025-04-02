@@ -1,14 +1,15 @@
 package job
 
 import (
+	"os"
+	"strconv"
+	"time"
+
 	"github.com/illusory-server/accounts/pkg/ecosystem"
 	"github.com/opentracing/opentracing-go"
 	"google.golang.org/grpc"
 	health "google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/grpc/reflection"
-	"os"
-	"strconv"
-	"time"
 )
 
 type GrpcEnvJobEnvKeys struct {

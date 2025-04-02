@@ -3,9 +3,10 @@ package entity_test
 import (
 	"encoding/json"
 	"github.com/google/uuid"
+	"github.com/illusory-server/accounts/internal/domain"
 	"github.com/illusory-server/accounts/internal/domain/entity"
 	"github.com/illusory-server/accounts/internal/domain/vo"
-	"github.com/illusory-server/accounts/pkg/errors/codes"
+	"github.com/illusory-server/accounts/pkg/errors/codex"
 	"github.com/illusory-server/accounts/pkg/errors/errx"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -55,7 +56,7 @@ func TestEntityAccount(t *testing.T) {
 			createdTime,
 		)
 		assert.Nil(t, acc)
-		assert.Equal(t, codes.InvalidArgument, errx.Code(err))
+		assert.Equal(t, codex.InvalidArgument, errx.Code(err))
 		assert.Error(t, err)
 
 		acc, err = entity.NewAccount(
@@ -69,7 +70,7 @@ func TestEntityAccount(t *testing.T) {
 		)
 		assert.Nil(t, acc)
 		assert.Error(t, err)
-		assert.Equal(t, codes.InvalidArgument, errx.Code(err))
+		assert.Equal(t, codex.InvalidArgument, errx.Code(err))
 
 		acc, err = entity.NewAccount(
 			id,
@@ -82,7 +83,7 @@ func TestEntityAccount(t *testing.T) {
 		)
 		assert.Nil(t, acc)
 		assert.Error(t, err)
-		assert.Equal(t, codes.InvalidArgument, errx.Code(err))
+		assert.Equal(t, codex.InvalidArgument, errx.Code(err))
 
 		acc, err = entity.NewAccount(
 			id,
@@ -95,7 +96,7 @@ func TestEntityAccount(t *testing.T) {
 		)
 		assert.Nil(t, acc)
 		assert.Error(t, err)
-		assert.Equal(t, codes.InvalidArgument, errx.Code(err))
+		assert.Equal(t, codex.InvalidArgument, errx.Code(err))
 
 		acc, err = entity.NewAccount(
 			id,
@@ -108,7 +109,7 @@ func TestEntityAccount(t *testing.T) {
 		)
 		assert.Nil(t, acc)
 		assert.Error(t, err)
-		assert.Equal(t, codes.InvalidArgument, errx.Code(err))
+		assert.Equal(t, codex.InvalidArgument, errx.Code(err))
 
 		incorrectTime := time.Now().Add(1 * time.Hour)
 		acc, err = entity.NewAccount(
@@ -122,7 +123,7 @@ func TestEntityAccount(t *testing.T) {
 		)
 		assert.Nil(t, acc)
 		assert.Error(t, err)
-		assert.Equal(t, codes.InvalidArgument, errx.Code(err))
+		assert.Equal(t, codex.InvalidArgument, errx.Code(err))
 
 		acc, err = entity.NewAccount(
 			id,
@@ -135,7 +136,7 @@ func TestEntityAccount(t *testing.T) {
 		)
 		assert.Nil(t, acc)
 		assert.Error(t, err)
-		assert.Equal(t, codes.InvalidArgument, errx.Code(err))
+		assert.Equal(t, codex.InvalidArgument, errx.Code(err))
 	})
 
 	t.Run("Should correct setter", func(t *testing.T) {
@@ -157,6 +158,7 @@ func TestEntityAccount(t *testing.T) {
 		assert.Equal(t, newPass, acc.Password())
 		err = acc.SetPassword(vo.Password{})
 		assert.Error(t, err)
+		assert.Equal(t, codex.InvalidArgument, errx.Code(err))
 		assert.Equal(t, newPass, acc.Password())
 
 		newInfo, err := vo.NewAccountInfo("eer0-2", "kirov-2", "kuru2@gmail.com")
@@ -166,6 +168,7 @@ func TestEntityAccount(t *testing.T) {
 		assert.Equal(t, newInfo, acc.Info())
 		err = acc.SetInfo(vo.AccountInfo{})
 		assert.Error(t, err)
+		assert.Equal(t, codex.InvalidArgument, errx.Code(err))
 		assert.Equal(t, newInfo, acc.Info())
 
 		newNick := "new-eer0"
@@ -174,6 +177,7 @@ func TestEntityAccount(t *testing.T) {
 		assert.Equal(t, newNick, acc.Nickname())
 		err = acc.SetNickname("s")
 		assert.Error(t, err)
+		assert.Equal(t, codex.InvalidArgument, errx.Code(err))
 		assert.Equal(t, newNick, acc.Nickname())
 
 		newUpdatedTime := time.Now()
@@ -182,6 +186,7 @@ func TestEntityAccount(t *testing.T) {
 		assert.Equal(t, newUpdatedTime, acc.UpdatedAt())
 		err = acc.SetUpdatedAt(time.Now().Add(1 * time.Hour))
 		assert.Error(t, err)
+		assert.Equal(t, codex.InvalidArgument, errx.Code(err))
 		assert.Equal(t, newUpdatedTime, acc.UpdatedAt())
 
 		avatar, err := vo.NewLink("https://joska.com/5432435")
@@ -189,6 +194,22 @@ func TestEntityAccount(t *testing.T) {
 		err = acc.SetAvatarLink(avatar)
 		assert.NoError(t, err)
 		assert.Equal(t, avatar, acc.AvatarLink().ValueOrDefault(vo.Link{}))
+
+		err = acc.SetAvatarLink(vo.Link{})
+		assert.Error(t, err)
+		assert.Equal(t, codex.InvalidArgument, errx.Code(err))
+
+		roleSet, err := vo.NewRole(vo.RoleUser)
+		assert.NoError(t, err)
+		assert.Equal(t, vo.RoleSuperAdmin, acc.Role().Value())
+		err = acc.SetRole(roleSet)
+		assert.NoError(t, err)
+		assert.Equal(t, roleSet.Value(), acc.Role().Value())
+
+		err = acc.SetRole(vo.Role{})
+		assert.Error(t, err)
+		assert.Equal(t, codex.InvalidArgument, errx.Code(err))
+		assert.Equal(t, roleSet.Value(), acc.Role().Value())
 	})
 
 	t.Run("Should correct marshal", func(t *testing.T) {
@@ -229,5 +250,18 @@ func TestEntityAccount(t *testing.T) {
 		err = json.Unmarshal(expectedBytes, &expectedMap)
 		assert.NoError(t, err)
 		assert.Equal(t, expectedMap, m)
+	})
+
+	t.Run("Should correct getter", func(t *testing.T) {
+		var acc *entity.Account
+		assert.Equal(t, vo.ID{}, acc.ID())
+		assert.Equal(t, vo.AccountInfo{}, acc.Info())
+		assert.Equal(t, vo.Password{}, acc.Password())
+		assert.Equal(t, vo.Role{}, acc.Role())
+		assert.Equal(t, "", acc.Nickname())
+		assert.Equal(t, domain.NewEmptyOptional[vo.Link](), acc.AvatarLink())
+		assert.Equal(t, time.Time{}, acc.UpdatedAt())
+		assert.Equal(t, time.Time{}, acc.CreatedAt())
+
 	})
 }

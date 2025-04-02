@@ -2,10 +2,11 @@ package log
 
 import (
 	"context"
-	"github.com/illusory-server/accounts/pkg/logger"
-	"github.com/rs/zerolog"
 	"io"
 	"time"
+
+	"github.com/illusory-server/accounts/pkg/logger"
+	"github.com/rs/zerolog"
 )
 
 const (
@@ -44,6 +45,7 @@ func (l *Log) Enabled(ctx context.Context, level logger.Level) bool {
 	return false
 }
 
+//nolint:gocyclo,funlen
 func fieldToEvent(event *zerolog.Event, fields []logger.Field) *zerolog.Event {
 	for _, f := range fields {
 		switch f.Type {
@@ -148,11 +150,11 @@ func fieldToEvent(event *zerolog.Event, fields []logger.Field) *zerolog.Event {
 
 func (l *Log) combineFields(fields []logger.Field) []logger.Field {
 	combined := make([]logger.Field, 0, len(l.withFields)+len(fields))
-	for _, field := range l.withFields {
-		combined = append(combined, field)
+	if len(l.withFields) > 0 {
+		combined = append(combined, l.withFields...)
 	}
-	for _, field := range fields {
-		combined = append(combined, field)
+	if len(fields) > 0 {
+		combined = append(combined, fields...)
 	}
 	return combined
 }

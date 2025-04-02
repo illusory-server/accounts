@@ -24,7 +24,7 @@ func TestField(t *testing.T) {
 				Value: "string value",
 			},
 			actual: func() logger.Field {
-				return String(allKeyName, "string value")
+				return logger.String(allKeyName, "string value")
 			},
 		},
 		{
@@ -35,7 +35,7 @@ func TestField(t *testing.T) {
 				Value: 69,
 			},
 			actual: func() logger.Field {
-				return Int(allKeyName, 69)
+				return logger.Int(allKeyName, 69)
 			},
 		},
 		{
@@ -46,7 +46,7 @@ func TestField(t *testing.T) {
 				Value: true,
 			},
 			actual: func() logger.Field {
-				return Bool(allKeyName, true)
+				return logger.Bool(allKeyName, true)
 			},
 		},
 		{
@@ -57,7 +57,7 @@ func TestField(t *testing.T) {
 				Value: 69.69,
 			},
 			actual: func() logger.Field {
-				return Float64(allKeyName, 69.69)
+				return logger.Float64(allKeyName, 69.69)
 			},
 		},
 		{
@@ -68,7 +68,7 @@ func TestField(t *testing.T) {
 				Value: float32(69.69),
 			},
 			actual: func() logger.Field {
-				return Float32(allKeyName, 69.69)
+				return logger.Float32(allKeyName, 69.69)
 			},
 		},
 		{
@@ -79,7 +79,7 @@ func TestField(t *testing.T) {
 				Value: int8(69),
 			},
 			actual: func() logger.Field {
-				return Int8(allKeyName, 69)
+				return logger.Int8(allKeyName, 69)
 			},
 		},
 		{
@@ -90,7 +90,7 @@ func TestField(t *testing.T) {
 				Value: int16(69),
 			},
 			actual: func() logger.Field {
-				return Int16(allKeyName, 69)
+				return logger.Int16(allKeyName, 69)
 			},
 		},
 		{
@@ -101,7 +101,7 @@ func TestField(t *testing.T) {
 				Value: int32(69),
 			},
 			actual: func() logger.Field {
-				return Int32(allKeyName, 69)
+				return logger.Int32(allKeyName, 69)
 			},
 		},
 		{
@@ -112,7 +112,7 @@ func TestField(t *testing.T) {
 				Value: int64(69),
 			},
 			actual: func() logger.Field {
-				return Int64(allKeyName, 69)
+				return logger.Int64(allKeyName, 69)
 			},
 		},
 		{
@@ -123,7 +123,7 @@ func TestField(t *testing.T) {
 				Value: uint8(69),
 			},
 			actual: func() logger.Field {
-				return Uint8(allKeyName, 69)
+				return logger.Uint8(allKeyName, 69)
 			},
 		},
 		{
@@ -134,7 +134,7 @@ func TestField(t *testing.T) {
 				Value: uint16(69),
 			},
 			actual: func() logger.Field {
-				return Uint16(allKeyName, 69)
+				return logger.Uint16(allKeyName, 69)
 			},
 		},
 		{
@@ -145,7 +145,7 @@ func TestField(t *testing.T) {
 				Value: uint32(69),
 			},
 			actual: func() logger.Field {
-				return Uint32(allKeyName, 69)
+				return logger.Uint32(allKeyName, 69)
 			},
 		},
 		{
@@ -156,7 +156,7 @@ func TestField(t *testing.T) {
 				Value: uint64(69),
 			},
 			actual: func() logger.Field {
-				return Uint64(allKeyName, 69)
+				return logger.Uint64(allKeyName, 69)
 			},
 		},
 		{
@@ -167,7 +167,7 @@ func TestField(t *testing.T) {
 				Value: time.Unix(69, 0),
 			},
 			actual: func() logger.Field {
-				return Time(allKeyName, time.Unix(69, 0))
+				return logger.Time(allKeyName, time.Unix(69, 0))
 			},
 		},
 		{
@@ -178,7 +178,7 @@ func TestField(t *testing.T) {
 				Value: time.Duration(69) * time.Second,
 			},
 			actual: func() logger.Field {
-				return Duration(allKeyName, 69*time.Second)
+				return logger.Duration(allKeyName, 69*time.Second)
 			},
 		},
 		{
@@ -189,7 +189,7 @@ func TestField(t *testing.T) {
 				Value: []string{"kek", "lol"},
 			},
 			actual: func() logger.Field {
-				return Any(allKeyName, []string{"kek", "lol"})
+				return logger.Any(allKeyName, []string{"kek", "lol"})
 			},
 		},
 		{
@@ -200,7 +200,7 @@ func TestField(t *testing.T) {
 				Value: errors.New("error 69"),
 			},
 			actual: func() logger.Field {
-				return Err(errors.New("error 69"))
+				return logger.Err(errors.New("error 69"))
 			},
 		},
 		{
@@ -211,7 +211,7 @@ func TestField(t *testing.T) {
 				Value: []byte(`{"data": "message"}`),
 			},
 			actual: func() logger.Field {
-				return RawJson(allKeyName, []byte(`{"data": "message"}`))
+				return logger.RawJson(allKeyName, []byte(`{"data": "message"}`))
 			},
 		},
 		{
@@ -220,12 +220,12 @@ func TestField(t *testing.T) {
 				Key:  allKeyName,
 				Type: logger.GroupType,
 				Value: []logger.Field{
-					String("1", "mes"),
-					Int("2", 69),
+					logger.String("1", "mes"),
+					logger.Int("2", 69),
 				},
 			},
 			actual: func() logger.Field {
-				return Group(allKeyName, String("1", "mes"), Int("2", 69))
+				return logger.Group(allKeyName, logger.String("1", "mes"), logger.Int("2", 69))
 			},
 		},
 	}

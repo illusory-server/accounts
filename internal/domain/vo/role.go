@@ -2,8 +2,9 @@ package vo
 
 import (
 	"encoding/json"
+
 	validation "github.com/go-ozzo/ozzo-validation"
-	"github.com/illusory-server/accounts/pkg/errors/codes"
+	"github.com/illusory-server/accounts/pkg/errors/codex"
 	"github.com/illusory-server/accounts/pkg/errors/errx"
 )
 
@@ -23,7 +24,7 @@ func NewRole(value AccountRoleType) (Role, error) {
 	result := Role{value: value}
 
 	if err := result.Validate(); err != nil {
-		return Role{}, errx.WrapWithCode(err, codes.InvalidArgument, "Role.Validate")
+		return Role{}, errx.WrapWithCode(err, codex.InvalidArgument, "Role.Validate")
 	}
 
 	return result, nil

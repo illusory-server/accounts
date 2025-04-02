@@ -2,6 +2,8 @@ package account
 
 import (
 	"context"
+	"time"
+
 	"github.com/illusory-server/accounts/internal/app/factory"
 	"github.com/illusory-server/accounts/internal/domain/aggregate"
 	"github.com/illusory-server/accounts/internal/domain/repository"
@@ -9,11 +11,17 @@ import (
 	"github.com/illusory-server/accounts/pkg/logger"
 )
 
+var _ Account = (*UseCase)(nil)
+
 //go:generate mockgen -package mock_usecase -source account.go -destination ../../../mock/usecase/account.go
 
 type (
-	// UseCase TODO - Требования по мульти create, update?
-	UseCase interface {
+	Timer interface {
+		Now() time.Time
+	}
+
+	// Account TODO - Требования по мульти create, update?
+	Account interface {
 		Create(ctx context.Context, firstName, lastName, email, nick, password string) (*WithoutPassword, error)
 
 		UpdateInfoById(ctx context.Context, id, firstName, lastName string) error
@@ -34,11 +42,12 @@ type (
 		GetByIds(ctx context.Context, ids []string) ([]*WithoutPassword, error)
 	}
 
-	AccountsUseCase struct {
+	UseCase struct {
 		log            logger.Logger
 		accountFactory factory.AccountFactory
 		accountQuery   repository.AccountQuery
 		accountCommand repository.AccountCommand
+		now            Timer
 	}
 )
 
@@ -47,13 +56,15 @@ func NewUseCase(
 	accountFactory factory.AccountFactory,
 	accountQuery repository.AccountQuery,
 	accountCommand repository.AccountCommand,
-) *AccountsUseCase {
-	return &AccountsUseCase{
+	nowTimer Timer,
+) (*UseCase, error) {
+	return &UseCase{
 		log:            log,
 		accountFactory: accountFactory,
 		accountQuery:   accountQuery,
 		accountCommand: accountCommand,
-	}
+		now:            nowTimer,
+	}, nil
 }
 
 func ConvertAccountAggregateToWithoutPassword(aggregate *aggregate.Account) *WithoutPassword {

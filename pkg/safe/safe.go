@@ -1,8 +1,9 @@
 package safe
 
 import (
-	"github.com/getsentry/sentry-go"
 	"time"
+
+	"github.com/getsentry/sentry-go"
 )
 
 const flushTime = time.Second * 2

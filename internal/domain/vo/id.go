@@ -2,9 +2,10 @@ package vo
 
 import (
 	"encoding/json"
-	"github.com/go-ozzo/ozzo-validation"
+
+	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/go-ozzo/ozzo-validation/is"
-	"github.com/illusory-server/accounts/pkg/errors/codes"
+	"github.com/illusory-server/accounts/pkg/errors/codex"
 	"github.com/illusory-server/accounts/pkg/errors/errx"
 )
 
@@ -15,7 +16,7 @@ type ID struct {
 func NewID(v string) (ID, error) {
 	result := ID{value: v}
 	if err := result.Validate(); err != nil {
-		return ID{}, errx.WrapWithCode(err, codes.InvalidArgument, "ID.Validate")
+		return ID{}, errx.WrapWithCode(err, codex.InvalidArgument, "ID.Validate")
 	}
 
 	return result, nil
