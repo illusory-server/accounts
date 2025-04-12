@@ -24,7 +24,7 @@ const (
 	FormatErrJobRunPanic             = "panic in runned job '%s': %v"
 )
 
-func (a *App) initJob() error {
+func (a *App[T]) initJob() error {
 	var wg sync.WaitGroup
 	ctx, cancel := context.WithTimeout(a.ctx, a.Config().StartTimeout)
 	defer cancel()
@@ -34,7 +34,7 @@ func (a *App) initJob() error {
 
 	for key, job := range a.jobs {
 		wg.Add(1)
-		go func(ctx context.Context, key string, job Job) {
+		go func(ctx context.Context, key string, job Job[T]) {
 			defer wg.Done()
 			defer func() {
 				if r := recover(); r != nil {
@@ -46,7 +46,7 @@ func (a *App) initJob() error {
 				}
 			}()
 
-			if err := job.Init(ctx, a.Dependency()); err != nil {
+			if err := job.Init(ctx, a.Container()); err != nil {
 				a.logger.Error(ctx, LogMessageInitError, map[string]any{
 					LogKeyInfoKey:   key,
 					LogKeyInfoError: err.Error(),
@@ -79,7 +79,7 @@ func (a *App) initJob() error {
 	}
 }
 
-func (a *App) runJob() error {
+func (a *App[T]) runJob() error {
 	var wg sync.WaitGroup
 	ctx, cancel := context.WithCancel(a.ctx)
 	defer cancel()
@@ -89,7 +89,7 @@ func (a *App) runJob() error {
 
 	for key, job := range a.jobs {
 		wg.Add(1)
-		go func(ctx context.Context, key string, job Job) {
+		go func(ctx context.Context, key string, job Job[T]) {
 			defer wg.Done()
 			defer func() {
 				if r := recover(); r != nil {
@@ -101,7 +101,7 @@ func (a *App) runJob() error {
 				}
 			}()
 
-			if err := job.Run(ctx, a.Dependency()); err != nil {
+			if err := job.Run(ctx, a.Container()); err != nil {
 				a.logger.Error(ctx, LogMessageRunError, map[string]any{
 					LogKeyInfoKey:   key,
 					LogKeyInfoError: err.Error(),

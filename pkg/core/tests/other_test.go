@@ -35,15 +35,15 @@ func TestMarshalConfig(t *testing.T) {
 }
 
 func TestContext(t *testing.T) {
-	app := ayaka.NewApp(&ayaka.Options{
+	app := ayaka.NewApp[*Container](&ayaka.Options[*Container]{
 		Name:        "my-app",
 		Description: "my-app description testing",
 		Version:     "1.0.0",
-		Container:   ayaka.NewContainer(ayaka.NoopLogger{}),
+		Container:   &Container{},
 	})
 
 	ctx := app.Context()
-	appRes, err := ayaka.AppFromContext(ctx)
+	appRes, err := ayaka.AppFromContext[*Container](ctx)
 	assert.NoError(t, err)
 	assert.NotNil(t, appRes)
 
@@ -54,10 +54,10 @@ func TestContext(t *testing.T) {
 		Description: "my-app description testing",
 		Version:     "1.0.0",
 	}, appRes.Info())
-	assert.NotNil(t, appRes.Dependency())
+	assert.NotNil(t, appRes.Container())
 	assert.NotZero(t, appRes.Context())
 
-	appRes, err = ayaka.AppFromContext(context.Background())
+	appRes, err = ayaka.AppFromContext[*Container](context.Background())
 	assert.Error(t, err)
 	assert.True(t, errors.Is(err, ayaka.ErrAppNotFountInContext))
 	assert.Nil(t, appRes)

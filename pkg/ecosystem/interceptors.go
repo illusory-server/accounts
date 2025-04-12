@@ -10,7 +10,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func TimeoutInterceptor(timeout time.Duration) grpc.UnaryServerInterceptor {
+func TimeoutInterceptor(timeout time.Duration, recover func()) grpc.UnaryServerInterceptor {
 	return func(
 		ctx context.Context, req interface{}, _ *grpc.UnaryServerInfo, handler grpc.UnaryHandler,
 	) (interface{}, error) {
@@ -22,6 +22,7 @@ func TimeoutInterceptor(timeout time.Duration) grpc.UnaryServerInterceptor {
 		done := make(chan struct{})
 
 		go func() {
+			defer recover()
 			result, err = handler(childCtx, req)
 			close(done)
 		}()
@@ -55,7 +56,7 @@ func RetryInterceptor(_ *RetryInterceptorOptions) grpc.UnaryServerInterceptor {
 	return func(
 		ctx context.Context,
 		req interface{},
-		info *grpc.UnaryServerInfo,
+		_ *grpc.UnaryServerInfo,
 		handler grpc.UnaryHandler,
 	) (interface{}, error) {
 		return handler(ctx, req)

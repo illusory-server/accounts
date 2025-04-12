@@ -4,7 +4,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-func (a *App) Start() error {
+func (a *App[T]) Start() error {
 	if a.err != nil {
 		return a.err
 	}
@@ -30,7 +30,7 @@ func (a *App) Start() error {
 	return nil
 }
 
-func (a *App) WithJob(jobEntries ...JobEntry) *App {
+func (a *App[T]) WithJob(jobEntries ...JobEntry[T]) *App[T] {
 	if a.err != nil {
 		return a
 	}

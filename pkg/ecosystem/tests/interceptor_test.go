@@ -13,7 +13,7 @@ import (
 
 func TestTimeoutInterceptor(t *testing.T) {
 	t.Run("Should correct working", func(t *testing.T) {
-		interceptor := ecosystem.TimeoutInterceptor(time.Second)
+		interceptor := ecosystem.TimeoutInterceptor(time.Second, func() {})
 		ctx := context.Background()
 		var req interface{}
 		res := 42
@@ -27,7 +27,7 @@ func TestTimeoutInterceptor(t *testing.T) {
 
 	t.Run("Should timout error", func(t *testing.T) {
 		t.Parallel()
-		interceptor := ecosystem.TimeoutInterceptor(time.Second)
+		interceptor := ecosystem.TimeoutInterceptor(time.Second, func() {})
 		ctx := context.Background()
 		var req interface{}
 		res := 42
@@ -43,5 +43,19 @@ func TestTimeoutInterceptor(t *testing.T) {
 		stat, ok := status.FromError(err)
 		assert.True(t, ok)
 		assert.Equal(t, codes.DeadlineExceeded, stat.Code())
+	})
+
+	t.Run("Should recover panic with recover handle", func(t *testing.T) {
+		t.Parallel()
+		interceptor := ecosystem.TimeoutInterceptor(time.Second, func() {
+			r := recover()
+			assert.NotNil(t, r)
+		})
+		ctx := context.Background()
+		var req interface{}
+
+		_, _ = interceptor(ctx, req, &grpc.UnaryServerInfo{}, func(ctx context.Context, req interface{}) (interface{}, error) {
+			panic("panic xd")
+		})
 	})
 }

@@ -11,7 +11,7 @@ import (
 func TestMonitoringJobBuilder(t *testing.T) {
 	t.Run("Should correctly build monitoring job", func(t *testing.T) {
 		address := "localhost:1000"
-		job, err := ecosystem.NewMonitoringJobBuilder().
+		job, err := ecosystem.NewMonitoringJobBuilder[*container]().
 			Address(address).
 			Build()
 
@@ -20,7 +20,7 @@ func TestMonitoringJobBuilder(t *testing.T) {
 	})
 
 	t.Run("Should correctly failed building monitoring job", func(t *testing.T) {
-		job, err := ecosystem.NewMonitoringJobBuilder().
+		job, err := ecosystem.NewMonitoringJobBuilder[*container]().
 			Build()
 
 		assert.Error(t, err)
@@ -29,7 +29,7 @@ func TestMonitoringJobBuilder(t *testing.T) {
 
 	t.Run("Should correctly custom mux", func(t *testing.T) {
 		address := "localhost:1000"
-		job, err := ecosystem.NewMonitoringJobBuilder().
+		job, err := ecosystem.NewMonitoringJobBuilder[*container]().
 			Address(address).
 			Mux(http.NewServeMux()).
 			Build()
@@ -42,18 +42,18 @@ func TestMonitoringJobBuilder(t *testing.T) {
 func TestMonitoringJobSignature(t *testing.T) {
 	address := "localhost:10101"
 
-	job, err := ecosystem.NewMonitoringJobBuilder().
+	job, err := ecosystem.NewMonitoringJobBuilder[*container]().
 		Address(address).
 		Build()
 
 	assert.NoError(t, err)
 
-	ayaka.NewApp(&ayaka.Options{
+	ayaka.NewApp(&ayaka.Options[*container]{
 		Name:        "aya",
 		Description: "kekw",
 		Version:     "0.0.1",
-		Container:   ayaka.NewContainer(ayaka.NoopLogger{}),
-	}).WithJob(ayaka.JobEntry{
+		Container:   &container{},
+	}).WithJob(ayaka.JobEntry[*container]{
 		Key: "xd",
 		Job: job,
 	})

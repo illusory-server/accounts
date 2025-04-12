@@ -12,81 +12,86 @@ import (
 	"google.golang.org/grpc"
 )
 
+var _ ayaka.Job[string] = (*GrpcJob[string])(nil)
+
 const (
 	sliceCap = 8
 )
 
 type (
-	GrpcJobBuilder struct {
+	GrpcJobBuilder[T any] struct {
 		address        string
 		requestTimeout time.Duration
+		recoverHandle  func()
 		interceptors   []grpc.UnaryServerInterceptor
-		regs           []GrpcRegister
+		regs           []GrpcRegister[T]
 		serverRegs     []GrpcServerRegister
 		options        []grpc.ServerOption
 	}
 
-	GrpcJob struct {
+	GrpcJob[T any] struct {
+		recoverHandle  func()
 		srv            *grpc.Server
 		mu             sync.Mutex
 		address        string
 		requestTimeout time.Duration
 		interceptors   []grpc.UnaryServerInterceptor
-		regs           []GrpcRegister
+		regs           []GrpcRegister[T]
 		serverRegs     []GrpcServerRegister
 		options        []grpc.ServerOption
 	}
 
-	GrpcRegister       func(ctx context.Context, di ayaka.Container, srv *grpc.Server) error
-	GrpcServerRegister func(srv *grpc.Server) error
+	GrpcRegister[T any] func(ctx context.Context, di T, srv *grpc.Server) error
+	GrpcServerRegister  func(srv *grpc.Server) error
 )
 
-func (g *GrpcJob) Address() string {
+func (g *GrpcJob[T]) Address() string {
 	return g.address
 }
 
-func (g *GrpcJob) RequestTimeout() time.Duration {
+func (g *GrpcJob[T]) RequestTimeout() time.Duration {
 	return g.requestTimeout
 }
 
-func (g *GrpcJob) Interceptors() []grpc.UnaryServerInterceptor {
+func (g *GrpcJob[T]) Interceptors() []grpc.UnaryServerInterceptor {
 	return g.interceptors
 }
 
-func (g *GrpcJob) Regs() []GrpcRegister {
+func (g *GrpcJob[T]) Regs() []GrpcRegister[T] {
 	return g.regs
 }
 
-func (g *GrpcJob) ServerRegs() []GrpcServerRegister {
+func (g *GrpcJob[T]) ServerRegs() []GrpcServerRegister {
 	return g.serverRegs
 }
 
-func (g *GrpcJob) Options() []grpc.ServerOption {
+func (g *GrpcJob[T]) Options() []grpc.ServerOption {
 	return g.options
 }
 
-func (g *GrpcJobBuilder) Validate() error {
+func (g *GrpcJobBuilder[T]) Validate() error {
 	return validation.ValidateStruct(g,
 		validation.Field(&g.address, validation.Required),
 		validation.Field(&g.requestTimeout, validation.Required),
 	)
 }
 
-func NewGrpcJobBuilder() *GrpcJobBuilder {
-	return &GrpcJobBuilder{
-		regs:         make([]GrpcRegister, 0, sliceCap),
-		serverRegs:   make([]GrpcServerRegister, 0, sliceCap),
-		interceptors: make([]grpc.UnaryServerInterceptor, 0, sliceCap),
-		options:      make([]grpc.ServerOption, 0, sliceCap),
+func NewGrpcJobBuilder[T any]() *GrpcJobBuilder[T] {
+	return &GrpcJobBuilder[T]{
+		recoverHandle: func() {},
+		regs:          make([]GrpcRegister[T], 0, sliceCap),
+		serverRegs:    make([]GrpcServerRegister, 0, sliceCap),
+		interceptors:  make([]grpc.UnaryServerInterceptor, 0, sliceCap),
+		options:       make([]grpc.ServerOption, 0, sliceCap),
 	}
 }
 
-func (g *GrpcJob) Init(ctx context.Context, di ayaka.Container) error {
+func (g *GrpcJob[T]) Init(ctx context.Context, di T) error {
 	sliceInterceptors := make([]grpc.UnaryServerInterceptor, 0, len(g.interceptors))
 	copy(sliceInterceptors, g.interceptors)
 
 	if g.requestTimeout > 0 {
-		sliceInterceptors = append(sliceInterceptors, TimeoutInterceptor(g.requestTimeout))
+		sliceInterceptors = append(sliceInterceptors, TimeoutInterceptor(g.requestTimeout, g.recoverHandle))
 	}
 
 	grpcOptions := []grpc.ServerOption{
@@ -126,19 +131,16 @@ func (g *GrpcJob) Init(ctx context.Context, di ayaka.Container) error {
 	}
 }
 
-func (g *GrpcJob) Run(ctx context.Context, di ayaka.Container) error {
+func (g *GrpcJob[T]) Run(ctx context.Context, di T) error {
 	errCh := make(chan error, 1)
-	var log ayaka.Logger
-	err := di.Invoke(func(logger ayaka.Logger) {
-		log = logger
-	})
+	app, err := ayaka.AppFromContext[T](ctx)
 	if err != nil {
-		return errors.Wrap(err, "[GrpcJob] di.Invoke")
+		return errors.Wrap(err, "[GrpcJob] ayaka.AppFromContext")
 	}
 
 	go func() {
 		if g.srv != nil {
-			log.Info(ctx, "grpc server started...", map[string]any{"address": g.address})
+			app.Logger().Info(ctx, "grpc server started...", map[string]any{"address": g.address})
 
 			lis, err := net.Listen("tcp", g.address)
 			if err != nil {
@@ -160,57 +162,62 @@ func (g *GrpcJob) Run(ctx context.Context, di ayaka.Container) error {
 	case err := <-errCh:
 		return err
 	case <-ctx.Done():
-		log.Warn(ctx, "grpc server stopped", map[string]any{"address": g.address})
+		app.Logger().Warn(ctx, "grpc server stopped", map[string]any{"address": g.address})
 		g.srv.GracefulStop()
 		return nil
 	}
 }
 
-func (g *GrpcJobBuilder) Address(address string) *GrpcJobBuilder {
+func (g *GrpcJobBuilder[T]) Address(address string) *GrpcJobBuilder[T] {
 	g.address = address
 	return g
 }
 
-func (g *GrpcJobBuilder) RequestTimeout(timeout time.Duration) *GrpcJobBuilder {
+func (g *GrpcJobBuilder[T]) RecoverHandler(recoverHandler func()) *GrpcJobBuilder[T] {
+	g.recoverHandle = recoverHandler
+	return g
+}
+
+func (g *GrpcJobBuilder[T]) RequestTimeout(timeout time.Duration) *GrpcJobBuilder[T] {
 	g.requestTimeout = timeout
 	return g
 }
 
-func (g *GrpcJobBuilder) Interceptors(interceptors ...grpc.UnaryServerInterceptor) *GrpcJobBuilder {
+func (g *GrpcJobBuilder[T]) Interceptors(interceptors ...grpc.UnaryServerInterceptor) *GrpcJobBuilder[T] {
 	if len(interceptors) > 0 {
 		g.interceptors = append(g.interceptors, interceptors...)
 	}
 	return g
 }
 
-func (g *GrpcJobBuilder) Register(regs ...GrpcRegister) *GrpcJobBuilder {
+func (g *GrpcJobBuilder[T]) Register(regs ...GrpcRegister[T]) *GrpcJobBuilder[T] {
 	if len(regs) > 0 {
 		g.regs = append(g.regs, regs...)
 	}
 	return g
 }
 
-func (g *GrpcJobBuilder) RegisterServer(regs ...GrpcServerRegister) *GrpcJobBuilder {
+func (g *GrpcJobBuilder[T]) RegisterServer(regs ...GrpcServerRegister) *GrpcJobBuilder[T] {
 	if len(regs) > 0 {
 		g.serverRegs = append(g.serverRegs, regs...)
 	}
 	return g
 }
 
-func (g *GrpcJobBuilder) RegisterOptions(options ...grpc.ServerOption) *GrpcJobBuilder {
+func (g *GrpcJobBuilder[T]) RegisterOptions(options ...grpc.ServerOption) *GrpcJobBuilder[T] {
 	if len(options) > 0 {
 		g.options = append(g.options, options...)
 	}
 	return g
 }
 
-func (g *GrpcJobBuilder) Build() (*GrpcJob, error) {
+func (g *GrpcJobBuilder[T]) Build() (*GrpcJob[T], error) {
 	err := g.Validate()
 	if err != nil {
 		return nil, errors.Wrap(err, "[GrpcJobBuilder] validate error")
 	}
 
-	return &GrpcJob{
+	return &GrpcJob[T]{
 		address:        g.address,
 		requestTimeout: g.requestTimeout,
 		interceptors:   g.interceptors,
@@ -218,5 +225,6 @@ func (g *GrpcJobBuilder) Build() (*GrpcJob, error) {
 		serverRegs:     g.serverRegs,
 		options:        g.options,
 		mu:             sync.Mutex{},
+		recoverHandle:  g.recoverHandle,
 	}, nil
 }

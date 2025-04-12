@@ -30,7 +30,7 @@ func (p DefaultPrinter) Printf(format string, args ...interface{}) {
 	fmt.Printf(format, args...)
 }
 
-func StartWithCli(app *ayaka.App, print Printer) error {
+func StartWithCli[T any](app *ayaka.App[T], print Printer) error {
 	var err error
 	info := app.Info()
 

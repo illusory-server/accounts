@@ -250,7 +250,7 @@ func TestAccountsUseCase_UpdateInfoById(t *testing.T) {
 			useCase, err := NewUseCase(l, accFactory, query, counter, timeDep)
 			assert.NoError(t, err)
 
-			err := useCase.UpdateInfoById(ctx, tc.params.id, tc.params.firstName, tc.params.lastName)
+			err = useCase.UpdateInfoById(ctx, tc.params.id, tc.params.firstName, tc.params.lastName)
 			if tc.expectedErr != nil {
 				assert.Error(t, err)
 				if !errors.Is(tc.expectedErr, anyErr) {
@@ -457,7 +457,7 @@ func TestAccountsUseCase_UpdateEmailById(t *testing.T) {
 			useCase, err := NewUseCase(l, accFactory, query, counter, timeDep)
 			assert.NoError(t, err)
 
-			err := useCase.UpdateEmailById(ctx, tc.params.id, tc.params.email)
+			err = useCase.UpdateEmailById(ctx, tc.params.id, tc.params.email)
 			if tc.expectedErr != nil {
 				assert.Error(t, err)
 				if !errors.Is(tc.expectedErr, anyErr) {
@@ -684,7 +684,7 @@ func TestAccount_UpdatePasswordById(t *testing.T) {
 			useCase, err := NewUseCase(l, accFactory, query, counter, timeDep)
 			assert.NoError(t, err)
 
-			err := useCase.UpdatePasswordById(ctx, tc.params.id, tc.params.old, tc.params.new)
+			err = useCase.UpdatePasswordById(ctx, tc.params.id, tc.params.old, tc.params.new)
 			if tc.expectedErr != nil {
 				assert.Error(t, err)
 				if !errors.Is(tc.expectedErr, anyErr) {

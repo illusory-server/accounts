@@ -9,13 +9,15 @@ import (
 	"time"
 )
 
+type Container struct{}
+
 func TestWithConfig(t *testing.T) {
 	t.Run("Should correct with config", func(t *testing.T) {
-		app := ayaka.NewApp(&ayaka.Options{
+		app := ayaka.NewApp[*Container](&ayaka.Options[*Container]{
 			Name:        "my-app",
 			Description: "my-app description testing",
 			Version:     "1.0.0",
-			Container:   ayaka.NewContainer(ayaka.NoopLogger{}),
+			Container:   &Container{},
 		}).WithConfig(&ayaka.Config{
 			StartTimeout:    time.Second * 2,
 			GracefulTimeout: time.Second * 3,
@@ -35,10 +37,10 @@ func TestWithConfig(t *testing.T) {
 	})
 
 	t.Run("Should not worked with error app", func(t *testing.T) {
-		app := ayaka.NewApp(&ayaka.Options{
+		app := ayaka.NewApp[*Container](&ayaka.Options[*Container]{
 			Name:        "my-app",
 			Description: "my-app description testing",
-			Container:   ayaka.NewContainer(ayaka.NoopLogger{}),
+			Container:   &Container{},
 		}).WithConfig(&ayaka.Config{
 			StartTimeout:    time.Second * 2,
 			GracefulTimeout: time.Second * 3,
@@ -50,11 +52,11 @@ func TestWithConfig(t *testing.T) {
 	})
 
 	t.Run("Should correct with interceptor", func(t *testing.T) {
-		app := ayaka.NewApp(&ayaka.Options{
+		app := ayaka.NewApp[*Container](&ayaka.Options[*Container]{
 			Name:        "my-app",
 			Description: "my-app description testing",
 			Version:     "1.0.0",
-			Container:   ayaka.NewContainer(ayaka.NoopLogger{}),
+			Container:   &Container{},
 			ConfigInterceptor: func(ctx context.Context, conf *ayaka.Config) (*ayaka.Config, error) {
 				conf.StartTimeout = time.Second * 2
 				conf.GracefulTimeout = time.Second * 3
@@ -76,11 +78,11 @@ func TestWithConfig(t *testing.T) {
 	})
 
 	t.Run("Should correct error with error interceptor", func(t *testing.T) {
-		app := ayaka.NewApp(&ayaka.Options{
+		app := ayaka.NewApp[*Container](&ayaka.Options[*Container]{
 			Name:        "my-app",
 			Description: "my-app description testing",
 			Version:     "1.0.0",
-			Container:   ayaka.NewContainer(ayaka.NoopLogger{}),
+			Container:   &Container{},
 			ConfigInterceptor: func(ctx context.Context, conf *ayaka.Config) (*ayaka.Config, error) {
 				return conf, errors.New("some error")
 			},

@@ -19,38 +19,38 @@ const (
 )
 
 type (
-	MonitoringJobBuilder struct {
+	MonitoringJobBuilder[T any] struct {
 		address string
 		mux     *http.ServeMux
 	}
 
-	MonitoringJob struct {
+	MonitoringJob[T any] struct {
 		address string
 		mux     *http.ServeMux
 	}
 )
 
-func (m *MonitoringJobBuilder) Validate() error {
+func (m *MonitoringJobBuilder[T]) Validate() error {
 	return validation.ValidateStruct(m,
 		validation.Field(&m.address, validation.Required),
 	)
 }
 
-func (m *MonitoringJobBuilder) Build() (*MonitoringJob, error) {
+func (m *MonitoringJobBuilder[T]) Build() (*MonitoringJob[T], error) {
 	if err := m.Validate(); err != nil {
 		return nil, err
 	}
 	if m.mux == nil {
 		m.mux = http.NewServeMux()
 	}
-	return &MonitoringJob{
+	return &MonitoringJob[T]{
 		address: m.address,
 		mux:     m.mux,
 	}, nil
 }
 
-func (m *MonitoringJob) Init(ctx context.Context, _ ayaka.Container) error {
-	app, err := ayaka.AppFromContext(ctx)
+func (m *MonitoringJob[T]) Init(ctx context.Context, _ T) error {
+	app, err := ayaka.AppFromContext[T](ctx)
 	if err != nil {
 		return errors.Wrap(err, "[MonitoringJob.Init] ayaka.AppFromContext")
 	}
@@ -81,15 +81,11 @@ func (m *MonitoringJob) Init(ctx context.Context, _ ayaka.Container) error {
 	return nil
 }
 
-func (m *MonitoringJob) Run(ctx context.Context, container ayaka.Container) error {
+func (m *MonitoringJob[T]) Run(ctx context.Context, container T) error {
 	errCh := make(chan error, 1)
-
-	var log ayaka.Logger
-	err := container.Invoke(func(logger ayaka.Logger) {
-		log = logger
-	})
+	app, err := ayaka.AppFromContext[T](ctx)
 	if err != nil {
-		return errors.Wrap(err, "[GrpcJob] di.Invoke")
+		return errors.Wrap(err, "[GrpcJob] ayaka.AppFromContext")
 	}
 
 	srv := http.Server{
@@ -101,7 +97,7 @@ func (m *MonitoringJob) Run(ctx context.Context, container ayaka.Container) erro
 	}
 
 	go func() {
-		log.Info(ctx, "http monitoring server started...", map[string]any{"address": m.address})
+		app.Logger().Info(ctx, "http monitoring server started...", map[string]any{"address": m.address})
 		err = srv.ListenAndServe()
 		if err != nil && !errors.Is(err, http.ErrServerClosed) {
 			errCh <- err
@@ -115,28 +111,28 @@ func (m *MonitoringJob) Run(ctx context.Context, container ayaka.Container) erro
 	case <-ctx.Done():
 		err := srv.Shutdown(ctx)
 		if err != nil {
-			log.Warn(ctx, "http monitoring server failed graceful stopped", map[string]any{"address": m.address})
+			app.Logger().Warn(ctx, "http monitoring server failed graceful stopped", map[string]any{"address": m.address})
 			return errors.Wrap(err, "[MonitoringJob] failed to shutdown http monitoring server")
 		}
-		log.Warn(ctx, "http server stopped", map[string]any{"address": m.address})
+		app.Logger().Warn(ctx, "http server stopped", map[string]any{"address": m.address})
 		return nil
 	}
 }
 
-func (m *MonitoringJob) Address() string {
+func (m *MonitoringJob[T]) Address() string {
 	return m.address
 }
 
-func (m *MonitoringJobBuilder) Address(addr string) *MonitoringJobBuilder {
+func (m *MonitoringJobBuilder[T]) Address(addr string) *MonitoringJobBuilder[T] {
 	m.address = addr
 	return m
 }
 
-func (m *MonitoringJobBuilder) Mux(mux *http.ServeMux) *MonitoringJobBuilder {
+func (m *MonitoringJobBuilder[T]) Mux(mux *http.ServeMux) *MonitoringJobBuilder[T] {
 	m.mux = mux
 	return m
 }
 
-func NewMonitoringJobBuilder() *MonitoringJobBuilder {
-	return &MonitoringJobBuilder{}
+func NewMonitoringJobBuilder[T any]() *MonitoringJobBuilder[T] {
+	return &MonitoringJobBuilder[T]{}
 }

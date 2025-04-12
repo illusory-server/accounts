@@ -17,59 +17,59 @@ const (
 )
 
 type (
-	HttpJobBuilder struct {
+	HttpJobBuilder[T any] struct {
 		address        string
 		requestTimeout time.Duration
 		idleTimeout    time.Duration
 		maxHeaderBytes int
 
-		regs        []HttpRegister
+		regs        []HttpRegister[T]
 		middlewares []func(http.Handler) http.Handler
 	}
 
-	HttpJob struct {
+	HttpJob[T any] struct {
 		address        string
 		requestTimeout time.Duration
 		idleTimeout    time.Duration
 		maxHeaderBytes int
 
 		handler     *chi.Mux
-		regs        []HttpRegister
+		regs        []HttpRegister[T]
 		middlewares []func(http.Handler) http.Handler
 	}
 
-	HttpRegister func(ctx context.Context, di ayaka.Container, handler *chi.Mux) (*chi.Mux, error)
+	HttpRegister[T any] func(ctx context.Context, di T, handler *chi.Mux) (*chi.Mux, error)
 )
 
-func (h *HttpJob) Address() string {
+func (h *HttpJob[T]) Address() string {
 	return h.address
 }
 
-func (h *HttpJob) RequestTimeout() time.Duration {
+func (h *HttpJob[T]) RequestTimeout() time.Duration {
 	return h.requestTimeout
 }
 
-func (h *HttpJob) IdleTimeout() time.Duration {
+func (h *HttpJob[T]) IdleTimeout() time.Duration {
 	return h.idleTimeout
 }
 
-func (h *HttpJob) MaxHeaderBytes() int {
+func (h *HttpJob[T]) MaxHeaderBytes() int {
 	return h.maxHeaderBytes
 }
 
-func (h *HttpJob) Handler() http.Handler {
+func (h *HttpJob[T]) Handler() http.Handler {
 	return h.handler
 }
 
-func (h *HttpJob) Regs() []HttpRegister {
+func (h *HttpJob[T]) Regs() []HttpRegister[T] {
 	return h.regs
 }
 
-func (h *HttpJob) Middlewares() []func(http.Handler) http.Handler {
+func (h *HttpJob[T]) Middlewares() []func(http.Handler) http.Handler {
 	return h.middlewares
 }
 
-func (h *HttpJob) Init(ctx context.Context, container ayaka.Container) error {
+func (h *HttpJob[T]) Init(ctx context.Context, container T) error {
 	errCh := make(chan error, 1)
 	go func(errCh chan<- error) {
 		var err error
@@ -91,14 +91,11 @@ func (h *HttpJob) Init(ctx context.Context, container ayaka.Container) error {
 	}
 }
 
-func (h *HttpJob) Run(ctx context.Context, container ayaka.Container) error {
+func (h *HttpJob[T]) Run(ctx context.Context, container T) error {
 	errCh := make(chan error, 1)
-	var log ayaka.Logger
-	err := container.Invoke(func(logger ayaka.Logger) {
-		log = logger
-	})
+	app, err := ayaka.AppFromContext[T](ctx)
 	if err != nil {
-		return errors.Wrap(err, "[GrpcJob] di.Invoke")
+		return errors.Wrap(err, "[HttpJob] ayaka.AppFromContext")
 	}
 
 	srv := http.Server{
@@ -111,7 +108,7 @@ func (h *HttpJob) Run(ctx context.Context, container ayaka.Container) error {
 	}
 
 	go func() {
-		log.Info(ctx, "http server started...", map[string]any{"address": h.address})
+		app.Logger().Info(ctx, "http server started...", map[string]any{"address": h.address})
 		err = srv.ListenAndServe()
 		if err != nil && !errors.Is(err, http.ErrServerClosed) {
 			errCh <- err
@@ -125,63 +122,63 @@ func (h *HttpJob) Run(ctx context.Context, container ayaka.Container) error {
 	case <-ctx.Done():
 		err := srv.Shutdown(ctx)
 		if err != nil {
-			log.Warn(ctx, "http server failed graceful stopped", map[string]any{"address": h.address})
+			app.Logger().Warn(ctx, "http server failed graceful stopped", map[string]any{"address": h.address})
 			return errors.Wrap(err, "[HttpJob] failed to shutdown http server")
 		}
-		log.Warn(ctx, "http server stopped", map[string]any{"address": h.address})
+		app.Logger().Warn(ctx, "http server stopped", map[string]any{"address": h.address})
 		return nil
 	}
 }
 
-func NewHttpJobBuilder() *HttpJobBuilder {
-	return &HttpJobBuilder{
-		regs:        make([]HttpRegister, 0, sliceCap),
+func NewHttpJobBuilder[T any]() *HttpJobBuilder[T] {
+	return &HttpJobBuilder[T]{
+		regs:        make([]HttpRegister[T], 0, sliceCap),
 		middlewares: make([]func(http.Handler) http.Handler, 0, sliceCap),
 	}
 }
 
-func (b *HttpJobBuilder) Address(address string) *HttpJobBuilder {
+func (b *HttpJobBuilder[T]) Address(address string) *HttpJobBuilder[T] {
 	b.address = address
 	return b
 }
 
-func (b *HttpJobBuilder) RequestTimeout(requestTimeout time.Duration) *HttpJobBuilder {
+func (b *HttpJobBuilder[T]) RequestTimeout(requestTimeout time.Duration) *HttpJobBuilder[T] {
 	b.requestTimeout = requestTimeout
 	return b
 }
 
-func (b *HttpJobBuilder) IdleTimeout(idleTimeout time.Duration) *HttpJobBuilder {
+func (b *HttpJobBuilder[T]) IdleTimeout(idleTimeout time.Duration) *HttpJobBuilder[T] {
 	b.idleTimeout = idleTimeout
 	return b
 }
 
-func (b *HttpJobBuilder) MaxHeaderBytes(maxHeaderBytes int) *HttpJobBuilder {
+func (b *HttpJobBuilder[T]) MaxHeaderBytes(maxHeaderBytes int) *HttpJobBuilder[T] {
 	b.maxHeaderBytes = maxHeaderBytes
 	return b
 }
 
-func (b *HttpJobBuilder) Middleware(middlewares ...func(http.Handler) http.Handler) *HttpJobBuilder {
+func (b *HttpJobBuilder[T]) Middleware(middlewares ...func(http.Handler) http.Handler) *HttpJobBuilder[T] {
 	if len(middlewares) > 0 {
 		b.middlewares = append(b.middlewares, middlewares...)
 	}
 	return b
 }
 
-func (b *HttpJobBuilder) Register(regs ...HttpRegister) *HttpJobBuilder {
+func (b *HttpJobBuilder[T]) Register(regs ...HttpRegister[T]) *HttpJobBuilder[T] {
 	if len(regs) > 0 {
 		b.regs = append(b.regs, regs...)
 	}
 	return b
 }
 
-func (b *HttpJobBuilder) Validate() error {
+func (b *HttpJobBuilder[T]) Validate() error {
 	return validation.ValidateStruct(b,
 		validation.Field(&b.address, validation.Required),
 		validation.Field(&b.requestTimeout, validation.Required),
 	)
 }
 
-func (b *HttpJobBuilder) Build() (*HttpJob, error) {
+func (b *HttpJobBuilder[T]) Build() (*HttpJob[T], error) {
 	if err := b.Validate(); err != nil {
 		return nil, errors.Wrap(err, "[HttpJob] validation failed")
 	}
@@ -192,7 +189,7 @@ func (b *HttpJobBuilder) Build() (*HttpJob, error) {
 		b.maxHeaderBytes = DefaultHttpHeaderMaxBytesLimit
 	}
 
-	return &HttpJob{
+	return &HttpJob[T]{
 		address:        b.address,
 		requestTimeout: b.requestTimeout,
 		idleTimeout:    b.idleTimeout,

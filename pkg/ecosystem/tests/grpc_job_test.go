@@ -1,4 +1,4 @@
-package grpc_job_test
+package grpc_job
 
 import (
 	"context"
@@ -10,7 +10,9 @@ import (
 	"time"
 )
 
-func noopRegister(ctx context.Context, di ayaka.Container, srv *grpc.Server) error {
+type container struct{}
+
+func noopRegister[T any](ctx context.Context, di T, srv *grpc.Server) error {
 	return nil
 }
 
@@ -27,7 +29,7 @@ func TestGrpcJobBuilder(t *testing.T) {
 		address := "localhost:10101"
 		requestTimeout := time.Second * 5
 
-		builder := ecosystem.NewGrpcJobBuilder()
+		builder := ecosystem.NewGrpcJobBuilder[*container]()
 		job, err := builder.
 			Address(address).
 			RequestTimeout(requestTimeout).
@@ -52,7 +54,7 @@ func TestGrpcJobBuilder(t *testing.T) {
 	t.Run("Should correct error building grpc without address, request-timeout", func(t *testing.T) {
 		address := "localhost:10101"
 
-		builder := ecosystem.NewGrpcJobBuilder()
+		builder := ecosystem.NewGrpcJobBuilder[*container]()
 		job, err := builder.
 			RequestTimeout(time.Second * 5).
 			Build()
@@ -60,7 +62,7 @@ func TestGrpcJobBuilder(t *testing.T) {
 		assert.Error(t, err)
 		assert.Nil(t, job)
 
-		builder = ecosystem.NewGrpcJobBuilder()
+		builder = ecosystem.NewGrpcJobBuilder[*container]()
 		job, err = builder.
 			Address(address).
 			Build()
@@ -73,11 +75,11 @@ func TestGrpcJobBuilder(t *testing.T) {
 		address := "localhost:10101"
 		requestTimeout := time.Second * 5
 
-		builder := ecosystem.NewGrpcJobBuilder()
+		builder := ecosystem.NewGrpcJobBuilder[*container]()
 		job, err := builder.
 			Address(address).
 			RequestTimeout(requestTimeout).
-			Register(noopRegister, noopRegister).
+			Register(noopRegister[*container], noopRegister[*container]).
 			RegisterServer(noopServerRegister, noopServerRegister, noopServerRegister).
 			Interceptors(noopInterceptor, noopInterceptor, noopInterceptor, noopInterceptor).
 			RegisterOptions(grpc.ChainUnaryInterceptor(), grpc.ChainUnaryInterceptor(), grpc.ChainUnaryInterceptor()).
@@ -100,7 +102,7 @@ func TestGrpcJobSignature(t *testing.T) {
 	address := "localhost:10101"
 	requestTimeout := time.Second * 5
 
-	builder := ecosystem.NewGrpcJobBuilder()
+	builder := ecosystem.NewGrpcJobBuilder[*container]()
 	job, err := builder.
 		Address(address).
 		RequestTimeout(requestTimeout).
@@ -112,12 +114,12 @@ func TestGrpcJobSignature(t *testing.T) {
 
 	assert.NoError(t, err)
 
-	ayaka.NewApp(&ayaka.Options{
+	ayaka.NewApp(&ayaka.Options[*container]{
 		Name:        "aya",
 		Description: "kekw",
 		Version:     "0.0.1",
-		Container:   ayaka.NewContainer(ayaka.NoopLogger{}),
-	}).WithJob(ayaka.JobEntry{
+		Container:   &container{},
+	}).WithJob(ayaka.JobEntry[*container]{
 		Key: "xd",
 		Job: job,
 	})

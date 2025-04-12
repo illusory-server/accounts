@@ -18,7 +18,7 @@ linters:
     - ineffassign
     - staticcheck
     - gosec
-    - revive
+#    - revive
     - gocyclo
     - lll
     - mnd

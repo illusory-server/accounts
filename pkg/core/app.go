@@ -2,20 +2,18 @@ package ayaka
 
 import (
 	"context"
-
 	validation "github.com/go-ozzo/ozzo-validation"
-	"go.uber.org/dig"
 )
 
 type (
-	Job interface {
-		Init(ctx context.Context, container Container) error
-		Run(ctx context.Context, container Container) error
+	Job[T any] interface {
+		Init(ctx context.Context, container T) error
+		Run(ctx context.Context, container T) error
 	}
 
-	JobEntry struct {
+	JobEntry[T any] struct {
 		Key string
-		Job Job
+		Job Job[T]
 	}
 
 	Info struct {
@@ -24,71 +22,80 @@ type (
 
 	ConfigInterceptor func(ctx context.Context, conf *Config) (*Config, error)
 
-	App struct {
+	App[T any] struct {
 		info   Info
 		config *Config
-		jobs   map[string]Job
+		jobs   map[string]Job[T]
 		err    error
 		ctx    context.Context
 
-		di Container
+		container T
 
 		configInterceptor ConfigInterceptor
 		logger            Logger
 	}
 
-	ReadonlyApp struct {
-		app *App
+	ReadonlyApp[T any] struct {
+		app *App[T]
 	}
 )
 
-func (a *App) Info() Info {
+func (a *App[T]) Info() Info {
 	return a.info
 }
 
-func (a *App) Config() *Config {
+func (a *App[T]) Config() *Config {
 	return a.config
 }
 
-func (a *App) Err() error {
+func (a *App[T]) Err() error {
 	return a.err
 }
 
-func (a *App) Dependency() Container {
-	return a.di
+func (a *App[T]) Container() T {
+	return a.container
 }
 
-func (a *App) Context() context.Context {
+func (a *App[T]) Context() context.Context {
 	return a.ctx
 }
 
-func (r *ReadonlyApp) Info() Info {
+func (a *App[T]) Logger() Logger {
+	return a.logger
+}
+
+func (r *ReadonlyApp[T]) Info() Info {
 	return r.app.Info()
 }
 
-func (r *ReadonlyApp) Context() context.Context {
+func (r *ReadonlyApp[T]) Context() context.Context {
 	return r.app.Context()
 }
 
-func (r *ReadonlyApp) Config() any {
+func (r *ReadonlyApp[T]) Config() any {
 	return r.app.Config()
 }
 
-func (r *ReadonlyApp) Err() error {
+func (r *ReadonlyApp[T]) Err() error {
 	return r.app.Err()
 }
 
-func (r *ReadonlyApp) Dependency() Container {
-	return r.app.Dependency()
+func (r *ReadonlyApp[T]) Container() T {
+	return r.app.Container()
 }
 
-type Options struct {
+func (r *ReadonlyApp[T]) Logger() Logger {
+	return r.app.Logger()
+}
+
+type Options[T any] struct {
 	Name, Description, Version string
 	ConfigInterceptor          ConfigInterceptor
-	Container                  *dig.Container
+	Logger                     Logger
+	Container                  T
 }
 
-func (o Options) Validate() error {
+func (o Options[T]) Validate() error {
 	return validation.ValidateStruct(&o,
 		validation.Field(&o.Name, validation.Required),
 		validation.Field(&o.Description, validation.Required),
@@ -97,33 +104,28 @@ func (o Options) Validate() error {
 	)
 }
 
-func NewApp(opt *Options) *App {
+func NewApp[T any](opt *Options[T]) *App[T] {
 	var errRes error
 	err := opt.Validate()
 	if err != nil {
 		errRes = err
 	}
-	var log Logger
-	if opt.Container != nil {
-		err = opt.Container.Invoke(func(l Logger) {
-			log = l
-		})
-		if err != nil {
-			errRes = err
-		}
+	var log Logger = NoopLogger{}
+	if opt.Logger != nil {
+		log = opt.Logger
 	}
 
-	result := &App{
+	result := &App[T]{
 		info: Info{
 			Name:        opt.Name,
 			Description: opt.Description,
 			Version:     opt.Version,
 		},
 		config: &Config{},
-		jobs:   make(map[string]Job),
+		jobs:   make(map[string]Job[T]),
 		err:    errRes,
 
-		di: opt.Container,
+		container: opt.Container,
 
 		configInterceptor: opt.ConfigInterceptor,
 		logger:            log,
@@ -132,13 +134,4 @@ func NewApp(opt *Options) *App {
 	result.ctx = AppWithContext(context.Background(), result)
 
 	return result
-}
-
-func NewContainer(log Logger) *dig.Container {
-	di := dig.New()
-	err := di.Provide(func() Logger { return log })
-	if err != nil {
-		return nil
-	}
-	return di
 }

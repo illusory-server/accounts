@@ -2,6 +2,7 @@ package v1
 
 import (
 	"context"
+	"github.com/illusory-server/accounts/pkg/tools"
 	"time"
 
 	"github.com/golang/protobuf/ptypes/empty"
@@ -11,11 +12,17 @@ import (
 	"github.com/illusory-server/accounts/pkg/fn"
 )
 
+const timeFormat = time.RFC3339
+
 type Server struct {
 	accountUseCase account.Account
 }
 
-const timeFormat = time.RFC3339
+func NewServer(accountUseCase account.Account) *Server {
+	return &Server{
+		accountUseCase: tools.NotNil(accountUseCase),
+	}
+}
 
 func accountWithoutPassToTransport(acc *account.WithoutPassword) *v1.Account {
 	return &v1.Account{

@@ -19,17 +19,17 @@ func (p *printer) Printf(format string, args ...interface{}) {
 	p.PrintString = fmt.Sprintf(format, args...)
 }
 
-type activateJob struct {
+type activateJob[T any] struct {
 	initCount int
 	runCount  int
 }
 
-func (a *activateJob) Init(ctx context.Context, container ayaka.Container) error {
+func (a *activateJob[T]) Init(ctx context.Context, container T) error {
 	a.initCount++
 	return nil
 }
 
-func (a *activateJob) Run(ctx context.Context, container ayaka.Container) error {
+func (a *activateJob[T]) Run(ctx context.Context, container T) error {
 	a.runCount++
 	return nil
 }
@@ -37,20 +37,20 @@ func (a *activateJob) Run(ctx context.Context, container ayaka.Container) error 
 func TestStartWithCli(t *testing.T) {
 	orig := os.Args
 	defer func() { os.Args = orig }()
-	job := &activateJob{}
+	job := &activateJob[*container]{}
 
 	appVersion := "1.0.0"
-	app := ayaka.NewApp(&ayaka.Options{
+	app := ayaka.NewApp(&ayaka.Options[*container]{
 		Name:        "TestStartWithCli",
 		Description: "TestStartWithCli case",
 		Version:     appVersion,
-		Container:   ayaka.NewContainer(ayaka.NoopLogger{}),
+		Container:   &container{},
 	}).
 		WithConfig(&ayaka.Config{
 			StartTimeout:    500 * time.Millisecond,
 			GracefulTimeout: 5 * time.Second,
 		}).
-		WithJob(ayaka.JobEntry{
+		WithJob(ayaka.JobEntry[*container]{
 			Key: "test",
 			Job: job,
 		})

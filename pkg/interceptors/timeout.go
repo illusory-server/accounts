@@ -3,6 +3,7 @@ package interceptors
 import (
 	"context"
 	"errors"
+	"github.com/illusory-server/accounts/pkg/safe"
 	"time"
 
 	"google.golang.org/grpc"
@@ -21,10 +22,10 @@ func Timeout(timeout time.Duration) grpc.UnaryServerInterceptor {
 		defer cancel()
 		done := make(chan struct{})
 
-		go func() {
+		safe.Go(func() {
 			result, err = handler(childCtx, req)
 			close(done)
-		}()
+		})
 
 		select {
 		case <-childCtx.Done():

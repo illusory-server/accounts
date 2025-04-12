@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-func noopHttpRegister(ctx context.Context, di ayaka.Container, handler *chi.Mux) (*chi.Mux, error) {
+func noopHttpRegister[T any](ctx context.Context, di T, handler *chi.Mux) (*chi.Mux, error) {
 	return handler, nil
 }
 
@@ -24,7 +24,7 @@ func TestHttpJobBuilder(t *testing.T) {
 		address := "localhost:10101"
 		requestTimeout := time.Second * 5
 
-		job, err := ecosystem.NewHttpJobBuilder().
+		job, err := ecosystem.NewHttpJobBuilder[*container]().
 			Address(address).
 			RequestTimeout(requestTimeout).
 			Register().
@@ -43,7 +43,7 @@ func TestHttpJobBuilder(t *testing.T) {
 		idleTimeout := time.Second * 42
 		maxBytes := 69
 
-		job, err = ecosystem.NewHttpJobBuilder().
+		job, err = ecosystem.NewHttpJobBuilder[*container]().
 			Address(address).
 			RequestTimeout(requestTimeout).
 			IdleTimeout(idleTimeout).
@@ -66,14 +66,14 @@ func TestHttpJobBuilder(t *testing.T) {
 		address := "localhost:10101"
 		requestTimeout := time.Second * 5
 
-		job, err := ecosystem.NewHttpJobBuilder().
+		job, err := ecosystem.NewHttpJobBuilder[*container]().
 			Address(address).
 			Build()
 
 		assert.Error(t, err)
 		assert.Nil(t, job)
 
-		job, err = ecosystem.NewHttpJobBuilder().
+		job, err = ecosystem.NewHttpJobBuilder[*container]().
 			RequestTimeout(requestTimeout).
 			Build()
 
@@ -84,10 +84,10 @@ func TestHttpJobBuilder(t *testing.T) {
 	t.Run("Should correct work middleware, register", func(t *testing.T) {
 		address := "localhost:10101"
 		requestTimeout := time.Second * 5
-		job, err := ecosystem.NewHttpJobBuilder().
+		job, err := ecosystem.NewHttpJobBuilder[*container]().
 			Address(address).
 			RequestTimeout(requestTimeout).
-			Register(noopHttpRegister, noopHttpRegister, noopHttpRegister).
+			Register(noopHttpRegister[*container], noopHttpRegister[*container], noopHttpRegister[*container]).
 			Middleware(noopMiddleware, noopMiddleware).
 			Build()
 
@@ -104,7 +104,7 @@ func TestHttpJobSignature(t *testing.T) {
 	address := "localhost:10101"
 	requestTimeout := time.Second * 5
 
-	job, err := ecosystem.NewHttpJobBuilder().
+	job, err := ecosystem.NewHttpJobBuilder[*container]().
 		Address(address).
 		RequestTimeout(requestTimeout).
 		Register().
@@ -113,12 +113,12 @@ func TestHttpJobSignature(t *testing.T) {
 
 	assert.NoError(t, err)
 
-	ayaka.NewApp(&ayaka.Options{
+	ayaka.NewApp(&ayaka.Options[*container]{
 		Name:        "aya",
 		Description: "kekw",
 		Version:     "0.0.1",
-		Container:   ayaka.NewContainer(ayaka.NoopLogger{}),
-	}).WithJob(ayaka.JobEntry{
+		Container:   &container{},
+	}).WithJob(ayaka.JobEntry[*container]{
 		Key: "xd",
 		Job: job,
 	})

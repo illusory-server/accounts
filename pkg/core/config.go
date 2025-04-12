@@ -19,7 +19,7 @@ func (c Config) MarshalJSON() ([]byte, error) {
 	})
 }
 
-func (a *App) WithConfig(conf *Config) *App {
+func (a *App[T]) WithConfig(conf *Config) *App[T] {
 	if a.err != nil {
 		return a
 	}

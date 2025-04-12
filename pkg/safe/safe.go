@@ -12,7 +12,7 @@ type RecoverOption interface {
 	OnPanic(r any)
 }
 
-func Recover(opts ...RecoverOption) {
+func RecoverWithOption(opts ...RecoverOption) {
 	if r := recover(); r != nil {
 		hub := sentry.CurrentHub().Clone()
 		hub.Recover(r)
@@ -20,6 +20,14 @@ func Recover(opts ...RecoverOption) {
 		for _, opt := range opts {
 			opt.OnPanic(r)
 		}
+	}
+}
+
+func Recover() {
+	if r := recover(); r != nil {
+		hub := sentry.CurrentHub().Clone()
+		hub.Recover(r)
+		hub.Flush(flushTime)
 	}
 }
 

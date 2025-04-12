@@ -57,4 +57,22 @@ type (
 		Type  int
 		Value any
 	}
+
+	NoopLogger struct{}
 )
+
+func (n NoopLogger) Log(context.Context, Level, string, ...Field) {}
+
+func (n NoopLogger) Debug(context.Context, string, ...Field) {}
+
+func (n NoopLogger) Info(context.Context, string, ...Field) {}
+
+func (n NoopLogger) Warn(context.Context, string, ...Field) {}
+
+func (n NoopLogger) Error(context.Context, string, ...Field) {}
+
+func (n NoopLogger) With(...Field) Logger { return n }
+
+func (n NoopLogger) InjectCtx(ctx context.Context) context.Context { return ctx }
+
+func (n NoopLogger) Enabled(context.Context, Level) bool { return false }

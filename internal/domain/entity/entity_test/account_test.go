@@ -3,11 +3,11 @@ package entity_test
 import (
 	"encoding/json"
 	"github.com/google/uuid"
-	"github.com/illusory-server/accounts/internal/domain"
 	"github.com/illusory-server/accounts/internal/domain/entity"
 	"github.com/illusory-server/accounts/internal/domain/vo"
 	"github.com/illusory-server/accounts/pkg/errors/codex"
 	"github.com/illusory-server/accounts/pkg/errors/errx"
+	"github.com/illusory-server/accounts/pkg/fn"
 	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
@@ -259,7 +259,7 @@ func TestEntityAccount(t *testing.T) {
 		assert.Equal(t, vo.Password{}, acc.Password())
 		assert.Equal(t, vo.Role{}, acc.Role())
 		assert.Equal(t, "", acc.Nickname())
-		assert.Equal(t, domain.NewEmptyOptional[vo.Link](), acc.AvatarLink())
+		assert.Equal(t, fn.None[vo.Link](), acc.AvatarLink())
 		assert.Equal(t, time.Time{}, acc.UpdatedAt())
 		assert.Equal(t, time.Time{}, acc.CreatedAt())
 

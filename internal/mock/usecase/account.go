@@ -52,31 +52,31 @@ func (mr *MockTimerMockRecorder) Now() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Now", reflect.TypeOf((*MockTimer)(nil).Now))
 }
 
-// MockUseCase is a mock of UseCase interface.
-type MockUseCase struct {
+// MockAccount is a mock of Account interface.
+type MockAccount struct {
 	ctrl     *gomock.Controller
-	recorder *MockUseCaseMockRecorder
+	recorder *MockAccountMockRecorder
 }
 
-// MockUseCaseMockRecorder is the mock recorder for MockUseCase.
-type MockUseCaseMockRecorder struct {
-	mock *MockUseCase
+// MockAccountMockRecorder is the mock recorder for MockAccount.
+type MockAccountMockRecorder struct {
+	mock *MockAccount
 }
 
-// NewMockUseCase creates a new mock instance.
-func NewMockUseCase(ctrl *gomock.Controller) *MockUseCase {
-	mock := &MockUseCase{ctrl: ctrl}
-	mock.recorder = &MockUseCaseMockRecorder{mock}
+// NewMockAccount creates a new mock instance.
+func NewMockAccount(ctrl *gomock.Controller) *MockAccount {
+	mock := &MockAccount{ctrl: ctrl}
+	mock.recorder = &MockAccountMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockUseCase) EXPECT() *MockUseCaseMockRecorder {
+func (m *MockAccount) EXPECT() *MockAccountMockRecorder {
 	return m.recorder
 }
 
 // AddAvatarLink mocks base method.
-func (m *MockUseCase) AddAvatarLink(ctx context.Context, id, url string) error {
+func (m *MockAccount) AddAvatarLink(ctx context.Context, id, url string) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "AddAvatarLink", ctx, id, url)
 	ret0, _ := ret[0].(error)
@@ -84,13 +84,13 @@ func (m *MockUseCase) AddAvatarLink(ctx context.Context, id, url string) error {
 }
 
 // AddAvatarLink indicates an expected call of AddAvatarLink.
-func (mr *MockUseCaseMockRecorder) AddAvatarLink(ctx, id, url interface{}) *gomock.Call {
+func (mr *MockAccountMockRecorder) AddAvatarLink(ctx, id, url interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddAvatarLink", reflect.TypeOf((*MockUseCase)(nil).AddAvatarLink), ctx, id, url)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddAvatarLink", reflect.TypeOf((*MockAccount)(nil).AddAvatarLink), ctx, id, url)
 }
 
 // Create mocks base method.
-func (m *MockUseCase) Create(ctx context.Context, firstName, lastName, email, nick, password string) (*account.WithoutPassword, error) {
+func (m *MockAccount) Create(ctx context.Context, firstName, lastName, email, nick, password string) (*account.WithoutPassword, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Create", ctx, firstName, lastName, email, nick, password)
 	ret0, _ := ret[0].(*account.WithoutPassword)
@@ -99,13 +99,13 @@ func (m *MockUseCase) Create(ctx context.Context, firstName, lastName, email, ni
 }
 
 // Create indicates an expected call of Create.
-func (mr *MockUseCaseMockRecorder) Create(ctx, firstName, lastName, email, nick, password interface{}) *gomock.Call {
+func (mr *MockAccountMockRecorder) Create(ctx, firstName, lastName, email, nick, password interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockUseCase)(nil).Create), ctx, firstName, lastName, email, nick, password)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockAccount)(nil).Create), ctx, firstName, lastName, email, nick, password)
 }
 
 // DeleteById mocks base method.
-func (m *MockUseCase) DeleteById(ctx context.Context, id string) error {
+func (m *MockAccount) DeleteById(ctx context.Context, id string) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DeleteById", ctx, id)
 	ret0, _ := ret[0].(error)
@@ -113,13 +113,13 @@ func (m *MockUseCase) DeleteById(ctx context.Context, id string) error {
 }
 
 // DeleteById indicates an expected call of DeleteById.
-func (mr *MockUseCaseMockRecorder) DeleteById(ctx, id interface{}) *gomock.Call {
+func (mr *MockAccountMockRecorder) DeleteById(ctx, id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteById", reflect.TypeOf((*MockUseCase)(nil).DeleteById), ctx, id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteById", reflect.TypeOf((*MockAccount)(nil).DeleteById), ctx, id)
 }
 
 // DeleteManyByIds mocks base method.
-func (m *MockUseCase) DeleteManyByIds(ctx context.Context, ids []string) error {
+func (m *MockAccount) DeleteManyByIds(ctx context.Context, ids []string) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DeleteManyByIds", ctx, ids)
 	ret0, _ := ret[0].(error)
@@ -127,13 +127,13 @@ func (m *MockUseCase) DeleteManyByIds(ctx context.Context, ids []string) error {
 }
 
 // DeleteManyByIds indicates an expected call of DeleteManyByIds.
-func (mr *MockUseCaseMockRecorder) DeleteManyByIds(ctx, ids interface{}) *gomock.Call {
+func (mr *MockAccountMockRecorder) DeleteManyByIds(ctx, ids interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteManyByIds", reflect.TypeOf((*MockUseCase)(nil).DeleteManyByIds), ctx, ids)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteManyByIds", reflect.TypeOf((*MockAccount)(nil).DeleteManyByIds), ctx, ids)
 }
 
 // GetByEmail mocks base method.
-func (m *MockUseCase) GetByEmail(ctx context.Context, email string) (*account.WithoutPassword, error) {
+func (m *MockAccount) GetByEmail(ctx context.Context, email string) (*account.WithoutPassword, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetByEmail", ctx, email)
 	ret0, _ := ret[0].(*account.WithoutPassword)
@@ -142,13 +142,13 @@ func (m *MockUseCase) GetByEmail(ctx context.Context, email string) (*account.Wi
 }
 
 // GetByEmail indicates an expected call of GetByEmail.
-func (mr *MockUseCaseMockRecorder) GetByEmail(ctx, email interface{}) *gomock.Call {
+func (mr *MockAccountMockRecorder) GetByEmail(ctx, email interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByEmail", reflect.TypeOf((*MockUseCase)(nil).GetByEmail), ctx, email)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByEmail", reflect.TypeOf((*MockAccount)(nil).GetByEmail), ctx, email)
 }
 
 // GetById mocks base method.
-func (m *MockUseCase) GetById(ctx context.Context, id string) (*account.WithoutPassword, error) {
+func (m *MockAccount) GetById(ctx context.Context, id string) (*account.WithoutPassword, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetById", ctx, id)
 	ret0, _ := ret[0].(*account.WithoutPassword)
@@ -157,13 +157,13 @@ func (m *MockUseCase) GetById(ctx context.Context, id string) (*account.WithoutP
 }
 
 // GetById indicates an expected call of GetById.
-func (mr *MockUseCaseMockRecorder) GetById(ctx, id interface{}) *gomock.Call {
+func (mr *MockAccountMockRecorder) GetById(ctx, id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetById", reflect.TypeOf((*MockUseCase)(nil).GetById), ctx, id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetById", reflect.TypeOf((*MockAccount)(nil).GetById), ctx, id)
 }
 
 // GetByIds mocks base method.
-func (m *MockUseCase) GetByIds(ctx context.Context, ids []string) ([]*account.WithoutPassword, error) {
+func (m *MockAccount) GetByIds(ctx context.Context, ids []string) ([]*account.WithoutPassword, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetByIds", ctx, ids)
 	ret0, _ := ret[0].([]*account.WithoutPassword)
@@ -172,13 +172,13 @@ func (m *MockUseCase) GetByIds(ctx context.Context, ids []string) ([]*account.Wi
 }
 
 // GetByIds indicates an expected call of GetByIds.
-func (mr *MockUseCaseMockRecorder) GetByIds(ctx, ids interface{}) *gomock.Call {
+func (mr *MockAccountMockRecorder) GetByIds(ctx, ids interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByIds", reflect.TypeOf((*MockUseCase)(nil).GetByIds), ctx, ids)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByIds", reflect.TypeOf((*MockAccount)(nil).GetByIds), ctx, ids)
 }
 
 // GetByNickname mocks base method.
-func (m *MockUseCase) GetByNickname(ctx context.Context, nickname string) (*account.WithoutPassword, error) {
+func (m *MockAccount) GetByNickname(ctx context.Context, nickname string) (*account.WithoutPassword, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetByNickname", ctx, nickname)
 	ret0, _ := ret[0].(*account.WithoutPassword)
@@ -187,13 +187,13 @@ func (m *MockUseCase) GetByNickname(ctx context.Context, nickname string) (*acco
 }
 
 // GetByNickname indicates an expected call of GetByNickname.
-func (mr *MockUseCaseMockRecorder) GetByNickname(ctx, nickname interface{}) *gomock.Call {
+func (mr *MockAccountMockRecorder) GetByNickname(ctx, nickname interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByNickname", reflect.TypeOf((*MockUseCase)(nil).GetByNickname), ctx, nickname)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByNickname", reflect.TypeOf((*MockAccount)(nil).GetByNickname), ctx, nickname)
 }
 
 // GetByQuery mocks base method.
-func (m *MockUseCase) GetByQuery(ctx context.Context, query vo.Query) ([]*account.WithoutPassword, uint, error) {
+func (m *MockAccount) GetByQuery(ctx context.Context, query vo.Query) ([]*account.WithoutPassword, uint, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetByQuery", ctx, query)
 	ret0, _ := ret[0].([]*account.WithoutPassword)
@@ -203,13 +203,13 @@ func (m *MockUseCase) GetByQuery(ctx context.Context, query vo.Query) ([]*accoun
 }
 
 // GetByQuery indicates an expected call of GetByQuery.
-func (mr *MockUseCaseMockRecorder) GetByQuery(ctx, query interface{}) *gomock.Call {
+func (mr *MockAccountMockRecorder) GetByQuery(ctx, query interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByQuery", reflect.TypeOf((*MockUseCase)(nil).GetByQuery), ctx, query)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByQuery", reflect.TypeOf((*MockAccount)(nil).GetByQuery), ctx, query)
 }
 
 // GetWithPasswordById mocks base method.
-func (m *MockUseCase) GetWithPasswordById(ctx context.Context, id string) (*aggregate.Account, error) {
+func (m *MockAccount) GetWithPasswordById(ctx context.Context, id string) (*aggregate.Account, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetWithPasswordById", ctx, id)
 	ret0, _ := ret[0].(*aggregate.Account)
@@ -218,13 +218,13 @@ func (m *MockUseCase) GetWithPasswordById(ctx context.Context, id string) (*aggr
 }
 
 // GetWithPasswordById indicates an expected call of GetWithPasswordById.
-func (mr *MockUseCaseMockRecorder) GetWithPasswordById(ctx, id interface{}) *gomock.Call {
+func (mr *MockAccountMockRecorder) GetWithPasswordById(ctx, id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetWithPasswordById", reflect.TypeOf((*MockUseCase)(nil).GetWithPasswordById), ctx, id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetWithPasswordById", reflect.TypeOf((*MockAccount)(nil).GetWithPasswordById), ctx, id)
 }
 
 // UpdateEmailById mocks base method.
-func (m *MockUseCase) UpdateEmailById(ctx context.Context, id, email string) error {
+func (m *MockAccount) UpdateEmailById(ctx context.Context, id, email string) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateEmailById", ctx, id, email)
 	ret0, _ := ret[0].(error)
@@ -232,13 +232,13 @@ func (m *MockUseCase) UpdateEmailById(ctx context.Context, id, email string) err
 }
 
 // UpdateEmailById indicates an expected call of UpdateEmailById.
-func (mr *MockUseCaseMockRecorder) UpdateEmailById(ctx, id, email interface{}) *gomock.Call {
+func (mr *MockAccountMockRecorder) UpdateEmailById(ctx, id, email interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateEmailById", reflect.TypeOf((*MockUseCase)(nil).UpdateEmailById), ctx, id, email)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateEmailById", reflect.TypeOf((*MockAccount)(nil).UpdateEmailById), ctx, id, email)
 }
 
 // UpdateInfoById mocks base method.
-func (m *MockUseCase) UpdateInfoById(ctx context.Context, id, firstName, lastName string) error {
+func (m *MockAccount) UpdateInfoById(ctx context.Context, id, firstName, lastName string) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateInfoById", ctx, id, firstName, lastName)
 	ret0, _ := ret[0].(error)
@@ -246,13 +246,13 @@ func (m *MockUseCase) UpdateInfoById(ctx context.Context, id, firstName, lastNam
 }
 
 // UpdateInfoById indicates an expected call of UpdateInfoById.
-func (mr *MockUseCaseMockRecorder) UpdateInfoById(ctx, id, firstName, lastName interface{}) *gomock.Call {
+func (mr *MockAccountMockRecorder) UpdateInfoById(ctx, id, firstName, lastName interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateInfoById", reflect.TypeOf((*MockUseCase)(nil).UpdateInfoById), ctx, id, firstName, lastName)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateInfoById", reflect.TypeOf((*MockAccount)(nil).UpdateInfoById), ctx, id, firstName, lastName)
 }
 
 // UpdateNickById mocks base method.
-func (m *MockUseCase) UpdateNickById(ctx context.Context, id, nick string) error {
+func (m *MockAccount) UpdateNickById(ctx context.Context, id, nick string) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateNickById", ctx, id, nick)
 	ret0, _ := ret[0].(error)
@@ -260,13 +260,13 @@ func (m *MockUseCase) UpdateNickById(ctx context.Context, id, nick string) error
 }
 
 // UpdateNickById indicates an expected call of UpdateNickById.
-func (mr *MockUseCaseMockRecorder) UpdateNickById(ctx, id, nick interface{}) *gomock.Call {
+func (mr *MockAccountMockRecorder) UpdateNickById(ctx, id, nick interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateNickById", reflect.TypeOf((*MockUseCase)(nil).UpdateNickById), ctx, id, nick)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateNickById", reflect.TypeOf((*MockAccount)(nil).UpdateNickById), ctx, id, nick)
 }
 
 // UpdatePasswordById mocks base method.
-func (m *MockUseCase) UpdatePasswordById(ctx context.Context, id, oldPassword, password string) error {
+func (m *MockAccount) UpdatePasswordById(ctx context.Context, id, oldPassword, password string) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdatePasswordById", ctx, id, oldPassword, password)
 	ret0, _ := ret[0].(error)
@@ -274,13 +274,13 @@ func (m *MockUseCase) UpdatePasswordById(ctx context.Context, id, oldPassword, p
 }
 
 // UpdatePasswordById indicates an expected call of UpdatePasswordById.
-func (mr *MockUseCaseMockRecorder) UpdatePasswordById(ctx, id, oldPassword, password interface{}) *gomock.Call {
+func (mr *MockAccountMockRecorder) UpdatePasswordById(ctx, id, oldPassword, password interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdatePasswordById", reflect.TypeOf((*MockUseCase)(nil).UpdatePasswordById), ctx, id, oldPassword, password)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdatePasswordById", reflect.TypeOf((*MockAccount)(nil).UpdatePasswordById), ctx, id, oldPassword, password)
 }
 
 // UpdateRoleById mocks base method.
-func (m *MockUseCase) UpdateRoleById(ctx context.Context, id, role string) error {
+func (m *MockAccount) UpdateRoleById(ctx context.Context, id, role string) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateRoleById", ctx, id, role)
 	ret0, _ := ret[0].(error)
@@ -288,7 +288,7 @@ func (m *MockUseCase) UpdateRoleById(ctx context.Context, id, role string) error
 }
 
 // UpdateRoleById indicates an expected call of UpdateRoleById.
-func (mr *MockUseCaseMockRecorder) UpdateRoleById(ctx, id, role interface{}) *gomock.Call {
+func (mr *MockAccountMockRecorder) UpdateRoleById(ctx, id, role interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateRoleById", reflect.TypeOf((*MockUseCase)(nil).UpdateRoleById), ctx, id, role)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateRoleById", reflect.TypeOf((*MockAccount)(nil).UpdateRoleById), ctx, id, role)
 }
