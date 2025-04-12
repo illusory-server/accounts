@@ -1,25 +1,16 @@
 package factory
 
 import (
-	"time"
-
 	"github.com/illusory-server/accounts/internal/domain/aggregate"
 	"github.com/illusory-server/accounts/internal/domain/entity"
 	"github.com/illusory-server/accounts/internal/domain/vo"
+	"github.com/illusory-server/accounts/pkg/utils"
 	"github.com/pkg/errors"
 )
 
 //go:generate mockgen -package mock_factory -source account.go -destination ../../mock/app_factory/account.go
 
 type (
-	Timer interface {
-		Now() time.Time
-	}
-
-	IDGenerator interface {
-		GenerateID() string
-	}
-
 	AccountFactory interface {
 		CreateAccount(
 			firstName, lastName, email, nick, password string,
@@ -27,12 +18,12 @@ type (
 	}
 
 	AccountFactoryImpl struct {
-		now   Timer
-		genID IDGenerator
+		now   utils.TimeNower
+		genID utils.IDGenerator
 	}
 )
 
-func NewAccountFactory(timer Timer, generatorID IDGenerator) AccountFactoryImpl {
+func NewAccountFactory(timer utils.TimeNower, generatorID utils.IDGenerator) AccountFactoryImpl {
 	return AccountFactoryImpl{
 		now:   timer,
 		genID: generatorID,

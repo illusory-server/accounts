@@ -2,11 +2,11 @@ package main
 
 import (
 	"context"
+	ayaka "github.com/OddEer0/ayaka/core"
+	"github.com/OddEer0/ayaka/ecosystem"
 	"github.com/illusory-server/accounts/cmd/dependency"
 	v1 "github.com/illusory-server/accounts/gen/accounts/v1"
 	grpcv1 "github.com/illusory-server/accounts/internal/transport/grpc/v1"
-	ayaka "github.com/illusory-server/accounts/pkg/core"
-	"github.com/illusory-server/accounts/pkg/ecosystem"
 	"github.com/illusory-server/accounts/pkg/job"
 	"github.com/opentracing/opentracing-go"
 	"google.golang.org/grpc"
