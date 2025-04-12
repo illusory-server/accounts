@@ -2,7 +2,7 @@ package v1
 
 import (
 	"context"
-	"github.com/illusory-server/accounts/pkg/tools"
+	"github.com/illusory-server/accounts/pkg/utils"
 	"time"
 
 	"github.com/golang/protobuf/ptypes/empty"
@@ -20,7 +20,7 @@ type Server struct {
 
 func NewServer(accountUseCase account.Account) *Server {
 	return &Server{
-		accountUseCase: tools.NotNil(accountUseCase),
+		accountUseCase: utils.NotNil(accountUseCase),
 	}
 }
 

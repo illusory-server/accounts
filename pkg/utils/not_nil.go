@@ -1,4 +1,4 @@
-package tools
+package utils
 
 func NotNil[T comparable](v T) T {
 	var t T
