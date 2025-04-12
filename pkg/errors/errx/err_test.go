@@ -58,8 +58,57 @@ func TestErr(t *testing.T) {
 		assert.Equal(t, err, errCause)
 	})
 
+	t.Run("Should correct wrapf", func(t *testing.T) {
+		errWrap1 := errors.Wrap(errCause, "wrap1")
+		errWrap2 := errors.Wrap(errWrap1, "wrap2")
+		errCode := WrapWithCodef(errWrap2, codex.NotFound, "wrap%s", "3")
+		errWrap4 := errors.Wrap(errCode, "wrap4")
+		err := errors.Wrap(errWrap4, "wrap5")
+
+		errC := errors.Cause(err)
+		assert.Equal(t, errCause, errC)
+
+		assert.True(t, errors.Is(err, errCode))
+		assert.True(t, errors.Is(err, errCause))
+
+		var e *Error
+		assert.True(t, errors.As(err, &e))
+		assert.Equal(t, e, errCode)
+		assert.Equal(t, codex.NotFound, e.Code())
+
+		err = errors.Unwrap(err)
+		err = errors.Unwrap(err)
+		assert.Equal(t, err, errWrap4)
+		err = errors.Unwrap(err)
+		err = errors.Unwrap(err)
+		assert.Equal(t, err, errCode)
+		err = errors.Unwrap(err)
+		err = errors.Unwrap(err)
+		assert.Equal(t, err, errWrap2)
+		err = errors.Unwrap(err)
+		err = errors.Unwrap(err)
+		assert.Equal(t, err, errWrap1)
+		err = errors.Unwrap(err)
+		err = errors.Unwrap(err)
+		assert.Equal(t, err, errCause)
+	})
+
 	t.Run("Should correct constructor", func(t *testing.T) {
 		errOrig := New(codex.NotFound, "err message")
+		var err error
+		err = errors.Wrap(errOrig, "wrap1")
+		err = errors.Wrap(err, "wrap2")
+		err = errors.Wrap(err, "wrap3")
+
+		var e *Error
+		assert.True(t, errors.As(err, &e))
+		assert.Equal(t, codex.NotFound, e.Code())
+		assert.True(t, errors.Is(err, errOrig))
+		assert.Equal(t, errors.Cause(errOrig), errors.Cause(err))
+	})
+
+	t.Run("Should correct constructor 2", func(t *testing.T) {
+		errOrig := Newf(codex.NotFound, "err %s", "message")
 		var err error
 		err = errors.Wrap(errOrig, "wrap1")
 		err = errors.Wrap(err, "wrap2")

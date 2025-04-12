@@ -1,7 +1,7 @@
 package job
 
 import (
-	"github.com/illusory-server/accounts/pkg/ecosystem"
+	"github.com/OddEer0/ayaka/ecosystem"
 	"github.com/pkg/errors"
 	"os"
 	"strconv"

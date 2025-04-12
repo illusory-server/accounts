@@ -2,10 +2,9 @@ package errx
 
 import (
 	"fmt"
-
 	"github.com/illusory-server/accounts/pkg/errors/codex"
 
-	errors "github.com/pkg/errors"
+	"github.com/pkg/errors"
 )
 
 type Error struct {
@@ -17,6 +16,13 @@ func New(code codex.Code, msg string) error {
 	return &Error{
 		code: code,
 		err:  errors.New(msg),
+	}
+}
+
+func Newf(code codex.Code, format string, args ...interface{}) error {
+	return &Error{
+		code: code,
+		err:  errors.Errorf(format, args...),
 	}
 }
 
@@ -74,6 +80,13 @@ func WrapWithCode(err error, code codex.Code, msg string) error {
 	return &Error{
 		code: code,
 		err:  errors.WithMessage(err, msg),
+	}
+}
+
+func WrapWithCodef(err error, code codex.Code, format string, args ...interface{}) error {
+	return &Error{
+		code: code,
+		err:  errors.WithMessagef(err, format, args...),
 	}
 }
 

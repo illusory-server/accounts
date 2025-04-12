@@ -1,6 +1,7 @@
 package job
 
 import (
+	"github.com/OddEer0/ayaka/ecosystem"
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/recovery"
 	grpcValidator "github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/validator"
 	grpcPrometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
@@ -13,7 +14,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/illusory-server/accounts/pkg/ecosystem"
 	"github.com/opentracing/opentracing-go"
 	"google.golang.org/grpc"
 	health "google.golang.org/grpc/health/grpc_health_v1"
