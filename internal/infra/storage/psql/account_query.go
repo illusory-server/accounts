@@ -2,6 +2,8 @@ package psql
 
 import (
 	"context"
+	"time"
+
 	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/google/uuid"
 	"github.com/illusory-server/accounts/internal/app/factory"
@@ -10,7 +12,6 @@ import (
 	"github.com/illusory-server/accounts/internal/domain/vo"
 	"github.com/illusory-server/accounts/pkg/logger"
 	"github.com/pkg/errors"
-	"time"
 )
 
 type timer struct{}
@@ -65,7 +66,7 @@ func (a *AccountQuery) HasByNickname(ctx context.Context, nickname string) (bool
 
 func (a *AccountQuery) GetById(ctx context.Context, id string) (*aggregate.Account, error) {
 	accFactory := factory.NewAccountFactory(timer{}, idGen{})
-	aggr, err := accFactory.CreateAccount("marlen", "karimov", "haha@gmail.com", "eer0", "Crutoi123456@")
+	aggr, err := accFactory.CreateAccount("marlen", "karimov", "haha@gmail.com", "eer0", "Crutoi123456@", 0)
 	if err != nil {
 		return nil, errors.Wrap(err, "[AccountQuery] accFactory.CreateAccount")
 	}
@@ -74,7 +75,7 @@ func (a *AccountQuery) GetById(ctx context.Context, id string) (*aggregate.Accou
 
 func (a *AccountQuery) GetByIds(ctx context.Context, ids []string) ([]*aggregate.Account, error) {
 	accFactory := factory.NewAccountFactory(timer{}, idGen{})
-	aggr, err := accFactory.CreateAccount("marlen", "karimov", "haha@gmail.com", "eer0", "Crutoi123456@")
+	aggr, err := accFactory.CreateAccount("marlen", "karimov", "haha@gmail.com", "eer0", "Crutoi123456@", 0)
 	if err != nil {
 		return nil, errors.Wrap(err, "[AccountQuery] accFactory.CreateAccount")
 	}
@@ -83,7 +84,7 @@ func (a *AccountQuery) GetByIds(ctx context.Context, ids []string) ([]*aggregate
 
 func (a *AccountQuery) GetByEmail(ctx context.Context, email string) (*aggregate.Account, error) {
 	accFactory := factory.NewAccountFactory(timer{}, idGen{})
-	aggr, err := accFactory.CreateAccount("marlen", "karimov", "haha@gmail.com", "eer0", "Crutoi123456@")
+	aggr, err := accFactory.CreateAccount("marlen", "karimov", "haha@gmail.com", "eer0", "Crutoi123456@", 0)
 	if err != nil {
 		return nil, errors.Wrap(err, "[AccountQuery] accFactory.CreateAccount")
 	}
@@ -92,7 +93,7 @@ func (a *AccountQuery) GetByEmail(ctx context.Context, email string) (*aggregate
 
 func (a *AccountQuery) GetByNickname(ctx context.Context, nickname string) (*aggregate.Account, error) {
 	accFactory := factory.NewAccountFactory(timer{}, idGen{})
-	aggr, err := accFactory.CreateAccount("marlen", "karimov", "haha@gmail.com", "eer0", "Crutoi123456@")
+	aggr, err := accFactory.CreateAccount("marlen", "karimov", "haha@gmail.com", "eer0", "Crutoi123456@", 0)
 	if err != nil {
 		return nil, errors.Wrap(err, "[AccountQuery] accFactory.CreateAccount")
 	}
@@ -101,7 +102,7 @@ func (a *AccountQuery) GetByNickname(ctx context.Context, nickname string) (*agg
 
 func (a *AccountQuery) GetByQuery(ctx context.Context, query vo.Query) ([]*aggregate.Account, uint, error) {
 	accFactory := factory.NewAccountFactory(timer{}, idGen{})
-	aggr, err := accFactory.CreateAccount("marlen", "karimov", "haha@gmail.com", "eer0", "Crutoi123456@")
+	aggr, err := accFactory.CreateAccount("marlen", "karimov", "haha@gmail.com", "eer0", "Crutoi123456@", 0)
 	if err != nil {
 		return nil, 0, errors.Wrap(err, "[AccountQuery] accFactory.CreateAccount")
 	}

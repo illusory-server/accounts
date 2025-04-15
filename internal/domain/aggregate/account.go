@@ -2,7 +2,6 @@ package aggregate
 
 import (
 	"encoding/json"
-	"github.com/illusory-server/accounts/pkg/fn"
 	"time"
 
 	"github.com/illusory-server/accounts/internal/domain/entity"
@@ -13,23 +12,6 @@ import (
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/bcrypt"
 )
-
-type ReadOnlyAccountEntity struct {
-	acc *entity.Account
-}
-
-func NewReadOnlyAccountEntity(acc *entity.Account) ReadOnlyAccountEntity {
-	return ReadOnlyAccountEntity{acc: acc}
-}
-
-func (r ReadOnlyAccountEntity) ID() vo.ID                      { return r.acc.ID() }
-func (r ReadOnlyAccountEntity) Info() vo.AccountInfo           { return r.acc.Info() }
-func (r ReadOnlyAccountEntity) Role() vo.Role                  { return r.acc.Role() }
-func (r ReadOnlyAccountEntity) Nickname() string               { return r.acc.Nickname() }
-func (r ReadOnlyAccountEntity) Password() vo.Password          { return r.acc.Password() }
-func (r ReadOnlyAccountEntity) AvatarLink() fn.Option[vo.Link] { return r.acc.AvatarLink() }
-func (r ReadOnlyAccountEntity) UpdatedAt() time.Time           { return r.acc.UpdatedAt() }
-func (r ReadOnlyAccountEntity) CreatedAt() time.Time           { return r.acc.CreatedAt() }
 
 type Account struct {
 	account *entity.Account
@@ -52,8 +34,8 @@ func NewAccount(account *entity.Account) (*Account, error) {
 	}, nil
 }
 
-func (a *Account) Account() ReadOnlyAccountEntity {
-	return NewReadOnlyAccountEntity(a.account)
+func (a *Account) Account() entity.ReadOnlyAccount {
+	return entity.NewReadOnlyAccount(a.account)
 }
 
 func (a *Account) Events() []event.Event {
@@ -145,6 +127,12 @@ func (a *Account) ChangePassword(password vo.Password, t time.Time) error {
 	a.AddEvent(event.NewAccountChangePassword(a.account.ID(), password, t))
 
 	return nil
+}
+
+func (a *Account) VersionIncrement() {
+	if a != nil {
+		a.account.VersionIncrement()
+	}
 }
 
 func (a *Account) MarshalJSON() ([]byte, error) {

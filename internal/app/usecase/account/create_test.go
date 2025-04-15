@@ -64,13 +64,13 @@ func TestAccountsUseCase_Create(t *testing.T) {
 			},
 			setupCommand: func(t *testing.T, p params) *mockRepo.MockAccountCommand {
 				repo := mockRepo.NewMockAccountCommand(ctrl)
-				acc, err := accFactory.CreateAccount(p.firstName, p.lastName, p.email, p.nick, p.password)
+				acc, err := accFactory.CreateAccount(p.firstName, p.lastName, p.email, p.nick, p.password, 0)
 				assert.NoError(t, err)
 				repo.EXPECT().Create(gomock.Any(), acc).Return(acc, nil)
 				return repo
 			},
 			expected: func(t *testing.T, p params) *WithoutPassword {
-				acc, err := accFactory.CreateAccount(p.firstName, p.lastName, p.email, p.nick, p.password)
+				acc, err := accFactory.CreateAccount(p.firstName, p.lastName, p.email, p.nick, p.password, 0)
 				assert.NoError(t, err)
 				return ConvertAccountAggregateToWithoutPassword(acc)
 			},
@@ -96,7 +96,7 @@ func TestAccountsUseCase_Create(t *testing.T) {
 			},
 			setupCommand: func(t *testing.T, p params) *mockRepo.MockAccountCommand {
 				repo := mockRepo.NewMockAccountCommand(ctrl)
-				acc, err := accFactory.CreateAccount(p.firstName, p.lastName, p.email, p.nick, p.password)
+				acc, err := accFactory.CreateAccount(p.firstName, p.lastName, p.email, p.nick, p.password, 0)
 				assert.NoError(t, err)
 				repo.EXPECT().Create(gomock.Any(), acc).Return(nil, errx.New(codex.AlreadyExists, "account already exists"))
 				return repo

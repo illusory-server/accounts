@@ -3,8 +3,9 @@ package interceptors
 import (
 	"context"
 	"errors"
-	"github.com/illusory-server/accounts/pkg/safe"
 	"time"
+
+	"github.com/illusory-server/accounts/pkg/safe"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"

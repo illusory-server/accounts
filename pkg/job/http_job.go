@@ -1,8 +1,9 @@
 package job
 
 import (
-	"github.com/OddEer0/ayaka/ecosystem"
 	"time"
+
+	"github.com/OddEer0/ayaka/ecosystem"
 )
 
 type HttpJob struct{}

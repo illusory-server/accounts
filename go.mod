@@ -1,6 +1,6 @@
 module github.com/illusory-server/accounts
 
-go 1.23.7
+go 1.24.2
 
 require (
 	github.com/OddEer0/ayaka v1.0.0

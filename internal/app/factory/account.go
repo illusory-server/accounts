@@ -13,7 +13,7 @@ import (
 type (
 	AccountFactory interface {
 		CreateAccount(
-			firstName, lastName, email, nick, password string,
+			firstName, lastName, email, nick, password string, aggregateVersion uint64,
 		) (*aggregate.Account, error)
 	}
 
@@ -31,7 +31,7 @@ func NewAccountFactory(timer utils.TimeNower, generatorID utils.IDGenerator) Acc
 }
 
 func (a AccountFactoryImpl) CreateAccount(
-	firstName, lastName, email, nick, password string,
+	firstName, lastName, email, nick, password string, version uint64,
 ) (*aggregate.Account, error) {
 	id, err := vo.NewID(a.genID.GenerateID())
 	if err != nil {
@@ -59,6 +59,7 @@ func (a AccountFactoryImpl) CreateAccount(
 		pass,
 		t,
 		t,
+		version,
 	)
 	if err != nil {
 		return nil, errors.Wrap(err, "[AccountFactory] entity.NewAccount")

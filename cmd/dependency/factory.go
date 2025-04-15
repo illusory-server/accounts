@@ -2,6 +2,7 @@ package dependency
 
 import (
 	"context"
+
 	"github.com/illusory-server/accounts/internal/app/usecase/account"
 	"github.com/illusory-server/accounts/internal/infra/config"
 	"github.com/illusory-server/accounts/pkg/logger/log"

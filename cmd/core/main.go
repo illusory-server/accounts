@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"os"
+
 	ayaka "github.com/OddEer0/ayaka/core"
 	"github.com/OddEer0/ayaka/ecosystem"
 	"github.com/illusory-server/accounts/cmd/dependency"
@@ -10,7 +12,6 @@ import (
 	"github.com/illusory-server/accounts/pkg/job"
 	"github.com/opentracing/opentracing-go"
 	"google.golang.org/grpc"
-	"os"
 )
 
 func grpcServer(_ context.Context, container dependency.Dependency, srv *grpc.Server) error {

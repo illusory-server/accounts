@@ -1,12 +1,15 @@
 package event
 
 import (
+	"github.com/illusory-server/accounts/internal/domain/entity"
+
 	"time"
 
 	"github.com/illusory-server/accounts/internal/domain/vo"
 )
 
 const (
+	AccountCreateType           Type = "AccountCreate"
 	AccountChangeNicknameType   Type = "NicknameChanged"
 	AccountChangeInfoType       Type = "AccountChangeInfo"
 	AccountChangePasswordType   Type = "AccountChangePassword"
@@ -16,6 +19,7 @@ const (
 )
 
 var (
+	_ Event = (*AccountCreate)(nil)
 	_ Event = (*AccountChangeNickname)(nil)
 	_ Event = (*AccountChangeInfo)(nil)
 	_ Event = (*AccountChangePassword)(nil)
@@ -23,6 +27,26 @@ var (
 	_ Event = (*AccountChangeRole)(nil)
 	_ Event = (*AccountChangeAvatarLink)(nil)
 )
+
+type AccountCreate struct {
+	id        vo.ID
+	account   entity.ReadOnlyAccount
+	timestamp time.Time
+}
+
+func (a AccountCreate) Type() Type                        { return AccountCreateType }
+func (a AccountCreate) Value() any                        { return a.account }
+func (a AccountCreate) Timestamp() time.Time              { return a.timestamp }
+func (a AccountCreate) ID() vo.ID                         { return a.id }
+func (a AccountCreate) Aggregate() entity.ReadOnlyAccount { return a.account }
+
+func NewAccountCreate(id vo.ID, account entity.ReadOnlyAccount, t time.Time) *AccountCreate {
+	return &AccountCreate{
+		id:        id,
+		account:   account,
+		timestamp: t,
+	}
+}
 
 type AccountChangeNickname struct {
 	id        vo.ID

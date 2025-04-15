@@ -47,7 +47,7 @@ func TestAccountsUseCase_GetById(t *testing.T) {
 					"Doe",
 					"john.doe@gmail.com",
 					"john",
-					"@CorrectPassword123%",
+					"@CorrectPassword123%", 0,
 				)
 				assert.NoError(t, err)
 				return ConvertAccountAggregateToWithoutPassword(acc)
@@ -60,7 +60,7 @@ func TestAccountsUseCase_GetById(t *testing.T) {
 					"Doe",
 					"john.doe@gmail.com",
 					"john",
-					"@CorrectPassword123%",
+					"@CorrectPassword123%", 0,
 				)
 				assert.NoError(t, err)
 				repo.EXPECT().GetById(gomock.Any(), p.id).Return(acc, nil)
@@ -171,7 +171,7 @@ func TestAccountsUseCase_GetByEmail(t *testing.T) {
 					"Doe",
 					p.email,
 					"john",
-					"@CorrectPassword123%",
+					"@CorrectPassword123%", 0,
 				)
 				assert.NoError(t, err)
 				return ConvertAccountAggregateToWithoutPassword(acc)
@@ -184,7 +184,7 @@ func TestAccountsUseCase_GetByEmail(t *testing.T) {
 					"Doe",
 					p.email,
 					"john",
-					"@CorrectPassword123%",
+					"@CorrectPassword123%", 0,
 				)
 				assert.NoError(t, err)
 				repo.EXPECT().GetByEmail(gomock.Any(), p.email).Return(acc, nil)
@@ -295,7 +295,7 @@ func TestAccountsUseCase_GetByNickname(t *testing.T) {
 					"Doe",
 					"john.doe@gmail.com",
 					p.nickname,
-					"@CorrectPassword123%",
+					"@CorrectPassword123%", 0,
 				)
 				assert.NoError(t, err)
 				return ConvertAccountAggregateToWithoutPassword(acc)
@@ -308,7 +308,7 @@ func TestAccountsUseCase_GetByNickname(t *testing.T) {
 					"Doe",
 					"john.doe@gmail.com",
 					p.nickname,
-					"@CorrectPassword123%",
+					"@CorrectPassword123%", 0,
 				)
 				assert.NoError(t, err)
 				repo.EXPECT().GetByNickname(gomock.Any(), p.nickname).Return(acc, nil)

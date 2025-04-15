@@ -1,6 +1,7 @@
 package event
 
 import (
+	"github.com/illusory-server/accounts/internal/domain/aggregate"
 	"github.com/illusory-server/accounts/internal/domain/vo"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -101,4 +102,17 @@ func TestAccountChangeAvatarLink(t *testing.T) {
 	assert.Equal(t, link, event.AvatarLink())
 	assert.Equal(t, timestamp, event.Timestamp())
 	assert.Equal(t, AccountChangeAvatarLinkType, event.Type())
+}
+
+func TestAccountCreate(t *testing.T) {
+	id, _ := vo.NewID("550e8400-e29b-41d4-a716-446655440000")
+	agg := &aggregate.Account{}
+	timestamp := time.Now()
+
+	event := NewAccountCreate(id, agg, timestamp)
+
+	assert.Equal(t, id, event.ID())
+	assert.Equal(t, agg, event.Aggregate())
+	assert.Equal(t, timestamp, event.Timestamp())
+	assert.Equal(t, AccountCreateType, event.Type())
 }

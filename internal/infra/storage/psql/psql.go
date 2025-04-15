@@ -3,12 +3,13 @@ package psql
 import (
 	"context"
 	"fmt"
+	"time"
+
 	"github.com/illusory-server/accounts/internal/infra/config"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/pkg/errors"
-	"time"
 )
 
 //go:generate mockgen -package mockPsql -source psql.go -destination ../../../mock/psql/psql.go

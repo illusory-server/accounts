@@ -46,7 +46,7 @@ func (a *UseCase) Create(
 		return nil, ErrEmailExists
 	}
 
-	acc, err := a.accountFactory.CreateAccount(firstName, lastName, email, nick, password)
+	acc, err := a.accountFactory.CreateAccount(firstName, lastName, email, nick, password, 0)
 	if err != nil {
 		a.log.Error(ctx, "failed to create account",
 			logger.Err(err),

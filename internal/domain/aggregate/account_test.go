@@ -37,6 +37,7 @@ func createTestAccount(t *testing.T) *Account {
 		password,
 		now,
 		now,
+		0,
 	)
 	require.NoError(t, err)
 

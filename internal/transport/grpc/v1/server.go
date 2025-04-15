@@ -2,8 +2,9 @@ package v1
 
 import (
 	"context"
-	"github.com/illusory-server/accounts/pkg/utils"
 	"time"
+
+	"github.com/illusory-server/accounts/pkg/utils"
 
 	"github.com/golang/protobuf/ptypes/empty"
 	v1 "github.com/illusory-server/accounts/gen/accounts/v1"

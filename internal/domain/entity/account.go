@@ -2,8 +2,9 @@ package entity
 
 import (
 	"encoding/json"
-	"github.com/illusory-server/accounts/pkg/fn"
 	"time"
+
+	"github.com/illusory-server/accounts/pkg/fn"
 
 	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/illusory-server/accounts/internal/domain/vo"
@@ -14,7 +15,7 @@ import (
 
 const (
 	MinNickLen = 2
-	MaxNickLen = 124
+	MaxNickLen = 128
 )
 
 func validateTimeBeforeNow(value interface{}) error {
@@ -32,6 +33,7 @@ type Account struct {
 	nickname   string
 	password   vo.Password
 	avatarLink fn.Option[vo.Link]
+	version    uint64
 	updatedAt  time.Time
 	createdAt  time.Time
 }
@@ -44,6 +46,7 @@ func NewAccount(
 	password vo.Password,
 	updatedAt time.Time,
 	createdAt time.Time,
+	version uint64,
 ) (*Account, error) {
 	result := &Account{
 		id:         id,
@@ -54,6 +57,7 @@ func NewAccount(
 		avatarLink: fn.None[vo.Link](),
 		updatedAt:  updatedAt,
 		createdAt:  createdAt,
+		version:    version,
 	}
 
 	if err := result.Validate(); err != nil {
@@ -133,7 +137,21 @@ func (a *Account) AvatarLink() fn.Option[vo.Link] {
 	return a.avatarLink
 }
 
+func (a *Account) Version() uint64 {
+	if a == nil {
+		return 0
+	}
+	return a.version
+}
+
 // setters
+
+func (a *Account) VersionIncrement() {
+	if a == nil {
+		return
+	}
+	a.version++
+}
 
 func (a *Account) SetInfo(info vo.AccountInfo) error {
 	if err := info.Validate(); err != nil {
@@ -197,3 +215,21 @@ func (a *Account) MarshalJSON() ([]byte, error) {
 	}
 	return json.Marshal(data)
 }
+
+type ReadOnlyAccount struct {
+	acc *Account
+}
+
+func NewReadOnlyAccount(acc *Account) ReadOnlyAccount {
+	return ReadOnlyAccount{acc: acc}
+}
+
+func (r ReadOnlyAccount) ID() vo.ID                      { return r.acc.ID() }
+func (r ReadOnlyAccount) Info() vo.AccountInfo           { return r.acc.Info() }
+func (r ReadOnlyAccount) Role() vo.Role                  { return r.acc.Role() }
+func (r ReadOnlyAccount) Nickname() string               { return r.acc.Nickname() }
+func (r ReadOnlyAccount) Password() vo.Password          { return r.acc.Password() }
+func (r ReadOnlyAccount) AvatarLink() fn.Option[vo.Link] { return r.acc.AvatarLink() }
+func (r ReadOnlyAccount) UpdatedAt() time.Time           { return r.acc.UpdatedAt() }
+func (r ReadOnlyAccount) CreatedAt() time.Time           { return r.acc.CreatedAt() }
+func (r ReadOnlyAccount) Version() uint64                { return r.acc.Version() }

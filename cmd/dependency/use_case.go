@@ -2,11 +2,13 @@ package dependency
 
 import (
 	"context"
+	"time"
+
 	"github.com/google/uuid"
 	"github.com/illusory-server/accounts/internal/app/factory"
 	"github.com/illusory-server/accounts/internal/app/usecase/account"
 	"github.com/illusory-server/accounts/internal/infra/storage/psql"
-	"time"
+	"github.com/illusory-server/accounts/pkg/utils"
 )
 
 type timeNow struct{}
@@ -38,7 +40,7 @@ func (f *Factory) initUseCase(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	command, err := psql.NewAccountCommand(log, pool)
+	command, err := psql.NewAccountCommand(log, pool, utils.NewUUIDGenerator())
 	if err != nil {
 		return err
 	}

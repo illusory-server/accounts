@@ -1,11 +1,12 @@
 package job
 
 import (
-	"github.com/OddEer0/ayaka/ecosystem"
-	"github.com/pkg/errors"
 	"os"
 	"strconv"
 	"time"
+
+	"github.com/OddEer0/ayaka/ecosystem"
+	"github.com/pkg/errors"
 )
 
 type (

@@ -33,7 +33,7 @@ func TestEntityAccount(t *testing.T) {
 			nick,
 			pass,
 			updatedTime,
-			createdTime,
+			createdTime, 0,
 		)
 		assert.NoError(t, err)
 		assert.Equal(t, id, acc.ID())
@@ -53,7 +53,7 @@ func TestEntityAccount(t *testing.T) {
 			nick,
 			pass,
 			updatedTime,
-			createdTime,
+			createdTime, 0,
 		)
 		assert.Nil(t, acc)
 		assert.Equal(t, codex.InvalidArgument, errx.Code(err))
@@ -66,7 +66,7 @@ func TestEntityAccount(t *testing.T) {
 			nick,
 			pass,
 			updatedTime,
-			createdTime,
+			createdTime, 0,
 		)
 		assert.Nil(t, acc)
 		assert.Error(t, err)
@@ -79,7 +79,7 @@ func TestEntityAccount(t *testing.T) {
 			nick,
 			pass,
 			updatedTime,
-			createdTime,
+			createdTime, 0,
 		)
 		assert.Nil(t, acc)
 		assert.Error(t, err)
@@ -92,7 +92,7 @@ func TestEntityAccount(t *testing.T) {
 			nick,
 			vo.Password{},
 			updatedTime,
-			createdTime,
+			createdTime, 0,
 		)
 		assert.Nil(t, acc)
 		assert.Error(t, err)
@@ -105,7 +105,7 @@ func TestEntityAccount(t *testing.T) {
 			"e",
 			pass,
 			updatedTime,
-			createdTime,
+			createdTime, 0,
 		)
 		assert.Nil(t, acc)
 		assert.Error(t, err)
@@ -119,7 +119,7 @@ func TestEntityAccount(t *testing.T) {
 			nick,
 			pass,
 			incorrectTime,
-			createdTime,
+			createdTime, 0,
 		)
 		assert.Nil(t, acc)
 		assert.Error(t, err)
@@ -132,7 +132,7 @@ func TestEntityAccount(t *testing.T) {
 			nick,
 			pass,
 			updatedTime,
-			incorrectTime,
+			incorrectTime, 0,
 		)
 		assert.Nil(t, acc)
 		assert.Error(t, err)
@@ -147,7 +147,7 @@ func TestEntityAccount(t *testing.T) {
 			nick,
 			pass,
 			updatedTime,
-			createdTime,
+			createdTime, 0,
 		)
 		assert.NoError(t, err)
 
@@ -210,6 +210,10 @@ func TestEntityAccount(t *testing.T) {
 		assert.Error(t, err)
 		assert.Equal(t, codex.InvalidArgument, errx.Code(err))
 		assert.Equal(t, roleSet.Value(), acc.Role().Value())
+
+		assert.Equal(t, uint64(0), acc.Version())
+		acc.VersionIncrement()
+		assert.Equal(t, uint64(1), acc.Version())
 	})
 
 	t.Run("Should correct marshal", func(t *testing.T) {
@@ -220,7 +224,7 @@ func TestEntityAccount(t *testing.T) {
 			nick,
 			pass,
 			updatedTime,
-			createdTime,
+			createdTime, 0,
 		)
 		assert.NoError(t, err)
 

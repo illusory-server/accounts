@@ -2,12 +2,13 @@ package dependency
 
 import (
 	"context"
+	"os"
+
 	"github.com/illusory-server/accounts/internal/infra/config"
 	"github.com/illusory-server/accounts/pkg/logger"
 	"github.com/illusory-server/accounts/pkg/logger/log"
 	"github.com/ilyakaznacheev/cleanenv"
 	"github.com/pkg/errors"
-	"os"
 )
 
 func parseConfigFromYaml(path string, target any) error {

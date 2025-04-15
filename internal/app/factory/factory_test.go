@@ -51,7 +51,7 @@ func TestAccountFactoryImpl_CreateAccount_Success(t *testing.T) {
 	password := "securePassword123"
 
 	// Execute
-	account, err := factory.CreateAccount(firstName, lastName, email, nick, password)
+	account, err := factory.CreateAccount(firstName, lastName, email, nick, password, 0)
 
 	// Assert
 	assert.NoError(t, err)
@@ -94,7 +94,7 @@ func TestAccountFactoryImpl_CreateAccount_InvalidEmail(t *testing.T) {
 	password := "securePassword123"
 
 	// Execute
-	account, err := factory.CreateAccount(firstName, lastName, email, nick, password)
+	account, err := factory.CreateAccount(firstName, lastName, email, nick, password, 0)
 
 	// Assert
 	assert.Error(t, err)
@@ -127,7 +127,7 @@ func TestAccountFactoryImpl_CreateAccount_InvalidFirstName(t *testing.T) {
 	password := "securePassword123"
 
 	// Execute
-	account, err := factory.CreateAccount(firstName, lastName, email, nick, password)
+	account, err := factory.CreateAccount(firstName, lastName, email, nick, password, 0)
 
 	// Assert
 	assert.Error(t, err)
@@ -160,7 +160,7 @@ func TestAccountFactoryImpl_CreateAccount_InvalidLastName(t *testing.T) {
 	password := "securePassword123"
 
 	// Execute
-	account, err := factory.CreateAccount(firstName, lastName, email, nick, password)
+	account, err := factory.CreateAccount(firstName, lastName, email, nick, password, 0)
 
 	// Assert
 	assert.Error(t, err)
@@ -193,7 +193,7 @@ func TestAccountFactoryImpl_CreateAccount_InvalidPassword(t *testing.T) {
 	password := "short"
 
 	// Execute
-	account, err := factory.CreateAccount(firstName, lastName, email, nick, password)
+	account, err := factory.CreateAccount(firstName, lastName, email, nick, password, 0)
 
 	// Assert
 	assert.Error(t, err)
@@ -226,7 +226,7 @@ func TestAccountFactoryImpl_CreateAccount_EmptyNick(t *testing.T) {
 	password := "securePassword123"
 
 	// Execute
-	account, err := factory.CreateAccount(firstName, lastName, email, nick, password)
+	account, err := factory.CreateAccount(firstName, lastName, email, nick, password, 0)
 
 	// Assert
 	assert.Error(t, err)
@@ -255,7 +255,7 @@ func TestAccountFactoryImpl_CreateAccount_IDGenerationError(t *testing.T) {
 	password := "securePassword123"
 
 	// Execute
-	account, err := factory.CreateAccount(firstName, lastName, email, nick, password)
+	account, err := factory.CreateAccount(firstName, lastName, email, nick, password, 0)
 
 	// Assert
 	assert.Error(t, err)

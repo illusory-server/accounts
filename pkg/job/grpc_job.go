@@ -1,6 +1,10 @@
 package job
 
 import (
+	"os"
+	"strconv"
+	"time"
+
 	"github.com/OddEer0/ayaka/ecosystem"
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/recovery"
 	grpcValidator "github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/validator"
@@ -10,9 +14,6 @@ import (
 	"github.com/illusory-server/accounts/pkg/logger"
 	"github.com/illusory-server/accounts/pkg/safe"
 	"github.com/pkg/errors"
-	"os"
-	"strconv"
-	"time"
 
 	"github.com/opentracing/opentracing-go"
 	"google.golang.org/grpc"
